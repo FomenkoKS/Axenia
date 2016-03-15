@@ -57,7 +57,7 @@ function HandleKarma($dist, $from, $to, $chat_id)
     } else $a = Query2DB($query)[0];
     if ($a < 0) return "Ты *не можешь* голосовать с отрицательной кармой";
     $output = "*".GetNameOfUser($from) . " (" . $a . ")*";
-    $query = "SELECT level FROM Karma WHERE user_id=" . $t . " AND chat_id=" . $chat_id;
+    $query = "SELECT level FROM Karma WHERE user_id=" . $to . " AND chat_id=" . $chat_id;
     (!Query2DB($query)[0]) ? $b = 0 : $b = Query2DB($query)[0];
     if($a==0)$a=1;
     switch ($dist) {
