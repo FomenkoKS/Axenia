@@ -1,6 +1,6 @@
 .idea
 *.iml
-/web/users/*
-/bot/config.php
-/web/config.php
-/zina/config.php
+#/web/users/*
+#/bot/config.php
+#/web/config.php
+#/zina/config.php
