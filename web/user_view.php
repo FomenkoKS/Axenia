@@ -6,8 +6,8 @@ if (!isset($logic)) {
 ?>
 <div class="col-xs-12 center">
     <?
-        $user_id= isset($_GET['user_id'])?$_GET['user_id']:GetUserID($_GET['username']);
-        echo $logic->MakeBarChart($user_id,"user");
-        echo $logic->GetAwards($user_id);
+    $user_id = isset($_GET['user_id']) ? $_GET['user_id'] : GetUserID($_GET['username']);
+    echo $logic->MakeBarChart($user_id, "user");
+    echo $logic->GetAwards($user_id);
     ?>
 </div>

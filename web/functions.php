@@ -12,22 +12,24 @@ function GetUserName($id)
     return (!Query2DB($query)[0]) ? Query2DB($query)[1] : Query2DB($query)[0];
 }
 
-function GetGroupName($id){
-    $query = "SELECT title FROM Chats WHERE id=".$id;
+function GetGroupName($id)
+{
+    $query = "SELECT title FROM Chats WHERE id=" . $id;
     return (!Query2DB($query)[0]) ? false : Query2DB($query)[0];
 }
 
-function Query2DB($query){
+function Query2DB($query)
+{
     $mysqli = new mysqli('localhost', MYSQL_USER, MYSQL_PASSWORD, MYSQL_DATABASE);
     $mysqli->connect_errno;
     $mysqli->query("SET SESSION collation_connection = 'utf8_general_ci'");
     $mysqli->query("SET NAMES 'utf8'");
-    $a=array();
+    $a = array();
     if ($result = $mysqli->query($query)) {
-        while ($row = mysqli_fetch_assoc($result)) foreach($row as $value) array_push($a,$value);
+        while ($row = mysqli_fetch_assoc($result)) foreach ($row as $value) array_push($a, $value);
         $mysqli->close();
         return $a;
-    } else{
+    } else {
         printf("Errormessage: %s\n", $mysqli->error);
         $mysqli->close();
         return false;
@@ -35,7 +37,8 @@ function Query2DB($query){
 
 }
 
-function exec_curl_request($handle) {
+function exec_curl_request($handle)
+{
     $response = curl_exec($handle);
 
     if ($response === false) {
@@ -71,7 +74,8 @@ function exec_curl_request($handle) {
     return $response;
 }
 
-function apiRequest($method, $parameters) {
+function apiRequest($method, $parameters)
+{
     if (!is_string($method)) {
         error_log("Method name must be a string\n");
         return false;
@@ -90,7 +94,7 @@ function apiRequest($method, $parameters) {
             $val = json_encode($val);
         }
     }
-    $url = API_URL.$method.'?'.http_build_query($parameters);
+    $url = API_URL . $method . '?' . http_build_query($parameters);
 
     $handle = curl_init($url);
     curl_setopt($handle, CURLOPT_RETURNTRANSFER, true);
@@ -98,4 +102,5 @@ function apiRequest($method, $parameters) {
     curl_setopt($handle, CURLOPT_TIMEOUT, 60);
     return exec_curl_request($handle);
 }
+
 ?>

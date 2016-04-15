@@ -17,8 +17,9 @@ function GetUserName($id)
     return (!Query2DB($query)[0]) ? Query2DB($query)[1] : Query2DB($query)[0];
 }
 
-function GetGroupName($id){
-    $query = "SELECT title FROM Chats WHERE id=".$id;
+function GetGroupName($id)
+{
+    $query = "SELECT title FROM Chats WHERE id=" . $id;
     return (!Query2DB($query)[0]) ? false : Query2DB($query)[0];
 }
 
@@ -52,7 +53,7 @@ function CheckAdmin($chat_id, $user_id)
 function HandleKarma($dist, $from, $to, $chat_id)
 {
     if ($from == $to) return "Давай <b>без</b> кармадрочерства";
-    if($from!=1) {
+    if ($from != 1) {
         $query = "SELECT level FROM Karma WHERE user_id=" . $from . " AND chat_id=" . $chat_id;
         if (!Query2DB($query)[0]) {
             $query = "INSERT INTO `Karma` SET `chat_id`=" . $chat_id . ",`user_id`=" . $from . ",`level`=0";
@@ -61,33 +62,38 @@ function HandleKarma($dist, $from, $to, $chat_id)
         } else $a = Query2DB($query)[0];
         if ($a < 0) return "Ты <b>не  можешь</b> голосовать с отрицательной кармой";
         $output = "<b>" . GetUserName($from) . " (" . $a . ")</b>";
-    }else{$output = "<b>Аксинья</b>";}
+    } else {
+        $output = "<b>Аксинья</b>";
+    }
     $query = "SELECT level FROM Karma WHERE user_id=" . $to . " AND chat_id=" . $chat_id;
     (!Query2DB($query)[0]) ? $b = 0 : $b = Query2DB($query)[0];
-    if($a==0)$a=1;
+    if ($a == 0) $a = 1;
     switch ($dist) {
         case "+":
             $output .= " плюсанул в карму ";
-            $result = round($b + sqrt($a),1);
+            $result = round($b + sqrt($a), 1);
             break;
         case "-":
             $output .= " минусанул в карму ";
-            $result=($from!=1)?round($b - sqrt($a),1):$b-0.1;
+            $result = ($from != 1) ? round($b - sqrt($a), 1) : $b - 0.1;
             break;
     }
-    $output .= "<b>".GetUserName($to) . " (" . $result . ")</b>";
+    $output .= "<b>" . GetUserName($to) . " (" . $result . ")</b>";
     $query = "INSERT INTO `Karma` SET `chat_id`=" . $chat_id . ",`user_id`=" . $to . ",`level`=" . $result . " ON DUPLICATE KEY UPDATE `level`=" . $result;
     Query2DB($query);
     return $output;
 }
 
-function Punish($user,$chat){
-    if ($chat==-1001016901471)return HandleKarma("-",1,$user,$chat);
+function Punish($user, $chat)
+{
+    if ($chat == -1001016901471) return HandleKarma("-", 1, $user, $chat);
 }
 
-function SetCarma($chat,$user,$level){
+function SetCarma($chat, $user, $level)
+{
     $query = "INSERT INTO Karma SET chat_id=" . $chat . ",user_id=" . $user . ",level=" . $level . " ON DUPLICATE KEY UPDATE level=" . $level;
     Query2DB($query);
     return (Query2DB($query) === false) ? false : true;
 }
+
 ?>

@@ -1,5 +1,6 @@
 <?php
-function apiRequestWebhook($method, $parameters) {
+function apiRequestWebhook($method, $parameters)
+{
     if (!is_string($method)) {
         error_log("Method name must be a string\n");
         return false;
@@ -19,7 +20,8 @@ function apiRequestWebhook($method, $parameters) {
     return true;
 }
 
-function exec_curl_request($handle) {
+function exec_curl_request($handle)
+{
     $response = curl_exec($handle);
 
     if ($response === false) {
@@ -55,7 +57,8 @@ function exec_curl_request($handle) {
     return $response;
 }
 
-function apiRequest($method, $parameters) {
+function apiRequest($method, $parameters)
+{
     if (!is_string($method)) {
         error_log("Method name must be a string\n");
         return false;
@@ -74,7 +77,7 @@ function apiRequest($method, $parameters) {
             $val = json_encode($val);
         }
     }
-    $url = API_URL.$method.'?'.http_build_query($parameters);
+    $url = API_URL . $method . '?' . http_build_query($parameters);
 
     $handle = curl_init($url);
     curl_setopt($handle, CURLOPT_RETURNTRANSFER, true);
@@ -83,7 +86,8 @@ function apiRequest($method, $parameters) {
     return exec_curl_request($handle);
 }
 
-function apiRequestJson($method, $parameters) {
+function apiRequestJson($method, $parameters)
+{
     if (!is_string($method)) {
         error_log("Method name must be a string\n", 3, "/wwww/abrikoseg.ru/anfisa/my-errors.log");
         return false;
@@ -109,19 +113,21 @@ function apiRequestJson($method, $parameters) {
     return exec_curl_request($handle);
 }
 
-function Query2DB($query){
+function Query2DB($query)
+{
     $mysqli = new mysqli('localhost', MYSQL_USER, MYSQL_PASSWORD, MYSQL_DATABASE);
     $mysqli->connect_errno;
     $mysqli->query("SET SESSION collation_connection = 'utf8_general_ci'");
     $mysqli->query("SET NAMES 'utf8'");
-    $a=array();
+    $a = array();
     if ($result = $mysqli->query($query)) {
-        while ($row = mysqli_fetch_assoc($result)) foreach($row as $value) array_push($a,$value);
+        while ($row = mysqli_fetch_assoc($result)) foreach ($row as $value) array_push($a, $value);
         $mysqli->close();
         return $a;
-    } else{
+    } else {
         $mysqli->close();
         return false;
     }
 }
+
 ?>

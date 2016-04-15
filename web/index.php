@@ -13,7 +13,7 @@ $logic->CheckData();
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="description" content="Портал для анализа кармы тётушки Аксиньи">
     <meta name="author" content="Fomenko C.S.">
-    <link rel="image_src" href="<? echo PATH_TO_SITE; ?>img/logo.png" />
+    <link rel="image_src" href="<? echo PATH_TO_SITE; ?>img/logo.png"/>
     <meta property="og:title" content="Аксинья">
     <meta property="og:image" content="<? echo PATH_TO_SITE; ?>img/logo.png">
     <meta property="og:site_name" content="Axenia Bot">
@@ -68,7 +68,8 @@ $logic->CheckData();
                 <button class="btn btn-sm btn-dark" data-toggle="modal" data-target="#myModal" id="for_food">
                     Пожертвовать на проект
                 </button>
-                <p>Написать автору <strong class="tg_user wrote">abrikos</strong><br><a href="https://telegram.me/storebot?start=Axenia_bot">Оставить отзыв</a></p>
+                <p>Написать автору <strong class="tg_user wrote">abrikos</strong><br><a
+                        href="https://telegram.me/storebot?start=Axenia_bot">Оставить отзыв</a></p>
             </div>
             <div class="col-md-2 col-md-offset-7 text-right">
                 <strong>Добавить к себе:</strong>

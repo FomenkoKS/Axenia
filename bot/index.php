@@ -37,9 +37,9 @@ function processMessage($message)
                     $out .= ($value[0] == "") ? $value[1] . " " . $value[2] : $value[0];
                     $out .= " (" . $value[3] . " см)\r\n";
                 }
-                $out.="<a href='".PATH_TO_SITE."?group_id=".$chat_id."'>Подробнее</a>";
+                $out .= "<a href='" . PATH_TO_SITE . "?group_id=" . $chat_id . "'>Подробнее</a>";
                 apiRequest("sendChatAction", array('chat_id' => $chat_id, "action" => "typing"));
-                apiRequest("sendMessage", array('chat_id' => $chat_id, "text" => $out, "parse_mode" => "HTML", "disable_web_page_preview"=>true));
+                apiRequest("sendMessage", array('chat_id' => $chat_id, "text" => $out, "parse_mode" => "HTML", "disable_web_page_preview" => true));
 
                 break;
             case preg_match('/^(\+|\-|👍|👎) ?([\s\S]+)?/ui', $text, $matches):
@@ -52,13 +52,13 @@ function processMessage($message)
                     if ($reply['from']['username'] != BOT_NAME) {
                         apiRequest("sendChatAction", array('chat_id' => $chat_id, "action" => "typing"));
                         $output = HandleKarma($level, $from_id, $reply['from']['id'], $chat_id);
-                        apiRequest("sendMessage", array('chat_id' => $chat_id, "text" => $output, "parse_mode" => "HTML", "disable_web_page_preview"=>true));
+                        apiRequest("sendMessage", array('chat_id' => $chat_id, "text" => $output, "parse_mode" => "HTML", "disable_web_page_preview" => true));
                     }
                 } else {
                     if (preg_match('/@([\w]+)/ui', $matches[2], $user)) {
                         $to = GetUserID($user[1]);
                         $to ? $output = HandleKarma($level, $from_id, $to, $chat_id) : $output = "Я его не знаю, считать карму не буду";
-                        apiRequest("sendMessage", array('chat_id' => $chat_id, "text" => $output, "parse_mode" => "HTML", "disable_web_page_preview"=>true));
+                        apiRequest("sendMessage", array('chat_id' => $chat_id, "text" => $output, "parse_mode" => "HTML", "disable_web_page_preview" => true));
                     }
 
                 }
@@ -83,7 +83,7 @@ function processMessage($message)
                 apiRequest("sendChatAction", array('chat_id' => $chat_id, "action" => "typing"));
                 apiRequest("sendMessage", array('chat_id' => $chat_id, "text" => $output, "parse_mode" => "Markdown"));
             }
-        }else AddUser($message['new_chat_member']['id'], $message['new_chat_member']['username'], $message['new_chat_member']['first_name'], $message['new_chat_member']['last_name']);
+        } else AddUser($message['new_chat_member']['id'], $message['new_chat_member']['username'], $message['new_chat_member']['first_name'], $message['new_chat_member']['last_name']);
 
     }
     if (isset($message['sticker'])) {

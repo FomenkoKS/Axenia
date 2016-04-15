@@ -23,7 +23,7 @@ function processMessage($message)
             case preg_match('/^\/top/ui', $text, $matches):
             case preg_match('/^\/Stats/ui', $text, $matches):
                 $query = "select u.username, u.firstname, u.lastname, k.level from Karma k, Users u where k.user_id=u.id and k.chat_id=" . $chat_id . " order by level desc limit 5";
-                $out = "<b>Самые почётные люди чата \"". GetGroupName($chat_id)."\":</b>\r\n";
+                $out = "<b>Самые почётные люди чата \"" . GetGroupName($chat_id) . "\":</b>\r\n";
                 $a = array_chunk(Query2DB($query), 4);
                 foreach ($a as $value) {
                     $out .= ($value[0] == "") ? $value[1] . " " . $value[2] : $value[0];
@@ -31,7 +31,7 @@ function processMessage($message)
                 }
                 $out .= "<a href='" . PATH_TO_SITE . "?group_id=" . $chat_id . "'>Подробнее</a>";
                 apiRequest("sendChatAction", array('chat_id' => $chat_id, "action" => "typing"));
-                apiRequest("sendMessage", array('chat_id' => $chat_id, "text" => $out, "parse_mode" => "HTML", "disable_web_page_preview"=>true));
+                apiRequest("sendMessage", array('chat_id' => $chat_id, "text" => $out, "parse_mode" => "HTML", "disable_web_page_preview" => true));
 
                 break;
             case preg_match('/^(\+|\-|👍|👎) ?([\s\S]+)?/ui', $text, $matches):
@@ -45,13 +45,13 @@ function processMessage($message)
                     if ($reply['from']['username'] != BOT_NAME) {
                         apiRequest("sendChatAction", array('chat_id' => $chat_id, "action" => "typing"));
                         $output = HandleKarma($level, $from_id, $reply['from']['id'], $chat_id);
-                        apiRequest("sendMessage", array('chat_id' => $chat_id, "text" => $output, "parse_mode" => "HTML", "reply_to_message_id"=>$message, "disable_web_page_preview"=>true));
+                        apiRequest("sendMessage", array('chat_id' => $chat_id, "text" => $output, "parse_mode" => "HTML", "reply_to_message_id" => $message, "disable_web_page_preview" => true));
                     }
                 } else {
                     if (preg_match('/@([\w]+)/ui', $matches[2], $user)) {
                         $to = GetUserID($user[1]);
                         $to ? $output = HandleKarma($level, $from_id, $to, $chat_id) : $output = "Я его не знаю, считать карму не буду";
-                        apiRequest("sendMessage", array('chat_id' => $chat_id, "text" => $output, "parse_mode" => "HTML", "disable_web_page_preview"=>true));
+                        apiRequest("sendMessage", array('chat_id' => $chat_id, "text" => $output, "parse_mode" => "HTML", "disable_web_page_preview" => true));
                     }
 
                 }

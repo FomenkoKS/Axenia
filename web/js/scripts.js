@@ -31,10 +31,10 @@ $(document).ready(function () {
                     break;
             }
             $.ajax({
-                method: "POST",
-                url: "logic.php",
-                data: {please: type+"list", query: $(this).val()}
-            })
+                    method: "POST",
+                    url: "logic.php",
+                    data: {please: type + "list", query: $(this).val()}
+                })
                 .done(function (msg) {
                     $("#suggestions").empty();
                     var numbers = msg;
@@ -47,18 +47,19 @@ $(document).ready(function () {
                                 if (item[1].length > 0)text += " <b>(@" + item[1] + ")</b>";
                                 break;
                             case "group":
-                                text=item[1];
+                                text = item[1];
                                 break;
                         }
-                        $("#suggestions").append("<div class='suggest load_"+type+"' onclick='load_"+type+"(" + item[0] + ")'>" + text + "</div>");
+                        $("#suggestions").append("<div class='suggest load_" + type + "' onclick='load_" + type + "(" + item[0] + ")'>" + text + "</div>");
                     });
                 });
-        } else {s
+        } else {
+            s
             $("#suggestions").hide();
         }
     })
 
-    $(".dropdown-menu li").click(function(e){
+    $(".dropdown-menu li").click(function (e) {
         $("#search_btn").val($(this).index());
         $("#search_btn").text($(this).text());
         return false;
