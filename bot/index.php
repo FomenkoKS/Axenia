@@ -7,7 +7,6 @@ $update = json_decode($content, true);
 
 
 if (!$update) {
-    // receive wrong update, must not happen
     exit;
 }
 
@@ -15,10 +14,6 @@ if (isset($update["message"])) {
     processMessage($update["message"]);
 }
 
-/*
-if (isset($update["inline_query"])) {
-    processInline($update["inline_query"]["query"], $update["inline_query"]["id"]);
-}*/
 function processMessage($message)
 {
     $message_id = $message['message_id'];
@@ -46,17 +41,7 @@ function processMessage($message)
                 apiRequest("sendChatAction", array('chat_id' => $chat_id, "action" => "typing"));
                 apiRequest("sendMessage", array('chat_id' => $chat_id, "text" => $out, "parse_mode" => "HTML", "disable_web_page_preview"=>true));
 
-                break;/*
-            case preg_match('/ок\?? ?ок/ui', $text, $matches):
-                apiRequest("sendChatAction", array('chat_id' => $chat_id, "action" => "typing"));
-                apiRequest("sendMessage", array('chat_id' => $chat_id, "text" => "Ок. " . Punish($from_id, $chat_id), "parse_mode" => "HTML"));
                 break;
-            case preg_match('/([х|x|h|ӽ][е|e]\W?){2}/ui', $text, $matches):
-                apiRequest("sendMessage", array('chat_id' => $chat_id, "text" => "Вот тебе и хехе. " . Punish($from_id, $chat_id), "parse_mode" => "HTML"));
-                break;
-            case preg_match('/б[о|а]?([\s\S+]?ян/ui', $text, $matches):
-                apiRequest("sendMessage", array('chat_id' => $chat_id, "text" => "Твоя жизнь - боян. " . Punish($from_id, $chat_id), "parse_mode" => "HTML"));
-                break;*/
             case preg_match('/^(\+|\-|👍|👎) ?([\s\S]+)?/ui', $text, $matches):
                 ($matches[1] == "+" || $matches[1] == "👍") ? $level = "+" : $level = "-";
 
@@ -81,24 +66,12 @@ function processMessage($message)
             case preg_match('/сис(ек|ьки|ечки|и|яндры)/ui', $text, $matches):
                 apiRequest("forwardMessage", array('chat_id' => $chat_id, "from_chat_id" => "@superboobs", "message_id" => rand(1, 2700)));
 
-                break;/*
-            case preg_match('/кот?(ик|э|ан|ы|ята)?/ui', $text, $matches):
-                apiRequest("forwardMessage", array('chat_id' => $chat_id, "from_chat_id" => "@catizm", "message_id" => rand(1, 900)));
-
-                break;*/
+                break;
         }
 
         if (($from_id == 32512143 || $from_id == 5492881) && preg_match('/^(\/nash) ([\s\S]+)/ui', $text, $matches)) {
             apiRequest("sendChatAction", array('chat_id' => -1001016901471, "action" => "typing"));
             apiRequest("sendMessage", array('chat_id' => -1001016901471, "text" => $matches[2], "message_id" => "Markdown"));
-        }
-
-        if (isset($message['reply_to_message'])) {
-            /*$text = str_replace("@" . BOT_NAME, "", $message['text']);
-            $reply = $message['reply_to_message'];
-            if ($reply['from']['username'] == BOT_NAME) {
-
-            }*/
         }
 
     }
@@ -114,12 +87,7 @@ function processMessage($message)
 
     }
     if (isset($message['sticker'])) {
-        $sticker = $message['sticker'];
-        if ($sticker['file_id'] == "BQADAgADXAADiSaYDFYhb3mdGYT3Ag") {
-            apiRequest("sendChatAction", array('chat_id' => $chat_id, "action" => "typing"));
-            apiRequest("sendMessage", array('chat_id' => $chat_id, "text" => "На всякую хитрую гайку всегда найдется свой винт. " . Punish($from_id, $chat_id), "parse_mode" => "HTML"));
-
-        }
+        //обработка получения стикеров
     }
 }
 

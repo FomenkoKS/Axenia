@@ -51,7 +51,6 @@ function exec_curl_request($handle) {
         }
         $response = $response['result'];
     }
-    //file_put_contents("array.txt",print_r($response,true));
     return $response;
 }
 

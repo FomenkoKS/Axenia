@@ -5,23 +5,14 @@ require_once('../axenia/commands.php');
 $content = file_get_contents("php://input");
 $update = json_decode($content, true);
 if (!$update) {
-    // receive wrong update, must not happen
     exit;
 }
-//file_put_contents("array.txt", print_r($update, true));
 if (isset($update["message"])) {
     processMessage($update["message"]);
 }
 
-/*
-if (isset($update["inline_query"])) {
-    processInline($update["inline_query"]["query"], $update["inline_query"]["id"]);
-}*/
 function processMessage($message)
 {
-    // process incoming message
-
-    //$message_id = $message['message_id'];
     $chat_id = $message['chat']['id'];
     $from_id = $message['from']['id'];
     AddUser($from_id, $message['from']['username'], $message['from']['first_name'], $message['from']['last_name']);
@@ -71,15 +62,6 @@ function processMessage($message)
             apiRequest("sendChatAction", array('chat_id' => -1001016901471, "action" => "typing"));
             apiRequest("sendMessage", array('chat_id' => -1001016901471, "text" => $matches[2], "message_id" => "Markdown"));
         }
-
-        if (isset($message['reply_to_message'])) {
-            /*$text = str_replace("@" . BOT_NAME, "", $message['text']);
-            $reply = $message['reply_to_message'];
-            if ($reply['from']['username'] == BOT_NAME) {
-
-            }*/
-        }
-
     }
 
     if (isset($message['new_chat_participant'])) {

@@ -1,13 +1,5 @@
-/config.php
-### Example user template template
-### Example user template
-
-# IntelliJ project files
 .idea
 *.iml
-out
 /bot/config.php
 /web/config.php
 /zina/config.php
-gen
-# Created by .ignore support plugin (hsz.mobi)

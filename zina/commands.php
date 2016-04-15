@@ -2,7 +2,6 @@
 function SetHello($text, $chat_id)
 {
     $query = "UPDATE  `Chats` SET  `greeterings` =  '" . $text . "' WHERE  id = " . $chat_id;
-    //$query="INSERT INTO `Admins` SET `user_id`='".$user_id."',`chat_id`=".$chat_id." ON DUPLICATE KEY UPDATE `user_id`='".$user_id."',`chat_id`=".$chat_id;
     return (Query2DB($query) === false) ? false : "Добавлено";
 }
 
@@ -25,7 +24,6 @@ function GetGroupName($id){
 
 function SetAdmin($chat_id, $user_id)
 {
-    //$query="INSERT INTO `Admins` SET `user_id`='".$user_id."',`chat_id`=".$chat_id." ON DUPLICATE KEY UPDATE `user_id`='".$user_id."',`chat_id`=".$chat_id;
     if ($user_id !== false) {
         $query = "INSERT INTO `Admins` SET `user_id`='" . $user_id . "',`chat_id`=" . $chat_id;
         return (Query2DB($query) === false) ? false : "{username}, жду твоих указаний.";
@@ -88,7 +86,7 @@ function Punish($user,$chat){
 }
 
 function SetCarma($chat,$user,$level){
-    $query = "INSERT INTO `Karma` SET `chat_id`=" . $chat . ",`user_id`=" . $user . ",`level`=" . $level . " ON DUPLICATE KEY UPDATE `level`=" . $level;
+    $query = "INSERT INTO Karma SET chat_id=" . $chat . ",user_id=" . $user . ",level=" . $level . " ON DUPLICATE KEY UPDATE level=" . $level;
     Query2DB($query);
     return (Query2DB($query) === false) ? false : true;
 }

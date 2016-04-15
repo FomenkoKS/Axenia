@@ -4,13 +4,10 @@ require_once("functions.php");
 $logic = new FemaleLogic();
 $type = $logic->TypeOfView($_GET);
 $logic->CheckData();
-
 ?>
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -23,13 +20,8 @@ $logic->CheckData();
     <meta property="og:description" content="Портал для анализа кармы тётушки Аксиньи">
     <title><? echo strip_tags($logic->GetHeader($type, $_GET)); ?></title>
     <link rel="icon" type="image/png" href="img/favicon.png"/>
-    <!-- Bootstrap Core CSS -->
     <link href="css/bootstrap.min.css" rel="stylesheet">
-
-    <!-- Custom CSS -->
     <link href="css/style.css" rel="stylesheet">
-
-    <!-- Custom Fonts -->
     <link href='https://fonts.googleapis.com/css?family=Roboto+Condensed|Roboto|Roboto+Slab&subset=latin,cyrillic'
           rel='stylesheet' type='text/css'>
     <!--[if lt IE 9]>
@@ -102,11 +94,8 @@ $logic->CheckData();
                 </iframe>
             </div>
         </div>
-        <!-- /.modal-content -->
     </div>
-    <!-- /.modal-dialog -->
 </div>
-<!-- /.modal -->
 <script src="js/jquery.js"></script>
 <script src="js/bootstrap.min.js"></script>
 <script src="js/typeahead.min.js"></script>

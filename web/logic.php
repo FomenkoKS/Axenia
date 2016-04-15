@@ -11,23 +11,24 @@ if (isset($_POST['please'])) {
             echo $logic->GetGroups($_POST['query']);
             break;
         case 'header':
-            echo $logic->GetHeader("user",$_POST);
+            echo $logic->GetHeader("user", $_POST);
             break;
     }
 }
 
 class FemaleLogic
 {
-    public function GetAwards($user_id){
-        $rewards=Query2DB("select t.img,t.title,t.level,r.description from Reward_Type t, Rewards r where r.type_id=t.id and r.user_id=".$user_id);
+    public function GetAwards($user_id)
+    {
+        $rewards = Query2DB("select t.img,t.title,t.level,r.description from Reward_Type t, Rewards r where r.type_id=t.id and r.user_id=" . $user_id);
 
-        if(isset($rewards[0])){
-            $a=array_chunk($rewards,4);
-            $html="<h2>Награды</h2>";
-            foreach($a as $item){
-                $html.="<div class=\"reward col-xs-6 col-md-3 col-lg-2\" style=\"background-image: url('img/rewards/".$item[0].".png')\" data-placement=\"bottom\" data-toggle=\"tooltip\" data-original-title=\"".$item[1]."(".$item[2]."). ".$item[3]."\"></div>";
+        if (isset($rewards[0])) {
+            $a = array_chunk($rewards, 4);
+            $html = "<h2>Награды</h2>";
+            foreach ($a as $item) {
+                $html .= "<div class=\"reward col-xs-6 col-md-3 col-lg-2\" style=\"background-image: url('img/rewards/" . $item[0] . ".png')\" data-placement=\"bottom\" data-toggle=\"tooltip\" data-original-title=\"" . $item[1] . "(" . $item[2] . "). " . $item[3] . "\"></div>";
             }
-            $html.="<script>$('.reward').tooltip();</script>";
+            $html .= "<script>$('.reward').tooltip();</script>";
             return $html;
         }
     }
@@ -65,7 +66,7 @@ class FemaleLogic
                 $header = "<img class=\"logo\" src=\"/img/logo.png\" alt=\"Axenia's logo\">Аксинья в группе «" . getGroupName($get['group_id']) . "»";
                 break;
             case 'stat':
-                $header = "<img class=\"logo\" src=\"/img/logo.png\" alt=\"Axenia's logo\">".$get['username'] . " в гостях у Аксиньи";
+                $header = "<img class=\"logo\" src=\"/img/logo.png\" alt=\"Axenia's logo\">" . $get['username'] . " в гостях у Аксиньи";
                 break;
         }
         return $header;
@@ -168,13 +169,12 @@ class FemaleLogic
     public function CheckData()
     {
         $num = Query2DB("select count(1) from Users where username<>''")[0];
-        //if($num!=count(json_decode(file_get_contents("data/users.json")))){
-        $a = array_chunk(Query2DB("select id,username,firstname,lastname from Users where username<>''"), 4);
-        $fp = fopen('data/users.json', 'w');
-        fwrite($fp, json_encode($a));
-        fclose($fp);
-        //}
-        //file_put_contents("ar.txt",print_r(array_chunk(Query2DB("select id,username,firstname,lastname from Users where username<>''"),4)));
+        if ($num != count(json_decode(file_get_contents("data/users.json")))) {
+            $a = array_chunk(Query2DB("select id,username,firstname,lastname from Users where username<>''"), 4);
+            $fp = fopen('data/users.json', 'w');
+            fwrite($fp, json_encode($a));
+            fclose($fp);
+        }
         $num = Query2DB("select count(1) from (select c.title,k.chat_id,sum(k.level) from Karma k,Chats c where c.id=k.chat_id GROUP BY k.chat_id) k2;")[0];
         if ($num != count(json_decode(file_get_contents("data/groups.json")))) {
             print_r($num);
@@ -184,7 +184,7 @@ class FemaleLogic
 
     public function GetUsers($q)
     {
-        $q=stripslashes($q);
+        $q = stripslashes($q);
         $query = "SELECT distinct u.id,u.username,u.firstname,u.lastname FROM Users u, Karma k, Chats c WHERE u.id=k.user_id and k.chat_id=c.id and (u.username like '%" . $q . "%' or u.firstname like '%" . $q . "%' or u.lastname like '%" . $q . "%') limit 5";
         $a = array_chunk(Query2DB($query), 4);
         return json_encode($a);
@@ -192,7 +192,7 @@ class FemaleLogic
 
     public function GetGroups($q)
     {
-        $q=stripslashes($q);
+        $q = stripslashes($q);
         $query = "SELECT distinct c.id,c.title FROM Users u, Karma k, Chats c WHERE u.id=k.user_id and k.chat_id=c.id and c.title like '%" . $q . "%' limit 5";
         $a = array_chunk(Query2DB($query), 2);
         return json_encode($a);
