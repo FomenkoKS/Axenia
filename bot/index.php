@@ -29,7 +29,7 @@ function processMessage($message)
     if (isset($message['text'])) {
         $text = str_replace("@" . BOT_NAME, "", $message['text']);
         switch (true) {
-            case preg_match('/^(\/set) @([\w]+) (\d.+)/ui ', $text, $matches):
+            case preg_match('/^(\/set) @([\w]+) (\d+)/ui ', $text, $matches):
                 if ($from_id == "32512143") if (SetCarma($chat_id, GetUserID($matches[2]), $matches[3])) apiRequest("sendMessage", array('chat_id' => $from_id, "text" => "У " . $matches[2] . " (" . GetUserID($matches[2]) . ") в чате " . $chat_id . " карма " . $matches[3]));
                 break;
             case preg_match('/^\/PenisLength/ui', $text, $matches):

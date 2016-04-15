@@ -6,6 +6,7 @@
 .idea
 *.iml
 out
+/bot/config.php
 /web/config.php
 /zina/config.php
 gen

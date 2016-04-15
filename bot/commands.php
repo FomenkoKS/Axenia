@@ -80,7 +80,7 @@ function HandleKarma($dist, $from, $to, $chat_id)
     $output .= "<b>".GetUserName($to) . " (" . $result . ")</b>";
     $query = "INSERT INTO `Karma` SET `chat_id`=" . $chat_id . ",`user_id`=" . $to . ",`level`=" . $result . " ON DUPLICATE KEY UPDATE `level`=" . $result;
     Query2DB($query);
-/*
+
     //проверка наград
     $old_type_id=Query2DB("select type_id from Rewards where user_id=".$to." and group_id=".$chat_id." and type_id>=2 and type_id<=4");
     switch($result){
@@ -100,14 +100,15 @@ function HandleKarma($dist, $from, $to, $chat_id)
             $min=1000;
             break;
     }
-    if(!$old_type_id){
+    if($old_type_id!=false){
         //если есть награды
         if(isset($new_type_id)){
-            if($new_type_id<>$old_type_id){
-                Query2DB("update Rewards set type_id=".$new_type_id.",  where type_id=".$old_type_id." and user_id=".$to." and group_id=".$chat_id);
+            if($new_type_id<>$old_type_id[0]){
+                $q="update Rewards set type_id=".$new_type_id.",  where type_id=".$old_type_id[0]." and user_id=".$to." and group_id=".$chat_id;
+                Query2DB($q);
             }
-            if($new_type_id>$old_type_id)$output.="\r\nТоварищ награждается отличительным знаком «<a href='".PATH_TO_SITE."?user_id=".$to."'>".$title."</a>»";
-
+            if($new_type_id>$old_type_id[0])$output.="\r\nТоварищ награждается отличительным знаком «<a href='".PATH_TO_SITE."?user_id=".$to."'>".$title."</a>»";
+            $output.=$q;
         }else{
             Query2DB("delete  from Rewards where user_id=".$to." and group_id=".$chat_id." and (type_id>=2 and type_id<=4)");
         }
@@ -116,7 +117,7 @@ function HandleKarma($dist, $from, $to, $chat_id)
         Query2DB("insert into Rewards(type_id,user_id,group_id,description) values (".$new_type_id.",".$to.",".$chat_id.",'Карма в группе ".GetGroupName($chat_id)." превысило отметку в ".$min."')");
         $output.="\r\nТоварищ награждается отличительным знаком «<a href='".PATH_TO_SITE."?user_id=".$to."'>".$title."</a>»";
     }
-*/
+
 
  /*   if($type_id){
         switch ($type_id[0]){
