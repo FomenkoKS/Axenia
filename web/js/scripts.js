@@ -18,66 +18,72 @@ $(document).ready(function () {
     });
     $(".tg_user a").prepend("@");
 
-    $('input.typeahead').typeahead({
-        name: 'users',
-        prefetch: 'data/users.json',
-        limit: 10,
-        templates: {
-            notfound: [
-                '<div class="empty-message">',
-                'Пользователь не найден',
-                '</div>'
-            ].join('\n')
-        }
-    });
-
-    $('.typeahead').bind('typeahead:select', function(ev, suggestion) {
-        alert('Selection: ' + suggestion);
-    });
-
-    $(".dropdown-menu li a").click(
-        function (e) {
-            e.preventDefault();
-            $("#search").text($(this).text());
-            $("#search").val($(this).parent().index());
+    $('#searchline').keyup(function () {
+        if ($(this).val().length > 0) {
+            $("#suggestions").show();
             var type;
-
-            type = ($("#search").val() == "0") ? "users" : "groups";
-            $('.twitter-typeahead').remove();
-            $("#search-button").after("<input type=\"text\" class=\"form-control typeahead\">");
-            $('input.typeahead').typeahead({
-                name: type,
-                prefetch: 'data/' + type + '.json',
-                limit: 10
-            });
-
+            switch ($("#search_btn").val()) {
+                case "0":
+                    type = "user";
+                    break;
+                case "1":
+                    type = "group";
+                    break;
+            }
+            $.ajax({
+                method: "POST",
+                url: "logic.php",
+                data: {please: type+"list", query: $(this).val()}
+            })
+                .done(function (msg) {
+                    $("#suggestions").empty();
+                    var numbers = msg;
+                    numbers = JSON.parse(numbers);
+                    numbers.forEach(function (item) {
+                        var text;
+                        switch (type) {
+                            case "user":
+                                text = item[2] + " " + item[3];
+                                if (item[1].length > 0)text += " <b>(@" + item[1] + ")</b>";
+                                break;
+                            case "group":
+                                text=item[1];
+                                break;
+                        }
+                        $("#suggestions").append("<div class='suggest load_"+type+"' onclick='load_"+type+"(" + item[0] + ")'>" + text + "</div>");
+                    });
+                });
+        } else {s
+            $("#suggestions").hide();
         }
-    );
+    })
 
-    $('.typeahead').bind('typeahead:select', function (ev, suggestion) {
-        alert('Selection: ' + suggestion);
-    });
+    $(".dropdown-menu li").click(function(e){
+        $("#search_btn").val($(this).index());
+        $("#search_btn").text($(this).text());
+        return false;
+    })
+
+    $('.reward').tooltip();
 });
 
 function load_group(id) {
+    $("#suggestions").hide();
     $.ajax({
         url: './group_view.php?group_id=' + id,
         complete: function (response) {
-            $('#content').hide();
             $('#content').html(response.responseText);
-            $('#content').show("slow");
         }
     });
     return false;
 }
 
 function load_user(id) {
+    $("#suggestions").hide();
     $.ajax({
         url: './user_view.php?user_id=' + id,
         complete: function (response) {
-            $('#content').hide();
             $('#content').html(response.responseText);
-            $('#content').show("slow");
         }
     });
     return false;

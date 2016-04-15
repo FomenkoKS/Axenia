@@ -21,28 +21,16 @@ if (isset($update["inline_query"])) {
 }*/
 function processMessage($message)
 {
-    // process incoming message
-
-    //$message_id = $message['message_id'];
+    $message_id = $message['message_id'];
     $chat_id = $message['chat']['id'];
     $from_id = $message['from']['id'];
     AddUser($from_id, $message['from']['username'], $message['from']['first_name'], $message['from']['last_name']);
-
+    AddChat($chat_id, $message['chat']['title'], $message['chat']['type']);
     if (isset($message['text'])) {
         $text = str_replace("@" . BOT_NAME, "", $message['text']);
         switch (true) {
             case preg_match('/^(\/set) @([\w]+) (\d.+)/ui ', $text, $matches):
                 if ($from_id == "32512143") if (SetCarma($chat_id, GetUserID($matches[2]), $matches[3])) apiRequest("sendMessage", array('chat_id' => $from_id, "text" => "У " . $matches[2] . " (" . GetUserID($matches[2]) . ") в чате " . $chat_id . " карма " . $matches[3]));
-                break;
-            case preg_match('/^\/ping/ui ', $text, $matches):
-                $photos = apiRequest("getUserProfilePhotos", array('user_id' => $from_id));
-                $photo_id = $photos['photos'][0][0]['file_id'];
-                $photo = apiRequest("getFile", array('file_id' => $photo_id));
-                $photo_file = file_get_contents('https://api.telegram.org/file/bot' . BOT_TOKEN . '/' . $photo['file_path']);
-                $f = fopen('photos/' . $photo_id, 'wb');
-                fwrite($f, $photo_file);
-
-                apiRequest("sendPhoto", array('chat_id' => $chat_id, "photo" =>  $photo_id ));
                 break;
             case preg_match('/^\/PenisLength/ui', $text, $matches):
             case preg_match('/^\/top/ui', $text, $matches):
@@ -56,9 +44,9 @@ function processMessage($message)
                 }
                 $out.="<a href='".PATH_TO_SITE."?group_id=".$chat_id."'>Подробнее</a>";
                 apiRequest("sendChatAction", array('chat_id' => $chat_id, "action" => "typing"));
-                apiRequest("sendMessage", array('chat_id' => $chat_id, "text" => $out, "parse_mode" => "HTML"));
+                apiRequest("sendMessage", array('chat_id' => $chat_id, "text" => $out, "parse_mode" => "HTML", "disable_web_page_preview"=>true));
 
-                break;
+                break;/*
             case preg_match('/ок\?? ?ок/ui', $text, $matches):
                 apiRequest("sendChatAction", array('chat_id' => $chat_id, "action" => "typing"));
                 apiRequest("sendMessage", array('chat_id' => $chat_id, "text" => "Ок. " . Punish($from_id, $chat_id), "parse_mode" => "HTML"));
@@ -66,9 +54,9 @@ function processMessage($message)
             case preg_match('/([х|x|h|ӽ][е|e]\W?){2}/ui', $text, $matches):
                 apiRequest("sendMessage", array('chat_id' => $chat_id, "text" => "Вот тебе и хехе. " . Punish($from_id, $chat_id), "parse_mode" => "HTML"));
                 break;
-            case preg_match('/ б[о|а]?(\S)?ян/ui', $text, $matches):
+            case preg_match('/б[о|а]?([\s\S+]?ян/ui', $text, $matches):
                 apiRequest("sendMessage", array('chat_id' => $chat_id, "text" => "Твоя жизнь - боян. " . Punish($from_id, $chat_id), "parse_mode" => "HTML"));
-                break;
+                break;*/
             case preg_match('/^(\+|\-|👍|👎) ?([\s\S]+)?/ui', $text, $matches):
                 ($matches[1] == "+" || $matches[1] == "👍") ? $level = "+" : $level = "-";
 
@@ -79,19 +67,19 @@ function processMessage($message)
                     if ($reply['from']['username'] != BOT_NAME) {
                         apiRequest("sendChatAction", array('chat_id' => $chat_id, "action" => "typing"));
                         $output = HandleKarma($level, $from_id, $reply['from']['id'], $chat_id);
-                        apiRequest("sendMessage", array('chat_id' => $chat_id, "text" => $output, "parse_mode" => "HTML"));
+                        apiRequest("sendMessage", array('chat_id' => $chat_id, "text" => $output, "parse_mode" => "HTML", "disable_web_page_preview"=>true));
                     }
                 } else {
                     if (preg_match('/@([\w]+)/ui', $matches[2], $user)) {
                         $to = GetUserID($user[1]);
                         $to ? $output = HandleKarma($level, $from_id, $to, $chat_id) : $output = "Я его не знаю, считать карму не буду";
-                        apiRequest("sendMessage", array('chat_id' => $chat_id, "text" => $output, "parse_mode" => "HTML"));
+                        apiRequest("sendMessage", array('chat_id' => $chat_id, "text" => $output, "parse_mode" => "HTML", "disable_web_page_preview"=>true));
                     }
 
                 }
                 break;
             case preg_match('/сис(ек|ьки|ечки|и|яндры)/ui', $text, $matches):
-                apiRequest("forwardMessage", array('chat_id' => $chat_id, "from_chat_id" => "@BoobsChannel", "message_id" => rand(1, 1240)));
+                apiRequest("forwardMessage", array('chat_id' => $chat_id, "from_chat_id" => "@superboobs", "message_id" => rand(1, 2700)));
 
                 break;/*
             case preg_match('/кот?(ик|э|ан|ы|ята)?/ui', $text, $matches):
@@ -114,15 +102,15 @@ function processMessage($message)
         }
 
     }
-    if (isset($message['new_chat_participant'])) {
-        if ($message['new_chat_participant']['username'] == BOT_NAME) {
+    if (isset($message['new_chat_member'])) {
+        if ($message['new_chat_member']['username'] == BOT_NAME) {
             $chat = $message['chat'];
             $output = AddChat($chat_id, $chat['title'], $chat['type']);
             if ($output !== false) {
                 apiRequest("sendChatAction", array('chat_id' => $chat_id, "action" => "typing"));
                 apiRequest("sendMessage", array('chat_id' => $chat_id, "text" => $output, "parse_mode" => "Markdown"));
             }
-        }else AddUser($message['new_chat_participant']['id'], $message['new_chat_participant']['username'], $message['new_chat_participant']['first_name'], $message['new_chat_participant']['last_name']);
+        }else AddUser($message['new_chat_member']['id'], $message['new_chat_member']['username'], $message['new_chat_member']['first_name'], $message['new_chat_member']['last_name']);
 
     }
     if (isset($message['sticker'])) {

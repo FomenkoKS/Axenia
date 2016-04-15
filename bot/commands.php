@@ -73,13 +73,87 @@ function HandleKarma($dist, $from, $to, $chat_id)
             $result = round($b + sqrt($a),1);
             break;
         case "-":
-            $output .= " насрал в карму ";
+            $output .= " минусанул в карму ";
             $result=($from!=1)?round($b - sqrt($a),1):$b-0.1;
             break;
     }
     $output .= "<b>".GetUserName($to) . " (" . $result . ")</b>";
     $query = "INSERT INTO `Karma` SET `chat_id`=" . $chat_id . ",`user_id`=" . $to . ",`level`=" . $result . " ON DUPLICATE KEY UPDATE `level`=" . $result;
     Query2DB($query);
+/*
+    //проверка наград
+    $old_type_id=Query2DB("select type_id from Rewards where user_id=".$to." and group_id=".$chat_id." and type_id>=2 and type_id<=4");
+    switch($result){
+        case $result>=200 and $result<500:
+            $new_type_id=2;
+            $title="Кармодрочер";
+            $min=200;
+            break;
+        case $result>=500 and $result<1000:
+            $new_type_id=3;
+            $title="Карманьяк";
+            $min=500;
+            break;
+        case $result>=1000:
+            $new_type_id=4;
+            $title="Кармонстр";
+            $min=1000;
+            break;
+    }
+    if(!$old_type_id){
+        //если есть награды
+        if(isset($new_type_id)){
+            if($new_type_id<>$old_type_id){
+                Query2DB("update Rewards set type_id=".$new_type_id.",  where type_id=".$old_type_id." and user_id=".$to." and group_id=".$chat_id);
+            }
+            if($new_type_id>$old_type_id)$output.="\r\nТоварищ награждается отличительным знаком «<a href='".PATH_TO_SITE."?user_id=".$to."'>".$title."</a>»";
+
+        }else{
+            Query2DB("delete  from Rewards where user_id=".$to." and group_id=".$chat_id." and (type_id>=2 and type_id<=4)");
+        }
+    }elseif(isset($new_type_id)){
+        //Если нет наград, но
+        Query2DB("insert into Rewards(type_id,user_id,group_id,description) values (".$new_type_id.",".$to.",".$chat_id.",'Карма в группе ".GetGroupName($chat_id)." превысило отметку в ".$min."')");
+        $output.="\r\nТоварищ награждается отличительным знаком «<a href='".PATH_TO_SITE."?user_id=".$to."'>".$title."</a>»";
+    }
+*/
+
+ /*   if($type_id){
+        switch ($type_id[0]){
+            case '2':
+                if($result<200) Query2DB("delete from Rewards where user_id=".$to." and group_id=".$chat_id." and (type_id>=2 and type_id<=4)");
+                if($result>=500){
+                    Query2DB("update Rewards set type_id=3, description='Карма в группе ".GetGroupName($chat_id)." превысило отметку в 500' where user_id=".$to." and group_id=".$chat_id);
+                    $output.="\r\nТоварищ награждается отличительным знаком «<a href='".PATH_TO_SITE."?user_id=".$to."'>Кармамньяк</a>»";
+                }
+                break;
+            case '3':
+                if($result<500 or $result>=1000) Query2DB("delete  from Rewards where user_id=".$to." and group_id=".$chat_id." and (type_id>=2 and type_id<=4)");
+                break;
+            case '4':
+                break;
+        }
+    }else if ($result>=200){
+        Query2DB("insert into Rewards(type_id,user_id,group_id,description) values (2,".$to.",".$chat_id.",'Карма в группе ".GetGroupName($chat_id)." превысило отметку в 200')");
+        $output.="\r\nТоварищ награждается отличительным знаком «<a href='".PATH_TO_SITE."?user_id=".$to."'>Кармодрочер</a>»";
+    }
+*/
+/*
+    if($result<200){
+        Query2DB("delete from Rewards where user_id=".$to." and group_id=".$chat_id." and (type_id>=2 and type_id<=4)");
+    }else{
+        if($a=Query2DB("select type_id from Rewards where user_id=".$to." and group_id=".$chat_id)){
+            if(!in_array($a,2)){
+                Query2DB("delete from Rewards where user_id=".$to." and group_id=".$chat_id." and (type_id>=2 and type_id<=4)");
+                Query2DB("insert into Rewards(type_id,user_id,group_id,description) values (2,".$to.",".$chat_id.",'Карма в группе «".GetGroupName($chat_id)."» превысило отметку в 200')");
+            }
+        }else{
+            Query2DB("insert into Rewards(type_id,user_id,group_id,description) values (2,".$to.",".$chat_id.",'Карма в группе ".GetGroupName($chat_id)." превысило отметку в 200')");
+            $output.="\r\nТоварищ награждается отличительным знаком «<a href='".PATH_TO_SITE."?user_id=".$to."'>Кармодрочер</a>»";
+        }
+    }*/
+
+
     return $output;
 }
 

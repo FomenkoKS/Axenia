@@ -7,5 +7,6 @@
 *.iml
 out
 /web/config.php
+/zina/config.php
 gen
 # Created by .ignore support plugin (hsz.mobi)

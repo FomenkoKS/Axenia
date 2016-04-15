@@ -1,8 +1,10 @@
 <?php
 require_once("logic.php");
 require_once("functions.php");
-$logic=new FemaleLogic();
-$type=$logic->TypeOfView($_GET);
+$logic = new FemaleLogic();
+$type = $logic->TypeOfView($_GET);
+$logic->CheckData();
+
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -13,12 +15,13 @@ $type=$logic->TypeOfView($_GET);
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="description" content="Портал для анализа кармы тётушки Аксиньи">
-    <meta name="author" content="Fomenko K.S.">
+    <meta name="author" content="Fomenko C.S.">
+    <link rel="image_src" href="<? echo PATH_TO_SITE; ?>img/logo.png" />
     <meta property="og:title" content="Аксинья">
-    <meta property="og:image" content="<? echo PATH_TO_SITE; ?>/logo.png">
+    <meta property="og:image" content="<? echo PATH_TO_SITE; ?>img/logo.png">
     <meta property="og:site_name" content="Axenia Bot">
     <meta property="og:description" content="Портал для анализа кармы тётушки Аксиньи">
-    <title><? echo $logic->GetHeader($type,$_GET); ?></title>
+    <title><? echo strip_tags($logic->GetHeader($type, $_GET)); ?></title>
     <link rel="icon" type="image/png" href="img/favicon.png"/>
     <!-- Bootstrap Core CSS -->
     <link href="css/bootstrap.min.css" rel="stylesheet">
@@ -38,46 +41,30 @@ $type=$logic->TypeOfView($_GET);
 
 <body>
 
-<!-- Navigation -->
-<a id="menu-toggle" href="#" class="btn btn-dark btn-lg toggle"><i class="glyphicon glyphicon-search"></i></a>
-<nav id="sidebar-wrapper">
-    <ul class="sidebar-nav">
-        <a id="menu-close" href="#" class="btn btn-light btn-lg pull-right toggle"><i class="glyphicon glyphicon-remove"></i></a>
-        <li class="sidebar-brand">
-            <a href="#top" onclick=$("#menu-close").click();>Здесь будет поиск</a>
-        </li>
-        <li>
-            <a href="#user1" class="tg_user load_user" onclick="load_user(32512143)">abrikos</a>
-        </li>
-        <li>
-            <a href="#user2" onclick=$("#menu-close").click();>user2</a>
-        </li>
-        <li>
-            <a href="#user3" onclick=$("#menu-close").click();>user3</a>
-        </li>
-    </ul>
-</nav>
-
 <header id="top" class="header">
     <div class="container">
         <div class="row">
-            <h1><?
-                if ($type=='user'){
-
-                    $user_id=isset($_GET['user_id'])?$logic->GetAvatar($_GET['user_id']):$logic->GetAvatar(GetUserID($_GET['username']));
-                    echo "<div class='user_photo img-circle' style='background-image:url(users/".$user_id.".jpg)'></div>";
-                }else echo "<img class=\"logo\" src=\"/img/logo.png\" alt=\"Axenia's logo\">";
-                echo $logic->GetHeader($type,$_GET);
-                ?></h1>
+            <h1 id="header"><?
+                echo $logic->GetHeader($type, $_GET);
+                ?>
+            </h1>
         </div>
     </div>
 </header>
-<section id="stats">
+<section id="srch">
+    <div class="container">
+        <div class="row">
+            <?
+            include("search_view.php");
+            ?>
+        </div>
+    </div>
+</section>
+<section id="cnt">
     <div class="container">
         <div class="row" id="content">
-
             <?
-            include($type."_view.php");
+            include($type . "_view.php");
             ?>
         </div>
     </div>
@@ -89,7 +76,7 @@ $type=$logic->TypeOfView($_GET);
                 <button class="btn btn-sm btn-dark" data-toggle="modal" data-target="#myModal" id="for_food">
                     Пожертвовать на проект
                 </button>
-                <p>Написать автору <strong class="tg_user wrote">abrikos</strong></p>
+                <p>Написать автору <strong class="tg_user wrote">abrikos</strong><br><a href="https://telegram.me/storebot?start=Axenia_bot">Оставить отзыв</a></p>
             </div>
             <div class="col-md-2 col-md-offset-7 text-right">
                 <strong>Добавить к себе:</strong>
@@ -109,11 +96,17 @@ $type=$logic->TypeOfView($_GET);
                 <h4 class="modal-title">Накорми Аксинью</h4>
             </div>
             <div class="modal-body center-block text-center">
-                    <iframe frameborder="0" allowtransparency="true" scrolling="no" src="https://money.yandex.ru/embed/donate.xml?account=41001224651196&quickpay=donate&payment-type-choice=on&mobile-payment-type-choice=on&default-sum=100&targets=%D0%90%D0%BA%D1%81%D0%B8%D0%BD%D1%8C%D0%B5+%D0%BD%D0%B0+%D0%B5%D0%B4%D1%83&target-visibility=on&project-name=&project-site=&button-text=05&comment=on&hint=%D0%9E%D1%81%D1%82%D0%B0%D0%B2%D1%8C%D1%82%D0%B5+%D1%81%D0%B2%D0%BE%D0%B9+%D1%8E%D0%B7%D0%B5%D1%80%D0%BD%D0%B5%D0%B9%D0%BC+%D0%B4%D0%BB%D1%8F+%D0%BF%D0%BE%D0%BB%D1%83%D1%87%D0%B5%D0%BD%D0%B8%D1%8F+%D0%B0%D1%87%D0%B8%D0%B2%D0%BA%D0%B8&successURL=https%3A%2F%2Fabrikoseg.ru%2Faxenia%2Fweb%2F" width="508" height="160"></iframe></iframe>
+                <iframe frameborder="0" allowtransparency="true" scrolling="no"
+                        src="https://money.yandex.ru/embed/donate.xml?account=41001224651196&quickpay=donate&payment-type-choice=on&mobile-payment-type-choice=on&default-sum=100&targets=%D0%90%D0%BA%D1%81%D0%B8%D0%BD%D1%8C%D0%B5+%D0%BD%D0%B0+%D0%B5%D0%B4%D1%83&target-visibility=on&project-name=&project-site=&button-text=05&comment=on&hint=%D0%9E%D1%81%D1%82%D0%B0%D0%B2%D1%8C%D1%82%D0%B5+%D1%81%D0%B2%D0%BE%D0%B9+%D1%8E%D0%B7%D0%B5%D1%80%D0%BD%D0%B5%D0%B9%D0%BC+%D0%B4%D0%BB%D1%8F+%D0%BF%D0%BE%D0%BB%D1%83%D1%87%D0%B5%D0%BD%D0%B8%D1%8F+%D0%B0%D1%87%D0%B8%D0%B2%D0%BA%D0%B8&successURL=https%3A%2F%2Fabrikoseg.ru%2Faxenia%2Fweb%2F"
+                        width="508" height="160"></iframe>
+                </iframe>
             </div>
-        </div><!-- /.modal-content -->
-    </div><!-- /.modal-dialog -->
-</div><!-- /.modal -->
+        </div>
+        <!-- /.modal-content -->
+    </div>
+    <!-- /.modal-dialog -->
+</div>
+<!-- /.modal -->
 <script src="js/jquery.js"></script>
 <script src="js/bootstrap.min.js"></script>
 <script src="js/typeahead.min.js"></script>

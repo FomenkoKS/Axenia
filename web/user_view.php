@@ -4,8 +4,10 @@ if (!isset($logic)) {
     $logic = new FemaleLogic();
 }
 ?>
-<div class="col-md-12 center">
+<div class="col-xs-12 center">
     <?
-        echo isset($_GET['user_id'])?$logic->MakeBarChart($_GET['user_id'],"user"):$logic->MakeBarChart(GetUserID($_GET['username']),"user");
+        $user_id= isset($_GET['user_id'])?$_GET['user_id']:GetUserID($_GET['username']);
+        echo $logic->MakeBarChart($user_id,"user");
+        echo $logic->GetAwards($user_id);
     ?>
 </div>
