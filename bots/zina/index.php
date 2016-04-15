@@ -1,6 +1,6 @@
 <?php
 require_once('config.php');
-require_once('../axenia/functions.php');
+require_once('../../core/functions.php');
 require_once('../axenia/commands.php');
 $content = file_get_contents("php://input");
 $update = json_decode($content, true);
