@@ -12,27 +12,6 @@ class Bot
     {
         $this->apiUrl = $apiUrl;
     }
-    
-    protected function apiRequestWebhook($method, $parameters)
-    {
-        if (!is_string($method)) {
-            error_log("Method name must be a string\n");
-            return false;
-        }
-
-        if (!$parameters) {
-            $parameters = array();
-        } else if (!is_array($parameters)) {
-            error_log("Parameters must be an array\n");
-            return false;
-        }
-
-        $parameters["method"] = $method;
-
-        header("Content-Type: application/json");
-        echo json_encode($parameters);
-        return true;
-    }
 
     private function exec_curl_request($handle)
     {
@@ -71,7 +50,7 @@ class Bot
         return $response;
     }
 
-    protected function apiRequest($method, $parameters)
+    public function apiRequest($method, $parameters)
     {
         if (!is_string($method)) {
             error_log("Method name must be a string\n");
@@ -92,7 +71,7 @@ class Bot
             }
         }
         $url = $this->apiUrl . $method . '?' . http_build_query($parameters);
-
+        echo $url;
         $handle = curl_init($url);
         curl_setopt($handle, CURLOPT_RETURNTRANSFER, true);
         curl_setopt($handle, CURLOPT_CONNECTTIMEOUT, 5);
@@ -100,7 +79,7 @@ class Bot
         return $this->exec_curl_request($handle);
     }
 
-    protected function apiRequestJson($method, $parameters)
+    public function apiRequestJson($method, $parameters)
     {
         if (!is_string($method)) {
             error_log("Method name must be a string\n", 3, "/wwww/abrikoseg.ru/anfisa/my-errors.log");

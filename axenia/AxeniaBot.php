@@ -71,7 +71,7 @@ class AxeniaBot extends Bot
     public function setCommand($from_id, $chat_id, $matches)
     {
         if ($from_id == "32512143") {
-            $user_id = GetUserID($matches[2]);
+            $user_id = $this->db->GetUserID($matches[2]);
             if ($this->db->setUserLevel($user_id, $chat_id, $matches[3])) {
                 $this->apiRequest("sendMessage", array('chat_id' => $from_id, "text" => "У " . $matches[2] . " (" . $user_id . ") в чате " . $chat_id . " карма " . $matches[3]));
             }

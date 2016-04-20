@@ -1,5 +1,7 @@
 <?php
 require_once('../core/config.php');
+require_once('AxeniaBot.php');
+require_once('AxeniaLogic.php');
 $content = file_get_contents("php://input");
 $update = json_decode($content, true);
 
