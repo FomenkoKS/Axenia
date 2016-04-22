@@ -27,7 +27,11 @@ function processMessage($message)
             case preg_match('/^(\/set) @([\w]+) (\d+)/ui ', $text, $matches):
                 if ($from_id == "32512143") if (SetCarma($chat_id, GetUserID($matches[2]), $matches[3])) apiRequest("sendMessage", array('chat_id' => $from_id, "text" => "У " . $matches[2] . " (" . GetUserID($matches[2]) . ") в чате " . $chat_id . " карма " . $matches[3]));
                 break;
-            case preg_match('/^\/PenisLength/ui', $text, $matches):
+            case (preg_match('/^\/start/ui', $text, $matches) and  $message['chat']['type']=="private"):
+                apiRequest("sendChatAction", array('chat_id' => $chat_id, "action" => "typing"));
+
+                apiRequest("sendMessage", array('chat_id' => $chat_id, "text" => "<a href='telegram.me/Axenia_Bot?startgroup=0'>Добавь меня в группу.</a>", "parse_mode" => "HTML", "disable_web_page_preview" => true));
+                break;
             case preg_match('/^\/top/ui', $text, $matches):
             case preg_match('/^\/Stats/ui', $text, $matches):
                 $query = "select u.username, u.firstname, u.lastname, k.level from Karma k, Users u where k.user_id=u.id and k.chat_id=" . $chat_id . " order by level desc limit 5";

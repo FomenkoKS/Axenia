@@ -3,4 +3,6 @@
 /web/users/*
 /bot/config.php
 /web/config.php
+/web/data/groups.json
+/web/data/users.json
 /zina/config.php

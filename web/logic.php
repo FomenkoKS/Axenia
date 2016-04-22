@@ -177,7 +177,6 @@ class FemaleLogic
         }
         $num = Query2DB("select count(1) from (select c.title,k.chat_id,sum(k.level) from Karma k,Chats c where c.id=k.chat_id GROUP BY k.chat_id) k2;")[0];
         if ($num != count(json_decode(file_get_contents("data/groups.json")))) {
-            print_r($num);
             file_put_contents("data/groups.json", json_encode(Query2DB("select c.title from Karma k,Chats c where c.id=k.chat_id GROUP BY k.chat_id;")), false);
         }
     }
