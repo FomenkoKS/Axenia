@@ -112,21 +112,33 @@ function apiRequestJson($method, $parameters)
     return exec_curl_request($handle);
 }
 
+/**
+ * Делает запрос в базу данных
+ *
+ * $a = !array();      // This will === true;
+ * $a = !array('a');   // This will === false;
+ * $s = !"";           // This will === true;
+ * $s = !"hello";      // This will === false;
+ *
+ * @param $query sql Запрос
+ * @return array|bool Массив значений или false если запрос не выполнен
+ */
 function Query2DB($query)
 {
     $mysqli = new mysqli('localhost', MYSQL_USER, MYSQL_PASSWORD, MYSQL_DATABASE);
     $mysqli->connect_errno;
     $mysqli->query("SET SESSION collation_connection = 'utf8_general_ci'");
     $mysqli->query("SET NAMES 'utf8'");
-    $a = array();
+    $out = array();
     if ($result = $mysqli->query($query)) {
-        while ($row = mysqli_fetch_assoc($result)) foreach ($row as $value) array_push($a, $value);
-        $mysqli->close();
-        return $a;
-    } else {
-        $mysqli->close();
-        return false;
+        while ($row = mysqli_fetch_assoc($result)) {
+            foreach ($row as $value) {
+                array_push($out, $value);
+            }
+        }
     }
+    $mysqli->close();
+    return count($out) > 0 ? $out : false;
 }
 
 ?>
