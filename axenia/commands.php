@@ -1,35 +1,35 @@
 <?php
 function SetHello($text, $chat_id)
 {
-    $query = "UPDATE  `Chats` SET  `greeterings` =  '" . $text . "' WHERE  id = " . $chat_id;
-    return (Query2DB($query) === false) ? false : "Добавлено";
+    $res = Query2DB("UPDATE  `Chats` SET  `greeterings` =  '" . $text . "' WHERE  id = " . $chat_id);
+    return ($res === false) ? false : "Добавлено";
 }
 
 function GetUserID($username)
 {
-    $query = "SELECT id FROM Users WHERE username='" . str_ireplace("@", "", $username) . "'";
-    return (!Query2DB($query)[0]) ? false : Query2DB($query)[0];
+    $res = Query2DB("SELECT id FROM Users WHERE username='" . str_ireplace("@", "", $username) . "'");
+    return (!$res[0]) ? false : $res[0];
 }
 
 function GetUserName($id)
 {
-    $query = "SELECT username,firstname,lastname FROM Users WHERE id=" . $id;
-    return (!Query2DB($query)[0]) ? Query2DB($query)[1] : Query2DB($query)[0];
+    $res = Query2DB("SELECT username,firstname,lastname FROM Users WHERE id=" . $id);
+    return (!$res[0]) ? $res[1] : $res[0];
 }
 
 function GetGroupName($id)
 {
-    $query = "SELECT title FROM Chats WHERE id=" . $id;
-    return (!Query2DB($query)[0]) ? false : Query2DB($query)[0];
+    $res = Query2DB("SELECT title FROM Chats WHERE id=" . $id);
+    return (!$res[0]) ? false : $res[0];
 }
 
 function SetAdmin($chat_id, $user_id)
 {
     if ($user_id !== false) {
-        $query = "INSERT INTO `Admins` SET `user_id`='" . $user_id . "',`chat_id`=" . $chat_id;
-        return (Query2DB($query) === false) ? false : "{username}, жду твоих указаний.";
-    } else return "Пользователь не найден";
-
+        $res = Query2DB("INSERT INTO `Admins` SET `user_id`='" . $user_id . "',`chat_id`=" . $chat_id);
+        return ($res === false) ? false : "{username}, жду твоих указаний.";
+    }
+    return "Пользователь не найден";
 }
 
 function AddUser($user_id, $username, $firstname, $lastname)
@@ -41,13 +41,42 @@ function AddUser($user_id, $username, $firstname, $lastname)
 function AddChat($chat_id, $title)
 {
     $query = "INSERT INTO `Chats` SET `id`=" . $chat_id . ",`title`='" . $title . "' ,`reports_num`=3 ON DUPLICATE KEY UPDATE `title`='" . $title . "'";
-    return (Query2DB($query) === false) ? false : "Всем чмаффки в этом чатике.";
+    $res = Query2DB($query);
+    return ($res === false) ? false : "Всем чмаффки в этом чатике.";
 }
 
 function CheckAdmin($chat_id, $user_id)
 {
-    $query = "SELECT id FROM Admins WHERE chat_id=" . $chat_id . " AND user_id=" . $user_id;
-    return Query2DB($query)[0];
+    $res = Query2DB("SELECT id FROM Admins WHERE chat_id=" . $chat_id . " AND user_id=" . $user_id);
+    return $res[0];
+}
+
+/**
+ * получить уровень кармы пользователя из чата
+ * @param $user_id
+ * @param $chat_id
+ * @return mixed
+ */
+function getUserLevel($user_id, $chat_id)
+{
+    $query = "SELECT level FROM Karma WHERE user_id=" . $user_id . " AND chat_id=" . $chat_id;
+    $res = Query2DB($query);
+    return $res;
+}
+
+/**
+ * Добавляет запись с уровня кармы пользователя в чате.
+ * Если пользователь уже имеется с каким то левелом то левел обновится из параметра $level
+ * @param $user_id
+ * @param $chat_id
+ * @param $level
+ * @return mixed
+ */
+function setUserLevel($user_id, $chat_id, $level)
+{
+    $query = "INSERT INTO `Karma` SET `user_id`=" . $user_id . ",`chat_id`=" . $chat_id . ",`level`=" . $level . " ON DUPLICATE KEY UPDATE `level`=" . $level;
+    $res = Query2DB($query);
+    return $res;
 }
 
 function HandleKarma($dist, $from, $to, $chat_id)
@@ -127,8 +156,8 @@ function Punish($user, $chat)
 function SetCarma($chat, $user, $level)
 {
     $query = "INSERT INTO `Karma` SET `chat_id`=" . $chat . ",`user_id`=" . $user . ",`level`=" . $level . " ON DUPLICATE KEY UPDATE `level`=" . $level;
-    Query2DB($query);
-    return (Query2DB($query) === false) ? false : true;
+    $res = Query2DB($query);
+    return ($res === false) ? false : true;
 }
 
 ?>
