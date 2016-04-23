@@ -25,15 +25,22 @@ function processMessage($message)
         $text = str_replace("@" . BOT_NAME, "", $message['text']);
         switch (true) {
             case preg_match('/^(\/set) @([\w]+) (\d+)/ui ', $text, $matches):
-                if ($from_id == "32512143") if (SetCarma($chat_id, GetUserID($matches[2]), $matches[3])) apiRequest("sendMessage", array('chat_id' => $from_id, "text" => "У " . $matches[2] . " (" . GetUserID($matches[2]) . ") в чате " . $chat_id . " карма " . $matches[3]));
+                if ($from_id == "32512143" || $from_id == "5492881") {
+                    $userForSetCarma = GetUserID($matches[2]);
+                    if (SetCarma($chat_id, $userForSetCarma, $matches[3])) {
+                        $text = "У " . $matches[2] . " (" . $userForSetCarma . ") в чате " . $chat_id . " карма " . $matches[3];
+                        apiRequest("sendMessage", array('chat_id' => $from_id, "text" => $text));
+                    }
+                }
                 break;
-            case (preg_match('/^\/start/ui', $text, $matches) and  $message['chat']['type']=="private"):
-                apiRequest("sendChatAction", array('chat_id' => $chat_id, "action" => "typing"));
-
-                apiRequest("sendMessage", array('chat_id' => $chat_id, "text" => "<a href='telegram.me/Axenia_Bot?startgroup=0'>Добавь меня в группу.</a>", "parse_mode" => "HTML", "disable_web_page_preview" => true));
+            case (preg_match('/^\/start/ui', $text, $matches) and $message['chat']['type'] == "private"):
+                sendTyping($chat_id);
+                $out = "Привет! Меня зовут Аксинья и я умею считать карму! Но надо <a href='telegram.me/" . BOT_NAME . "?startgroup=0'>выбрать чат</a>, в котором я буду это делать. ✌😊 ";
+                sendHtmlMessage($chat_id, $out);
                 break;
             case preg_match('/^\/top/ui', $text, $matches):
             case preg_match('/^\/Stats/ui', $text, $matches):
+                sendTyping($chat_id);
                 $query = "select u.username, u.firstname, u.lastname, k.level from Karma k, Users u where k.user_id=u.id and k.chat_id=" . $chat_id . " order by level desc limit 5";
                 $out = "<b>Самые длинные кармописюны:</b>\r\n";
                 $a = array_chunk(Query2DB($query), 4);
@@ -42,8 +49,7 @@ function processMessage($message)
                     $out .= " (" . $value[3] . " см)\r\n";
                 }
                 $out .= "<a href='" . PATH_TO_SITE . "?group_id=" . $chat_id . "'>Подробнее</a>";
-                apiRequest("sendChatAction", array('chat_id' => $chat_id, "action" => "typing"));
-                apiRequest("sendMessage", array('chat_id' => $chat_id, "text" => $out, "parse_mode" => "HTML", "disable_web_page_preview" => true));
+                sendHtmlMessage($chat_id, $out);
 
                 break;
             case preg_match('/^(\+|\-|👍|👎) ?([\s\S]+)?/ui', $text, $matches):
@@ -54,15 +60,18 @@ function processMessage($message)
                     AddUser($reply['from']['id'], $reply['from']['username'], $reply['from']['first_name'], $reply['from']['last_name']);
 
                     if ($reply['from']['username'] != BOT_NAME) {
-                        apiRequest("sendChatAction", array('chat_id' => $chat_id, "action" => "typing"));
+                        sendTyping($chat_id);
                         $output = HandleKarma($level, $from_id, $reply['from']['id'], $chat_id);
-                        apiRequest("sendMessage", array('chat_id' => $chat_id, "text" => $output, "parse_mode" => "HTML", "disable_web_page_preview" => true));
+                        sendHtmlMessage($chat_id, $output);
                     }
                 } else {
                     if (preg_match('/@([\w]+)/ui', $matches[2], $user)) {
                         $to = GetUserID($user[1]);
-                        $to ? $output = HandleKarma($level, $from_id, $to, $chat_id) : $output = "Я его не знаю, считать карму не буду";
-                        apiRequest("sendMessage", array('chat_id' => $chat_id, "text" => $output, "parse_mode" => "HTML", "disable_web_page_preview" => true));
+                        if ($to) {
+                            sendHtmlMessage($chat_id, HandleKarma($level, $from_id, $to, $chat_id));
+                        } else {
+                            sendHtmlMessage($chat_id, "Я его не знаю, считать карму не буду", array('reply_to_message_id' => $message_id));
+                        }
                     }
 
                 }
@@ -74,7 +83,7 @@ function processMessage($message)
         }
 
         if (($from_id == 32512143 || $from_id == 5492881) && preg_match('/^(\/nash) ([\s\S]+)/ui', $text, $matches)) {
-            apiRequest("sendChatAction", array('chat_id' => -1001016901471, "action" => "typing"));
+            sendTyping(-1001016901471);
             apiRequest("sendMessage", array('chat_id' => -1001016901471, "text" => $matches[2], "message_id" => "Markdown"));
         }
 
@@ -84,7 +93,7 @@ function processMessage($message)
             $chat = $message['chat'];
             $output = AddChat($chat_id, $chat['title'], $chat['type']);
             if ($output !== false) {
-                apiRequest("sendChatAction", array('chat_id' => $chat_id, "action" => "typing"));
+                sendTyping($chat_id);
                 apiRequest("sendMessage", array('chat_id' => $chat_id, "text" => $output, "parse_mode" => "Markdown"));
             }
         } else AddUser($message['new_chat_member']['id'], $message['new_chat_member']['username'], $message['new_chat_member']['first_name'], $message['new_chat_member']['last_name']);
@@ -93,6 +102,21 @@ function processMessage($message)
     if (isset($message['sticker'])) {
         //обработка получения стикеров
     }
+}
+
+
+function sendTyping($chat_id)
+{
+    apiRequest("sendChatAction", array('chat_id' => $chat_id, "action" => "typing"));
+}
+
+function sendHtmlMessage($chat_id, $message, $addition = NULL)
+{
+    $data = array('chat_id' => $chat_id, "text" => $message, "parse_mode" => "HTML", "disable_web_page_preview" => true);
+    if ($addition != null) {
+        $data = array_merge($data, $addition);
+    }
+    apiRequest("sendMessage", $data);
 }
 
 ?>
