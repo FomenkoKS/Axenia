@@ -35,7 +35,7 @@ function processMessage($message)
                 break;
             case (preg_match('/^\/start/ui', $text, $matches) and $message['chat']['type'] == "private"):
                 sendTyping($chat_id);
-                $out = "Привет! Меня зовут Аксинья и я умею считать карму! Но надо <a href='telegram.me/" . BOT_NAME . "?startgroup=0'>выбрать чат</a>, в котором я буду это делать. ✌😊 ";
+                $out = "Привет! Меня зовут Аксинья, и я умею считать карму! Но надо <a href='telegram.me/" . BOT_NAME . "?startgroup=0'>выбрать чат</a>, в котором я буду это делать. ✌😊 ";
                 sendHtmlMessage($chat_id, $out);
                 break;
             case preg_match('/^\/top/ui', $text, $matches):
@@ -114,7 +114,7 @@ function sendHtmlMessage($chat_id, $message, $addition = NULL)
 {
     $data = array('chat_id' => $chat_id, "text" => $message, "parse_mode" => "HTML", "disable_web_page_preview" => true);
     if ($addition != null) {
-        $data = array_merge($data, $addition);
+        $data = array_replace($data, $addition);
     }
     apiRequest("sendMessage", $data);
 }
