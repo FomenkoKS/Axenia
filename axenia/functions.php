@@ -141,4 +141,19 @@ function Query2DB($query)
     return count($out) > 0 ? $out : false;
 }
 
+
+//Just a little function which mimics the original mysql_real_escape_string but which doesn't
+// need an active mysql connection.
+function mysql_escape_mimic($inp) {
+    if(is_array($inp))
+        return array_map(__METHOD__, $inp);
+
+    if(!empty($inp) && is_string($inp)) {
+        return str_replace(array('\\', "\0", "\n", "\r", "'", '"', "\x1a"), array('\\\\', '\\0', '\\n', '\\r', "\\'", '\\"', '\\Z'), $inp);
+    }
+
+    return $inp;
+}
+
+
 ?>

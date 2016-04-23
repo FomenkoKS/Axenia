@@ -1,9 +1,6 @@
 <?php
-function SetHello($text, $chat_id)
-{
-    $res = Query2DB("UPDATE  `Chats` SET  `greeterings` =  '" . $text . "' WHERE  id = " . $chat_id);
-    return ($res === false) ? false : "Добавлено";
-}
+
+//--------------------Users----------------------------------
 
 function GetUserID($username)
 {
@@ -17,11 +14,36 @@ function GetUserName($id)
     return (!$res[0]) ? $res[1] : $res[0];
 }
 
+function AddUser($user_id, $username, $firstname, $lastname)
+{
+    $query = "INSERT INTO `Users` SET `id`='" . $user_id . "',`username`='" . $username . "',`firstname`='" . $firstname . "',`lastname`='" . $lastname . "' ON DUPLICATE KEY UPDATE `username`='" . $username . "' , `firstname`='" . $firstname . "' , `lastname`='" . $lastname . "'";
+    Query2DB($query);
+}
+
+
+//--------------------Chats----------------------------------
+
+function SetHello($text, $chat_id)
+{
+    $res = Query2DB("UPDATE  `Chats` SET  `greeterings` =  '" . $text . "' WHERE  id = " . $chat_id);
+    return ($res === false) ? false : "Добавлено";
+}
+
 function GetGroupName($id)
 {
     $res = Query2DB("SELECT title FROM Chats WHERE id=" . $id);
     return (!$res[0]) ? false : $res[0];
 }
+
+function AddChat($chat_id, $title)
+{
+    $query = "INSERT INTO `Chats` SET `id`=" . $chat_id . ",`title`='" . $title . "' ,`reports_num`=3 ON DUPLICATE KEY UPDATE `title`='" . $title . "'";
+    $res = Query2DB($query);
+    return ($res === false) ? false : "Всем чмаффки в этом чатике.";
+}
+
+
+//--------------------Admins----------------------------------
 
 function SetAdmin($chat_id, $user_id)
 {
@@ -32,24 +54,13 @@ function SetAdmin($chat_id, $user_id)
     return "Пользователь не найден";
 }
 
-function AddUser($user_id, $username, $firstname, $lastname)
-{
-    $query = "INSERT INTO `Users` SET `id`='" . $user_id . "',`username`='" . $username . "',`firstname`='" . $firstname . "',`lastname`='" . $lastname . "' ON DUPLICATE KEY UPDATE `username`='" . $username . "' , `firstname`='" . $firstname . "' , `lastname`='" . $lastname . "'";
-    Query2DB($query);
-}
-
-function AddChat($chat_id, $title)
-{
-    $query = "INSERT INTO `Chats` SET `id`=" . $chat_id . ",`title`='" . $title . "' ,`reports_num`=3 ON DUPLICATE KEY UPDATE `title`='" . $title . "'";
-    $res = Query2DB($query);
-    return ($res === false) ? false : "Всем чмаффки в этом чатике.";
-}
-
 function CheckAdmin($chat_id, $user_id)
 {
     $res = Query2DB("SELECT id FROM Admins WHERE chat_id=" . $chat_id . " AND user_id=" . $user_id);
     return $res[0];
 }
+
+//--------------------Karma----------------------------------
 
 /**
  * получить уровень кармы пользователя из чата
@@ -78,6 +89,42 @@ function setUserLevel($user_id, $chat_id, $level)
     $res = Query2DB($query);
     return $res;
 }
+
+
+function SetCarma($chat, $user, $level)
+{
+    $query = "INSERT INTO `Karma` SET `chat_id`=" . $chat . ",`user_id`=" . $user . ",`level`=" . $level . " ON DUPLICATE KEY UPDATE `level`=" . $level;
+    $res = Query2DB($query);
+    return ($res === false) ? false : true;
+}
+
+
+//--------------------Rewards----------------------------------
+
+
+function getRewardOldType($user_id, $chat_id)
+{
+    return Query2DB("select type_id from Rewards where user_id=" . $user_id . " and group_id=" . $chat_id . " and type_id>=2 and type_id<=4");
+}
+
+function updateReward($new_type_id, $old_type_id, $desc, $user_id, $chat_id)
+{
+    Query2DB("update Rewards set type_id=" . $new_type_id . ", description='" . $desc . "'  where type_id=" . $old_type_id . " and user_id=" . $user_id . " and group_id=" . $chat_id);
+}
+
+function deleteReward($user_id, $chat_id)
+{
+    Query2DB("delete from Rewards where user_id=" . $user_id . " and group_id=" . $chat_id . " and (type_id>=2 and type_id<=4)");
+}
+
+function insertReward($new_type_id, $desc, $user_id, $chat_id)
+{
+    Query2DB("insert into Rewards(type_id,user_id,group_id,description) values (" . $new_type_id . "," . $user_id . "," . $chat_id . ",'" . $desc . "')");
+}
+
+
+//--------------------Others----------------------------------
+
 
 function HandleKarma($dist, $from, $to, $chat_id)
 {
@@ -110,8 +157,8 @@ function HandleKarma($dist, $from, $to, $chat_id)
     $output .= "<b>" . GetUserName($to) . " (" . $result . ")</b>";
     $query = "INSERT INTO `Karma` SET `chat_id`=" . $chat_id . ",`user_id`=" . $to . ",`level`=" . $result . " ON DUPLICATE KEY UPDATE `level`=" . $result;
     Query2DB($query);
+
     //проверка наград
-    $old_type_id = Query2DB("select type_id from Rewards where user_id=" . $to . " and group_id=" . $chat_id . " and type_id>=2 and type_id<=4");
     switch ($result) {
         case $result >= 200 and $result < 500:
             $new_type_id = 2;
@@ -128,24 +175,42 @@ function HandleKarma($dist, $from, $to, $chat_id)
             $title = "Кармонстр";
             $min = 1000;
             break;
+        default:
+            $title = "title";
+            $min = "min";
+            break;
     }
+    $old_type_id = getRewardOldType($to, $chat_id);
     if ($old_type_id != false) {
         //если есть награды
         if (isset($new_type_id)) {
             if ($new_type_id <> $old_type_id[0]) {
-                $q = "update Rewards set type_id=" . $new_type_id . ", description='Карма в группе " . GetGroupName($chat_id) . " превысило отметку в " . $min . "'  where type_id=" . $old_type_id[0] . " and user_id=" . $to . " and group_id=" . $chat_id;
-                Query2DB($q);
+                $desc = generateRewardDesc($chat_id, $min);
+                updateReward($new_type_id, $old_type_id[0], $desc, $to, $chat_id);
             }
-            if ($new_type_id > $old_type_id[0]) $output .= "\r\nТоварищ награждается отличительным знаком «<a href='" . PATH_TO_SITE . "?user_id=" . $to . "'>" . $title . "</a>»";
+            if ($new_type_id > $old_type_id[0]) {
+                $output .= getRewardMessage($to, $title);
+            }
         } else {
-            Query2DB("delete  from Rewards where user_id=" . $to . " and group_id=" . $chat_id . " and (type_id>=2 and type_id<=4)");
+            deleteReward($to, $chat_id);
         }
     } elseif (isset($new_type_id)) {
         //Если нет наград, но
-        Query2DB("insert into Rewards(type_id,user_id,group_id,description) values (" . $new_type_id . "," . $to . "," . $chat_id . ",'Карма в группе " . GetGroupName($chat_id) . " превысило отметку в " . $min . "')");
-        $output .= "\r\nТоварищ награждается отличительным знаком «<a href='" . PATH_TO_SITE . "?user_id=" . $to . "'>" . $title . "</a>»";
+        $desc = generateRewardDesc($chat_id, $min);
+        insertReward($new_type_id, $desc, $to, $chat_id);
+        $output .= getRewardMessage($to, $title);
     }
     return $output;
+}
+
+function generateRewardDesc($chat_id, $min)
+{
+    return "Карма в группе " . GetGroupName($chat_id) . " превысило отметку в " . $min;
+}
+
+function getRewardMessage($user_id, $title)
+{
+    return "\r\nТоварищ награждается отличительным знаком «<a href='" . PATH_TO_SITE . "?user_id=" . $user_id . "'>" . $title . "</a>»";
 }
 
 function Punish($user, $chat)
@@ -153,11 +218,5 @@ function Punish($user, $chat)
     if ($chat == -1001016901471) return HandleKarma("-", 1, $user, $chat);
 }
 
-function SetCarma($chat, $user, $level)
-{
-    $query = "INSERT INTO `Karma` SET `chat_id`=" . $chat . ",`user_id`=" . $user . ",`level`=" . $level . " ON DUPLICATE KEY UPDATE `level`=" . $level;
-    $res = Query2DB($query);
-    return ($res === false) ? false : true;
-}
 
 ?>
