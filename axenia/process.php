@@ -3,7 +3,6 @@ require_once('functions.php');
 require_once('commands.php');
 function processMessage($message)
 {
-    $message_id = $message['message_id'];
     $chat_id = $message['chat']['id'];
     $from_id = $message['from']['id'];
     AddUser($from_id, $message['from']['username'], $message['from']['first_name'], $message['from']['last_name']);

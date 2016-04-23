@@ -1,5 +1,5 @@
 <?php
-require_once('config.php');
+require_once('../configs/zina/config.php');
 require_once('../axenia/functions.php');
 require_once('../axenia/commands.php');
 $content = file_get_contents("php://input");
