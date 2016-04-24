@@ -32,9 +32,9 @@ function processMessage($message)
             case preg_match('/^\/top/ui', $text, $matches):
             case preg_match('/^\/Stats/ui', $text, $matches):
                 sendTyping($chat_id);
-                $query = "select u.username, u.firstname, u.lastname, k.level from Karma k, Users u where k.user_id=u.id and k.chat_id=" . $chat_id . " order by level desc limit 5";
                 $out = "<b>Самые почётные люди чата «" . GetGroupName($chat_id) . "»:</b>\r\n";
-                $a = array_chunk(Query2DB($query), 4);
+                $top = getTop($chat_id, 5);
+                $a = array_chunk($top, 4);
                 foreach ($a as $value) {
                     $out .= ($value[0] == "") ? $value[1] . " " . $value[2] : $value[0];
                     $out .= " (" . $value[3] . ")\r\n";
@@ -44,7 +44,7 @@ function processMessage($message)
 
                 break;
             case preg_match('/^(\+|\-|👍|👎) ?([\s\S]+)?/ui', $text, $matches):
-                $level = isInEnum("+,👍", $matches[1]) ? "+" : "-";
+                $dist = isInEnum("+,👍", $matches[1]) ? "+" : "-";
 
                 if (isset($message['reply_to_message'])) {
                     $replyUser = $message['reply_to_message']['from'];
@@ -52,14 +52,14 @@ function processMessage($message)
 
                     if ($replyUser['username'] != BOT_NAME) {
                         sendTyping($chat_id);
-                        $output = HandleKarma($level, $from_id, $replyUser['id'], $chat_id);
+                        $output = HandleKarma($dist, $from_id, $replyUser['id'], $chat_id);
                         sendHtmlMessage($chat_id, $output);
                     }
                 } else {
                     if (preg_match('/@([\w]+)/ui', $matches[2], $user)) {
                         $to = GetUserID($user[1]);
                         if ($to) {
-                            sendHtmlMessage($chat_id, HandleKarma($level, $from_id, $to, $chat_id));
+                            sendHtmlMessage($chat_id, HandleKarma($dist, $from_id, $to, $chat_id));
                         } else {
                             sendHtmlMessage($chat_id, "Я его не знаю, считать карму не буду", array('reply_to_message_id' => $message_id));
                         }
