@@ -25,7 +25,7 @@ function processMessage($message)
         $text = str_replace("@" . BOT_NAME, "", $message['text']);
         switch (true) {
             case preg_match('/^(\/set) @([\w]+) (\d+)/ui ', $text, $matches):
-                if ($from_id == "32512143" || $from_id == "5492881") {
+                if (isInEnum(ADMIN_IDS, $from_id)) {
                     $userForSetCarma = GetUserID($matches[2]);
                     if (SetCarma($chat_id, $userForSetCarma, $matches[3])) {
                         $text = "У " . $matches[2] . " (" . $userForSetCarma . ") в чате " . $chat_id . " карма " . $matches[3];
@@ -80,13 +80,13 @@ function processMessage($message)
                 apiRequest("forwardMessage", array('chat_id' => $chat_id, "from_chat_id" => "@superboobs", "message_id" => rand(1, 2700)));
 
                 break;
+            case preg_match('/^(\/nash) ([\s\S]+)/ui', $text, $matches):
+                if (isInEnum(ADMIN_IDS, $from_id)) {
+                    sendTyping(-1001016901471);
+                    apiRequest("sendMessage", array('chat_id' => -1001016901471, "text" => $matches[2], "message_id" => "Markdown"));
+                }
+                break;
         }
-
-        if (($from_id == 32512143 || $from_id == 5492881) && preg_match('/^(\/nash) ([\s\S]+)/ui', $text, $matches)) {
-            sendTyping(-1001016901471);
-            apiRequest("sendMessage", array('chat_id' => -1001016901471, "text" => $matches[2], "message_id" => "Markdown"));
-        }
-
     }
     if (isset($message['new_chat_member'])) {
         if ($message['new_chat_member']['username'] == BOT_NAME) {
