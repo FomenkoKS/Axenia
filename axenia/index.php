@@ -42,7 +42,7 @@ function processMessage($message)
             case preg_match('/^\/Stats/ui', $text, $matches):
                 sendTyping($chat_id);
                 $query = "select u.username, u.firstname, u.lastname, k.level from Karma k, Users u where k.user_id=u.id and k.chat_id=" . $chat_id . " order by level desc limit 5";
-                $out = "<b>Самые длинные кармописюны:</b>\r\n";
+                $out = "<b>Самые длинные кармописюны чата «" . GetGroupName($chat_id) . "»:</b>\r\n";
                 $a = array_chunk(Query2DB($query), 4);
                 foreach ($a as $value) {
                     $out .= ($value[0] == "") ? $value[1] . " " . $value[2] : $value[0];
