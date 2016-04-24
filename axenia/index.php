@@ -53,15 +53,15 @@ function processMessage($message)
 
                 break;
             case preg_match('/^(\+|\-|👍|👎) ?([\s\S]+)?/ui', $text, $matches):
-                ($matches[1] == "+" || $matches[1] == "👍") ? $level = "+" : $level = "-";
+                $level = isInEnum("+,👍", $matches[1]) ? "+" : "-";
 
                 if (isset($message['reply_to_message'])) {
-                    $reply = $message['reply_to_message'];
-                    AddUser($reply['from']['id'], $reply['from']['username'], $reply['from']['first_name'], $reply['from']['last_name']);
+                    $replyUser = $message['reply_to_message']['from'];
+                    AddUser($replyUser['id'], $replyUser['username'], $replyUser['first_name'], $replyUser['last_name']);
 
-                    if ($reply['from']['username'] != BOT_NAME) {
+                    if ($replyUser['username'] != BOT_NAME) {
                         sendTyping($chat_id);
-                        $output = HandleKarma($level, $from_id, $reply['from']['id'], $chat_id);
+                        $output = HandleKarma($level, $from_id, $replyUser['id'], $chat_id);
                         sendHtmlMessage($chat_id, $output);
                     }
                 } else {
