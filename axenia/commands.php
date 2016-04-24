@@ -95,6 +95,12 @@ function SetCarma($chat, $user, $level)
     return ($res === false) ? false : true;
 }
 
+function getTop($chat_id, $limit = 5)
+{
+    $query = "select u.username, u.firstname, u.lastname, k.level from Karma k, Users u where k.user_id=u.id and k.chat_id=" . $chat_id . " order by level desc limit " . $limit;
+    return Query2DB($query);
+}
+
 
 //--------------------Rewards----------------------------------
 
