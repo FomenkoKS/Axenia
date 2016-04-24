@@ -23,23 +23,20 @@ function AddUser($user_id, $username, $firstname, $lastname)
 
 //--------------------Chats----------------------------------
 
-function SetHello($text, $chat_id)
-{
-    $res = Query2DB("UPDATE  `Chats` SET  `greeterings` =  '" . $text . "' WHERE  id = " . $chat_id);
-    return ($res === false) ? false : "Добавлено";
-}
-
 function GetGroupName($id)
 {
     $res = Query2DB("SELECT title FROM Chats WHERE id=" . $id);
     return (!$res[0]) ? false : $res[0];
 }
 
-function AddChat($chat_id, $title, $chatType = NULL)
+function AddChat($chat_id, $title, $chatType)
 {
-    $query = "INSERT INTO `Chats` SET `id`=" . $chat_id . ",`title`='" . $title . "' ,`reports_num`=3 ON DUPLICATE KEY UPDATE `title`='" . $title . "'";
-    $res = Query2DB($query);
-    return ($res === false) ? false : "Всем чмаффки в этом чатике.";
+    if (isInEnum("group,supergroup", $chatType)) {
+        $query = "INSERT INTO `Chats` SET `id`=" . $chat_id . ",`title`='" . $title . "' ON DUPLICATE KEY UPDATE `title`='" . $title . "'";
+        $res = Query2DB($query);
+        return ($res === false) ? false : "Всем чмаффки в этом чатике.";
+    }
+    return false;
 }
 
 
@@ -104,22 +101,22 @@ function SetCarma($chat, $user, $level)
 
 function getRewardOldType($user_id, $chat_id)
 {
-    return Query2DB("select type_id from Rewards where user_id=" . $user_id . " and group_id=" . $chat_id . " and type_id>=2 and type_id<=4");
+    return Query2DB("SELECT type_id FROM Rewards WHERE user_id=" . $user_id . " AND group_id=" . $chat_id . " AND type_id>=2 AND type_id<=4");
 }
 
 function updateReward($new_type_id, $old_type_id, $desc, $user_id, $chat_id)
 {
-    Query2DB("update Rewards set type_id=" . $new_type_id . ", description='" . $desc . "'  where type_id=" . $old_type_id . " and user_id=" . $user_id . " and group_id=" . $chat_id);
+    Query2DB("UPDATE Rewards SET type_id=" . $new_type_id . ", description='" . $desc . "'  WHERE type_id=" . $old_type_id . " AND user_id=" . $user_id . " AND group_id=" . $chat_id);
 }
 
 function deleteReward($user_id, $chat_id)
 {
-    Query2DB("delete from Rewards where user_id=" . $user_id . " and group_id=" . $chat_id . " and (type_id>=2 and type_id<=4)");
+    Query2DB("DELETE FROM Rewards WHERE user_id=" . $user_id . " AND group_id=" . $chat_id . " AND (type_id>=2 AND type_id<=4)");
 }
 
 function insertReward($new_type_id, $desc, $user_id, $chat_id)
 {
-    Query2DB("insert into Rewards(type_id,user_id,group_id,description) values (" . $new_type_id . "," . $user_id . "," . $chat_id . ",'" . $desc . "')");
+    Query2DB("INSERT INTO Rewards(type_id,user_id,group_id,description) VALUES (" . $new_type_id . "," . $user_id . "," . $chat_id . ",'" . $desc . "')");
 }
 
 

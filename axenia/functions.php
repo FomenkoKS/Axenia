@@ -130,15 +130,22 @@ function Query2DB($query)
     $mysqli->query("SET SESSION collation_connection = 'utf8_general_ci'");
     $mysqli->query("SET NAMES 'utf8'");
     $out = array();
-    if ($result = $mysqli->query($query)) {
+
+    $result = $mysqli->query($query);
+
+    if ($result) {
         while ($row = mysqli_fetch_assoc($result)) {
             foreach ($row as $value) {
                 array_push($out, $value);
             }
         }
+        $mysqli->close();
+        return $out;
+    } else {
+        printf("Error message: %s\n", $mysqli->error);
+        $mysqli->close();
+        return false;
     }
-    $mysqli->close();
-    return count($out) > 0 ? $out : false;
 }
 
 
