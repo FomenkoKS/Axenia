@@ -89,14 +89,17 @@ function processMessage($message)
         }
     }
     if (isset($message['new_chat_member'])) {
-        if ($message['new_chat_member']['username'] == BOT_NAME) {
+        $newMember = $message['new_chat_member'];
+        if (BOT_NAME == $newMember['username']) {
             $chat = $message['chat'];
             $output = AddChat($chat_id, $chat['title'], $chat['type']);
             if ($output !== false) {
                 sendTyping($chat_id);
                 apiRequest("sendMessage", array('chat_id' => $chat_id, "text" => $output, "parse_mode" => "Markdown"));
             }
-        } else AddUser($message['new_chat_member']['id'], $message['new_chat_member']['username'], $message['new_chat_member']['first_name'], $message['new_chat_member']['last_name']);
+        } else {
+            AddUser($newMember['id'], $newMember['username'], $newMember['first_name'], $newMember['last_name']);
+        }
 
     }
     if (isset($message['sticker'])) {

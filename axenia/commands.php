@@ -35,7 +35,7 @@ function GetGroupName($id)
     return (!$res[0]) ? false : $res[0];
 }
 
-function AddChat($chat_id, $title)
+function AddChat($chat_id, $title, $chatType = NULL)
 {
     $query = "INSERT INTO `Chats` SET `id`=" . $chat_id . ",`title`='" . $title . "' ,`reports_num`=3 ON DUPLICATE KEY UPDATE `title`='" . $title . "'";
     $res = Query2DB($query);
