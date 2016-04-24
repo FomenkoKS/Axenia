@@ -88,14 +88,6 @@ function setUserLevel($user_id, $chat_id, $level)
 {
     $query = "INSERT INTO `Karma` SET `user_id`=" . $user_id . ",`chat_id`=" . $chat_id . ",`level`=" . $level . " ON DUPLICATE KEY UPDATE `level`=" . $level;
     $res = Query2DB($query);
-    return $res;
-}
-
-
-function SetCarma($chat, $user, $level)
-{
-    $query = "INSERT INTO `Karma` SET `chat_id`=" . $chat . ",`user_id`=" . $user . ",`level`=" . $level . " ON DUPLICATE KEY UPDATE `level`=" . $level;
-    $res = Query2DB($query);
     return ($res === false) ? false : true;
 }
 
