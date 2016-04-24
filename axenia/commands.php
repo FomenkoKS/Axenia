@@ -108,7 +108,7 @@ function getRewardOldType($user_id, $chat_id)
 
 function updateReward($new_type_id, $old_type_id, $desc, $user_id, $chat_id)
 {
-    Query2DB("UPDATE Rewards SET type_id=" . $new_type_id . ", description='" . $desc . "'  WHERE type_id=" . $old_type_id . " AND user_id=" . $user_id . " AND group_id=" . $chat_id);
+    Query2DB("UPDATE Rewards SET type_id=" . $new_type_id . ", description='" . $desc . "' WHERE type_id=" . $old_type_id . " AND user_id=" . $user_id . " AND group_id=" . $chat_id);
 }
 
 function deleteReward($user_id, $chat_id)
@@ -125,35 +125,41 @@ function insertReward($new_type_id, $desc, $user_id, $chat_id)
 
 function HandleKarma($dist, $from, $to, $chat_id)
 {
+    $fromLevel = 0;
     if ($from == $to) return "Давай <b>без</b> кармадрочерства";
-    if ($from != 1) {
-        $query = "SELECT level FROM Karma WHERE user_id=" . $from . " AND chat_id=" . $chat_id;
-        if (!Query2DB($query)[0]) {
-            $query = "INSERT INTO `Karma` SET `chat_id`=" . $chat_id . ",`user_id`=" . $from . ",`level`=0";
-            Query2DB($query);
-            $a = 0;
-        } else $a = Query2DB($query)[0];
-        if ($a < 0) return "Ты <b>не  можешь</b> голосовать с отрицательной кармой";
-        $output = "<b>" . GetUserName($from) . " (" . $a . ")</b>";
+    if ($from != BOT_NAME) {
+        $fromLevelResult = getUserLevel($from, $chat_id);
+        if (!$fromLevelResult[0]) {
+            setUserLevel($from, $chat_id, 0);
+            $fromLevel = 0;
+        } else {
+            $fromLevel = $fromLevelResult[0];
+        };
+
+        if ($fromLevel < 0) {
+            return "Ты <b>не можешь</b> голосовать с отрицательной кармой";
+        };
+        $output = "<b>" . GetUserName($from) . " (" . $fromLevel . ")</b>";
     } else {
         $output = "<b>Аксинья</b>";
     }
-    $query = "SELECT level FROM Karma WHERE user_id=" . $to . " AND chat_id=" . $chat_id;
-    (!Query2DB($query)[0]) ? $b = 0 : $b = Query2DB($query)[0];
-    if ($a == 0) $a = 1;
+    $fromLevelSqrt = $fromLevel == 0 ? 1 : sqrt($fromLevel);
+
+    $toLevelResult = getUserLevel($to, $chat_id);
+    $toLevel = !$toLevelResult[0] ? 0 : $toLevelResult[0];
+
     switch ($dist) {
         case "+":
             $output .= " плюсанул в карму ";
-            $result = round($b + sqrt($a), 1);
+            $result = round($toLevel + $fromLevelSqrt, 1);
             break;
         case "-":
             $output .= " минусанул в карму ";
-            $result = ($from != 1) ? round($b - sqrt($a), 1) : $b - 0.1;
+            $result = ($from != BOT_NAME) ? round($toLevel - $fromLevelSqrt, 1) : $toLevel - 0.1;
             break;
     }
     $output .= "<b>" . GetUserName($to) . " (" . $result . ")</b>";
-    $query = "INSERT INTO `Karma` SET `chat_id`=" . $chat_id . ",`user_id`=" . $to . ",`level`=" . $result . " ON DUPLICATE KEY UPDATE `level`=" . $result;
-    Query2DB($query);
+    setUserLevel($to, $chat_id, $result);
 
     //проверка наград
     $output .= handleRewards($result, $chat_id, $to);
@@ -167,17 +173,17 @@ function handleRewards($currentCarma, $chat_id, $user_id)
     //проверка наград
     switch ($currentCarma) {
         case $currentCarma >= 200 and $currentCarma < 500:
-            $new_type_id = 2;
+            $newType = 2;
             $title = "Кармодрочер";
             $min = 200;
             break;
         case $currentCarma >= 500 and $currentCarma < 1000:
-            $new_type_id = 3;
+            $newType = 3;
             $title = "Карманьяк";
             $min = 500;
             break;
         case $currentCarma >= 1000:
-            $new_type_id = 4;
+            $newType = 4;
             $title = "Кармонстр";
             $min = 1000;
             break;
@@ -186,24 +192,24 @@ function handleRewards($currentCarma, $chat_id, $user_id)
             $min = "min";
             break;
     }
-    $old_type_id = getRewardOldType($user_id, $chat_id);
-    if ($old_type_id != false) {
+    $oldType = getRewardOldType($user_id, $chat_id);
+    if ($oldType != false) {
         //если есть награды
-        if (isset($new_type_id)) {
-            if ($new_type_id <> $old_type_id[0]) {
+        if (isset($newType)) {
+            if ($newType <> $oldType[0]) {
                 $desc = generateRewardDesc($chat_id, $min);
-                updateReward($new_type_id, $old_type_id[0], $desc, $user_id, $chat_id);
+                updateReward($newType, $oldType[0], $desc, $user_id, $chat_id);
             }
-            if ($new_type_id > $old_type_id[0]) {
+            if ($newType > $oldType[0]) {
                 $output .= getRewardMessage($user_id, $title);
             }
         } else {
             deleteReward($user_id, $chat_id);
         }
-    } elseif (isset($new_type_id)) {
+    } elseif (isset($newType)) {
         //Если нет наград, но
         $desc = generateRewardDesc($chat_id, $min);
-        insertReward($new_type_id, $desc, $user_id, $chat_id);
+        insertReward($newType, $desc, $user_id, $chat_id);
         $output .= getRewardMessage($user_id, $title);
     }
     return $output;
@@ -221,7 +227,7 @@ function getRewardMessage($user_id, $title)
 
 function Punish($user, $chat)
 {
-    if ($chat == -1001016901471) return HandleKarma("-", 1, $user, $chat);
+    return HandleKarma("-", BOT_NAME, $user, $chat);
 }
 
 

@@ -24,7 +24,7 @@ function processMessage($message)
     if (isset($message['text'])) {
         $text = str_replace("@" . BOT_NAME, "", $message['text']);
         switch (true) {
-            case preg_match('/^(\/set) @([\w]+) (\d+)/ui ', $text, $matches):
+            case preg_match('/^(\/set) @([\w]+) (-?\d+)/ui ', $text, $matches):
                 if (isInEnum(ADMIN_IDS, $from_id)) {
                     $userForSetCarma = GetUserID($matches[2]);
                     if (setUserLevel($userForSetCarma, $chat_id, $matches[3])) {
@@ -54,7 +54,7 @@ function processMessage($message)
 
                 break;
             case preg_match('/^(\+|\-|👍|👎) ?([\s\S]+)?/ui', $text, $matches):
-                $level = isInEnum("+,👍", $matches[1]) ? "+" : "-";
+                $dist = isInEnum("+,👍", $matches[1]) ? "+" : "-";
 
                 if (isset($message['reply_to_message'])) {
                     $replyUser = $message['reply_to_message']['from'];
@@ -62,14 +62,14 @@ function processMessage($message)
 
                     if ($replyUser['username'] != BOT_NAME) {
                         sendTyping($chat_id);
-                        $output = HandleKarma($level, $from_id, $replyUser['id'], $chat_id);
+                        $output = HandleKarma($dist, $from_id, $replyUser['id'], $chat_id);
                         sendHtmlMessage($chat_id, $output);
                     }
                 } else {
                     if (preg_match('/@([\w]+)/ui', $matches[2], $user)) {
                         $to = GetUserID($user[1]);
                         if ($to) {
-                            sendHtmlMessage($chat_id, HandleKarma($level, $from_id, $to, $chat_id));
+                            sendHtmlMessage($chat_id, HandleKarma($dist, $from_id, $to, $chat_id));
                         } else {
                             sendHtmlMessage($chat_id, "Я его не знаю, считать карму не буду", array('reply_to_message_id' => $message_id));
                         }
@@ -83,8 +83,8 @@ function processMessage($message)
                 break;
             case preg_match('/^(\/nash) ([\s\S]+)/ui', $text, $matches):
                 if (isInEnum(ADMIN_IDS, $from_id)) {
-                    sendTyping(-1001016901471);
-                    apiRequest("sendMessage", array('chat_id' => -1001016901471, "text" => $matches[2], "message_id" => "Markdown"));
+                    sendTyping(NASH_CHAT_ID);
+                    apiRequest("sendMessage", array('chat_id' => NASH_CHAT_ID, "text" => $matches[2], "message_id" => "Markdown"));
                 }
                 break;
         }
