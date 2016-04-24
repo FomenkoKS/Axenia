@@ -1,6 +1,6 @@
 <?php
 
-//--------------------Users----------------------------------
+// region -------------------- Users
 
 function GetUserID($username)
 {
@@ -20,8 +20,9 @@ function AddUser($user_id, $username, $firstname, $lastname)
     Query2DB($query);
 }
 
+//endregion
 
-//--------------------Chats----------------------------------
+// region -------------------- Chats
 
 function GetGroupName($id)
 {
@@ -39,8 +40,9 @@ function AddChat($chat_id, $title, $chatType)
     return false;
 }
 
+//endregion
 
-//--------------------Admins----------------------------------
+// region -------------------- Admins
 
 function SetAdmin($chat_id, $user_id)
 {
@@ -57,7 +59,9 @@ function CheckAdmin($chat_id, $user_id)
     return $res[0];
 }
 
-//--------------------Karma----------------------------------
+//endregion
+
+//region -------------------- Karma
 
 /**
  * получить уровень кармы пользователя из чата
@@ -101,9 +105,9 @@ function getTop($chat_id, $limit = 5)
     return Query2DB($query);
 }
 
+//endregion
 
-//--------------------Rewards----------------------------------
-
+//region -------------------- Rewards
 
 function getRewardOldType($user_id, $chat_id)
 {
@@ -125,9 +129,7 @@ function insertReward($new_type_id, $desc, $user_id, $chat_id)
     Query2DB("INSERT INTO Rewards(type_id,user_id,group_id,description) VALUES (" . $new_type_id . "," . $user_id . "," . $chat_id . ",'" . $desc . "')");
 }
 
-
-//--------------------Others----------------------------------
-
+//endregion
 
 function HandleKarma($dist, $from, $to, $chat_id)
 {
