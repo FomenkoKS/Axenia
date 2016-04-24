@@ -162,18 +162,27 @@ function HandleKarma($dist, $from, $to, $chat_id)
     Query2DB($query);
 
     //проверка наград
-    switch ($result) {
-        case $result >= 200 and $result < 500:
+    $output .= handleRewards($result, $chat_id, $to);
+
+    return $output;
+}
+
+function handleRewards($currentCarma, $chat_id, $user_id)
+{
+    $output = "";
+    //проверка наград
+    switch ($currentCarma) {
+        case $currentCarma >= 200 and $currentCarma < 500:
             $new_type_id = 2;
             $title = "Кармодрочер";
             $min = 200;
             break;
-        case $result >= 500 and $result < 1000:
+        case $currentCarma >= 500 and $currentCarma < 1000:
             $new_type_id = 3;
             $title = "Карманьяк";
             $min = 500;
             break;
-        case $result >= 1000:
+        case $currentCarma >= 1000:
             $new_type_id = 4;
             $title = "Кармонстр";
             $min = 1000;
@@ -183,25 +192,25 @@ function HandleKarma($dist, $from, $to, $chat_id)
             $min = "min";
             break;
     }
-    $old_type_id = getRewardOldType($to, $chat_id);
+    $old_type_id = getRewardOldType($user_id, $chat_id);
     if ($old_type_id != false) {
         //если есть награды
         if (isset($new_type_id)) {
             if ($new_type_id <> $old_type_id[0]) {
                 $desc = generateRewardDesc($chat_id, $min);
-                updateReward($new_type_id, $old_type_id[0], $desc, $to, $chat_id);
+                updateReward($new_type_id, $old_type_id[0], $desc, $user_id, $chat_id);
             }
             if ($new_type_id > $old_type_id[0]) {
-                $output .= getRewardMessage($to, $title);
+                $output .= getRewardMessage($user_id, $title);
             }
         } else {
-            deleteReward($to, $chat_id);
+            deleteReward($user_id, $chat_id);
         }
     } elseif (isset($new_type_id)) {
         //Если нет наград, но
         $desc = generateRewardDesc($chat_id, $min);
-        insertReward($new_type_id, $desc, $to, $chat_id);
-        $output .= getRewardMessage($to, $title);
+        insertReward($new_type_id, $desc, $user_id, $chat_id);
+        $output .= getRewardMessage($user_id, $title);
     }
     return $output;
 }
