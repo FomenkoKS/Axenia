@@ -1,6 +1,6 @@
 <?php
 
-class Db
+class AbstractDB
 {
     protected static $connection;
 
