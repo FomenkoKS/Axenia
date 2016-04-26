@@ -1,6 +1,6 @@
 <?php
 
-class AbstractDB
+class AbstractDao
 {
     protected static $connection;
 
