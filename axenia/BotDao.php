@@ -7,20 +7,20 @@ class BotDao extends AbstractDao
 
     public function GetUserID($username)
     {
-        $res = $this->query("SELECT id FROM Users WHERE username='" . str_ireplace("@", "", $username) . "'");
+        $res = $this->select("SELECT id FROM Users WHERE username='" . str_ireplace("@", "", $username) . "'");
         return (!$res[0]) ? false : $res[0];
     }
 
     public function GetUserName($id)
     {
-        $res = $this->query("SELECT username,firstname,lastname FROM Users WHERE id=" . $id);
+        $res = $this->select("SELECT username,firstname,lastname FROM Users WHERE id=" . $id);
         return (!$res[0]) ? $res[1] : $res[0];
     }
 
     public function AddUser($user_id, $username, $firstname, $lastname)
     {
         $query = "INSERT INTO `Users` SET `id`='" . $user_id . "',`username`='" . $username . "',`firstname`='" . $firstname . "',`lastname`='" . $lastname . "' ON DUPLICATE KEY UPDATE `username`='" . $username . "' , `firstname`='" . $firstname . "' , `lastname`='" . $lastname . "'";
-        $this->query($query);
+        $this->insert($query);
     }
 
 //endregion
@@ -29,15 +29,15 @@ class BotDao extends AbstractDao
 
     public function GetGroupName($id)
     {
-        $res = $this->query("SELECT title FROM Chats WHERE id=" . $id);
+        $res = $this->select("SELECT title FROM Chats WHERE id=" . $id);
         return (!$res[0]) ? false : $res[0];
     }
 
     public function AddChat($chat_id, $title, $chatType)
     {
-        if (isInEnum("group,supergroup", $chatType)) {
+        if (Util::isInEnum("group,supergroup", $chatType)) {
             $query = "INSERT INTO `Chats` SET `id`=" . $chat_id . ",`title`='" . $title . "' ON DUPLICATE KEY UPDATE `title`='" . $title . "'";
-            $res = $this->query($query);
+            $res = $this->insert($query);
             return ($res === false) ? false : "Всем чмаффки в этом чатике.";
         }
         return false;
@@ -50,7 +50,7 @@ class BotDao extends AbstractDao
     public function SetAdmin($chat_id, $user_id)
     {
         if ($user_id !== false) {
-            $res = $this->query("INSERT INTO `Admins` SET `user_id`='" . $user_id . "',`chat_id`=" . $chat_id);
+            $res = $this->insert("INSERT INTO `Admins` SET `user_id`='" . $user_id . "',`chat_id`=" . $chat_id);
             return ($res === false) ? false : "{username}, жду твоих указаний.";
         }
         return "Пользователь не найден";
@@ -58,7 +58,7 @@ class BotDao extends AbstractDao
 
     public function CheckAdmin($chat_id, $user_id)
     {
-        $res = $this->query("SELECT id FROM Admins WHERE chat_id=" . $chat_id . " AND user_id=" . $user_id);
+        $res = $this->select("SELECT id FROM Admins WHERE chat_id=" . $chat_id . " AND user_id=" . $user_id);
         return $res[0];
     }
 
@@ -75,7 +75,7 @@ class BotDao extends AbstractDao
     public function getUserLevel($user_id, $chat_id)
     {
         $query = "SELECT level FROM Karma WHERE user_id=" . $user_id . " AND chat_id=" . $chat_id;
-        $res = $this->query($query);
+        $res = $this->select($query);
         return $res;
     }
 
@@ -90,14 +90,14 @@ class BotDao extends AbstractDao
     public function setUserLevel($user_id, $chat_id, $level)
     {
         $query = "INSERT INTO `Karma` SET `user_id`=" . $user_id . ",`chat_id`=" . $chat_id . ",`level`=" . $level . " ON DUPLICATE KEY UPDATE `level`=" . $level;
-        $res = $this->query($query);
+        $res = $this->insert($query);
         return ($res === false) ? false : true;
     }
 
     public function getTop($chat_id, $limit = 5)
     {
         $query = "SELECT u.username, u.firstname, u.lastname, k.level FROM Karma k, Users u WHERE k.user_id=u.id AND k.chat_id=" . $chat_id . " ORDER BY level DESC LIMIT " . $limit;
-        return $this->query($query);
+        return $this->select($query);
     }
 
 //endregion
@@ -106,22 +106,22 @@ class BotDao extends AbstractDao
 
     public function getRewardOldType($user_id, $chat_id)
     {
-        return $this->query("SELECT type_id FROM Rewards WHERE user_id=" . $user_id . " AND group_id=" . $chat_id . " AND type_id>=2 AND type_id<=4");
+        return $this->select("SELECT type_id FROM Rewards WHERE user_id=" . $user_id . " AND group_id=" . $chat_id . " AND type_id>=2 AND type_id<=4");
     }
 
     public function updateReward($new_type_id, $old_type_id, $desc, $user_id, $chat_id)
     {
-        $this->query("UPDATE Rewards SET type_id=" . $new_type_id . ", description='" . $desc . "' WHERE type_id=" . $old_type_id . " AND user_id=" . $user_id . " AND group_id=" . $chat_id);
+        $this->update("UPDATE Rewards SET type_id=" . $new_type_id . ", description='" . $desc . "' WHERE type_id=" . $old_type_id . " AND user_id=" . $user_id . " AND group_id=" . $chat_id);
     }
 
     public function deleteReward($user_id, $chat_id)
     {
-        $this->query("DELETE FROM Rewards WHERE user_id=" . $user_id . " AND group_id=" . $chat_id . " AND (type_id>=2 AND type_id<=4)");
+        $this->delete("DELETE FROM Rewards WHERE user_id=" . $user_id . " AND group_id=" . $chat_id . " AND (type_id>=2 AND type_id<=4)");
     }
 
     public function insertReward($new_type_id, $desc, $user_id, $chat_id)
     {
-        $this->query("INSERT INTO Rewards(type_id,user_id,group_id,description) VALUES (" . $new_type_id . "," . $user_id . "," . $chat_id . ",'" . $desc . "')");
+        $this->insert("INSERT INTO Rewards(type_id,user_id,group_id,description) VALUES (" . $new_type_id . "," . $user_id . "," . $chat_id . ",'" . $desc . "')");
     }
 
 //endregion

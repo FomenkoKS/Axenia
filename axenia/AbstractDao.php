@@ -9,6 +9,11 @@ class AbstractDao
         // Try and connect to the database
         if (!isset(self::$connection)) {
             self::$connection = new mysqli('localhost', MYSQL_USER, MYSQL_PASSWORD, MYSQL_DATABASE);
+            /* проверка соединения */
+            if (self::$connection->connect_errno) {
+                printf("Error connection: %s\n", self::$connection->connect_error);
+                exit();
+            }
             self::$connection->query("SET SESSION collation_connection = 'utf8_general_ci'");
             self::$connection->query("SET NAMES 'utf8'");
         }
@@ -20,32 +25,49 @@ class AbstractDao
         return self::$connection;
     }
 
-    /**
-     * Query the database
-     *
-     * @param $query The query string
-     * @return mixed The result of the mysqli::query() function
-     */
-    public function query($query)
+    public function select($query)
+    {
+        $out = array();
+
+        $connection = $this->connect();
+        $result = $connection->query($query);
+
+        if ($result) {
+            while ($row = $result->fetch_assoc()) {
+                //$rows[] = $row;
+                foreach ($row as $value) {
+                    array_push($out, $value);
+                }
+            }
+        } else {
+            error_log("Error query: %s\n %s\n", $query, $this->error());
+            return false;
+        }
+
+        return $out;
+    }
+
+    public function update($query)
     {
         $connection = $this->connect();
         $result = $connection->query($query);
 
-        $out = array();
-
-        if ($result == false) {
-            printf("Error message: %s\n", $this->error());
+        if ($result) {
+            return true;
+        } else {
+            error_log("Error query: %s\n %s\n", $query, $this->error());
             return false;
         }
+    }
 
-        while ($row = $result->fetch_assoc()) {
-            //$rows[] = $row;
-            foreach ($row as $value) {
-                array_push($out, $value);
-            }
-        }
-        return $out;
+    public function delete($query)
+    {
+        return $this->update($query);
+    }
 
+    public function insert($query)
+    {
+        return $this->update($query);
     }
 
     /**
