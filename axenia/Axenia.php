@@ -33,7 +33,7 @@ class Axenia
             switch (true) {
                 case preg_match('/^(\/set) @([\w]+) (-?\d+)/ui ', $text, $matches):
                     if (Util::isInEnum(ADMIN_IDS, $from_id)) {
-                        $userForSetCarma = GetUserID($matches[2]);
+                        $userForSetCarma = $this->db->GetUserID($matches[2]);
                         if ($this->db->setUserLevel($userForSetCarma, $chat_id, $matches[3])) {
                             $text = "У " . $matches[2] . " (" . $userForSetCarma . ") в чате " . $chat_id . " карма " . $matches[3];
                             Request::exec("sendMessage", array('chat_id' => $from_id, "text" => $text));
