@@ -90,11 +90,12 @@ class Axenia
                 case preg_match('/^(\/nash) ([\s\S]+)/ui', $text, $matches):
                     if (Util::isInEnum(ADMIN_IDS, $from_id)) {
                         Request::sendTyping(NASH_CHAT_ID);
-                        Request::exec("sendMessage", array('chat_id' => NASH_CHAT_ID, "text" => $matches[2], "message_id" => "Markdown"));
+                        Request::exec("sendMessage", array('chat_id' => NASH_CHAT_ID, "text" => $matches[2]));
                     }
                     break;
             }
         }
+
         if (isset($message['new_chat_member'])) {
             $newMember = $message['new_chat_member'];
             if (BOT_NAME == $newMember['username']) {
@@ -117,9 +118,13 @@ class Axenia
         if (isset($message['sticker'])) {
             //обработка получения стикеров
         }
+
+        if (isset($message['left_chat_member'])) {
+            //не видит себя когда его удаляют из чата
+            $member = $message['left_chat_member'];
+            if (BOT_NAME == $member['username']) $this->db->DeleteChat($chat_id);
+        }
     }
 
 }
-
-
 ?>
