@@ -68,7 +68,7 @@ $logic->CheckData();
                 <button class="btn btn-sm btn-dark" data-toggle="modal" data-target="#myModal" id="for_food">
                     Пожертвовать на проект
                 </button>
-                <p>Написать автору <strong class="tg_user wrote">abrikos</strong><br><a
+                <p>Написать авторам <strong class="tg_user wrote">abrikos</strong>, <strong class="tg_user wrote">formatq</strong><br><a
                         href="https://telegram.me/storebot?start=Axenia_bot">Оставить отзыв</a></p>
             </div>
             <div class="col-md-2 col-md-offset-7 text-right">

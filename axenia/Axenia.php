@@ -26,7 +26,6 @@ class Axenia
         $from_id = $message['from']['id'];
 
         $this->db->AddUser($from_id, $message['from']['username'], $message['from']['first_name'], $message['from']['last_name']);
-        $this->db->AddChat($chat_id, $message['chat']['title'], $message['chat']['type']);
 
         if (isset($message['text'])) {
             $text = str_replace("@" . BOT_NAME, "", $message['text']);
@@ -108,8 +107,13 @@ class Axenia
             } else {
                 $this->db->AddUser($newMember['id'], $newMember['username'], $newMember['first_name'], $newMember['last_name']);
             }
-
         }
+
+        if (isset($message['new_chat_title'])) {
+            $newtitle = $message['new_chat_title'];
+            $this->db->AddChat($chat_id, $newtitle, $chat = $message['chat']['type']);
+        }
+
         if (isset($message['sticker'])) {
             //обработка получения стикеров
         }
