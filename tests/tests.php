@@ -5,6 +5,8 @@ require_once('../axenia/util.php');
 //print_r(isInEnum("343434,434234,1", "434234"), false);
 //print_r(false === isInEnum("343434,434234,1", "4342324"));
 
-if(Util::isInEnum("343434,434234,1", "434234")){
-    print_r(true);
-}
+//if(Util::isInEnum("343434,434234,1", "434234")){
+//    print_r(true);
+//}
+
+print_r(Util::insert(':name is :age years old.', array('name' => 'Bob', 'age' => '65')));
