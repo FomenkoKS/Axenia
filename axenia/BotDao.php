@@ -17,6 +17,17 @@ class BotDao extends AbstractDao
         $this->insert($query);
     }
 
+    public function GetUserName($id)
+    {
+        $res = $this->select("SELECT username,firstname,lastname FROM Users WHERE id=" . $id);
+        return (!$res[0]) ? $res[1] : $res[0];
+    }
+
+
+//endregion
+
+// region -------------------- Chats
+
     public function AddChat($chat_id, $title, $chatType)
     {
         if (Util::isInEnum("group,supergroup", $chatType)) {
@@ -27,16 +38,24 @@ class BotDao extends AbstractDao
         return false;
     }
 
-//endregion
-
-// region -------------------- Chats
-
     public function DeleteChat($chat_id)
     {
-        $query = "delete from `Chats` where `id`=" . $chat_id ;
+        $query = "DELETE FROM `Chats` WHERE `id`=" . $chat_id;
         $this->delete($query);
         return true;
     }
+
+
+    public function GetGroupName($id)
+    {
+        $res = $this->select("SELECT title FROM Chats WHERE id=" . $id);
+        return (!$res[0]) ? false : $res[0];
+    }
+
+
+//endregion
+
+// region -------------------- Admins
 
     public function SetAdmin($chat_id, $user_id)
     {
@@ -53,9 +72,13 @@ class BotDao extends AbstractDao
         return $res[0];
     }
 
+
+
+
+
 //endregion
 
-// region -------------------- Admins
+//region -------------------- Karma
 
     public function getTop($chat_id, $limit = 5)
     {
@@ -63,14 +86,33 @@ class BotDao extends AbstractDao
         return $this->select($query);
     }
 
-    public function Punish($user, $chat)
+    /**
+     * получить уровень кармы пользователя из чата
+     * @param $user_id
+     * @param $chat_id
+     * @return mixed
+     */
+    public function getUserLevel($user_id, $chat_id)
     {
-        return $this->HandleKarma("-", BOT_NAME, $user, $chat);
+        $query = "SELECT level FROM Karma WHERE user_id=" . $user_id . " AND chat_id=" . $chat_id;
+        $res = $this->select($query);
+        return $res;
     }
 
-//endregion
-
-//region -------------------- Karma
+    /**
+     * Добавляет запись с уровня кармы пользователя в чате.
+     * Если пользователь уже имеется с каким то левелом то левел обновится из параметра $level
+     * @param $user_id
+     * @param $chat_id
+     * @param $level
+     * @return mixed
+     */
+    public function setUserLevel($user_id, $chat_id, $level)
+    {
+        $query = "INSERT INTO `Karma` SET `user_id`=" . $user_id . ",`chat_id`=" . $chat_id . ",`level`=" . $level . " ON DUPLICATE KEY UPDATE `level`=" . $level;
+        $res = $this->insert($query);
+        return ($res === false) ? false : true;
+    }
 
     public function HandleKarma($dist, $from, $to, $chat_id)
     {
@@ -116,43 +158,14 @@ class BotDao extends AbstractDao
         return $output;
     }
 
-    /**
-     * получить уровень кармы пользователя из чата
-     * @param $user_id
-     * @param $chat_id
-     * @return mixed
-     */
-    public function getUserLevel($user_id, $chat_id)
+    public function Punish($user, $chat)
     {
-        $query = "SELECT level FROM Karma WHERE user_id=" . $user_id . " AND chat_id=" . $chat_id;
-        $res = $this->select($query);
-        return $res;
-    }
-
-    /**
-     * Добавляет запись с уровня кармы пользователя в чате.
-     * Если пользователь уже имеется с каким то левелом то левел обновится из параметра $level
-     * @param $user_id
-     * @param $chat_id
-     * @param $level
-     * @return mixed
-     */
-    public function setUserLevel($user_id, $chat_id, $level)
-    {
-        $query = "INSERT INTO `Karma` SET `user_id`=" . $user_id . ",`chat_id`=" . $chat_id . ",`level`=" . $level . " ON DUPLICATE KEY UPDATE `level`=" . $level;
-        $res = $this->insert($query);
-        return ($res === false) ? false : true;
+        return $this->HandleKarma("-", BOT_NAME, $user, $chat);
     }
 
 //endregion
 
 //region -------------------- Rewards
-
-    public function GetUserName($id)
-    {
-        $res = $this->select("SELECT username,firstname,lastname FROM Users WHERE id=" . $id);
-        return (!$res[0]) ? $res[1] : $res[0];
-    }
 
     public function handleRewards($currentCarma, $chat_id, $user_id)
     {
@@ -207,19 +220,6 @@ class BotDao extends AbstractDao
         return $this->select("SELECT type_id FROM Rewards WHERE user_id=" . $user_id . " AND group_id=" . $chat_id . " AND type_id>=2 AND type_id<=4");
     }
 
-    public function generateRewardDesc($chat_id, $min)
-    {
-        return "Карма в группе " . $this->GetGroupName($chat_id) . " превысило отметку в " . $min;
-    }
-
-//endregion
-
-    public function GetGroupName($id)
-    {
-        $res = $this->select("SELECT title FROM Chats WHERE id=" . $id);
-        return (!$res[0]) ? false : $res[0];
-    }
-
     public function updateReward($new_type_id, $old_type_id, $desc, $user_id, $chat_id)
     {
         $this->update("UPDATE Rewards SET type_id=" . $new_type_id . ", description='" . $desc . "' WHERE type_id=" . $old_type_id . " AND user_id=" . $user_id . " AND group_id=" . $chat_id);
@@ -239,6 +239,14 @@ class BotDao extends AbstractDao
     {
         $this->insert("INSERT INTO Rewards(type_id,user_id,group_id,description) VALUES (" . $new_type_id . "," . $user_id . "," . $chat_id . ",'" . $desc . "')");
     }
+
+    public function generateRewardDesc($chat_id, $min)
+    {
+        return "Карма в группе " . $this->GetGroupName($chat_id) . " превысило отметку в " . $min;
+    }
+
+//endregion
+
 
 }
 

@@ -102,17 +102,14 @@ class Request
     public static function execJson($method, $parameters)
     {
         if (!is_string($method)) {
-            error_log("Method name must be a string\n", 3, "/wwww/abrikoseg.ru/anfisa/my-errors.log");
             return false;
         }
 
         if (!$parameters) {
             $parameters = array();
         } else if (!is_array($parameters)) {
-            error_log("Parameters must be an array\n", 3, "/wwww/abrikoseg.ru/anfisa/my-errors.log");
             return false;
         }
-
 
         $parameters["method"] = $method;
 
@@ -126,7 +123,6 @@ class Request
         return self::exec_curl_request($handle);
     }
 
-
     public static function sendTyping($chat_id)
     {
         self::exec("sendChatAction", array('chat_id' => $chat_id, "action" => "typing"));
@@ -139,6 +135,15 @@ class Request
             $data = array_replace($data, $addition);
         }
         self::exec("sendMessage", $data);
+    }
+
+
+    public static function sendKeyboard($chat_id, $message, $keyboard)
+    {
+
+        $data = array('chat_id' => $chat_id, "text" => $message, 'reply_markup' => array(
+            'keyboard' => $keyboard));
+        self::execJson("sendMessage", $data);
     }
 
 }

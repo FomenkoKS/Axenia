@@ -1,10 +1,13 @@
 <?php
 require_once('../configs/axenia/config.php');
-require_once('util.php');
-require_once('AbstractDao.php');
+
+require_once('core/util.php');
+require_once('core/AbstractDao.php');
+require_once('core/Request.php');
+
 require_once('BotDao.php');
 require_once('Axenia.php');
-require_once('Request.php');
+
 $content = file_get_contents("php://input");
 $update = json_decode($content, true);
 
