@@ -1,6 +1,16 @@
 <?php
 
 return array(
+    "bot.name" =>
+        array(
+            "en" => "Axenia",
+            "ru" => "Аксинья"
+        ),
+    "bot.pong" =>
+        array(
+            "en" => "Pong",
+            "ru" => "Понг"
+        ),
     "chat.greetings" =>
         array(
             "en" => "Hi, everyone!",
@@ -24,13 +34,13 @@ return array(
         ),
     "karma.plus" =>
         array(
-            "en" => "<b>:giver(:k1)</b> give some karma to <b>:getter(:k2)</b>",
-            "ru" => "<b>:giver(:k1)</b> плюсанул в карму <b>:getter(:k2)</b>"
+            "en" => "<b>:from(:k1)</b> give some karma to <b>:to(:k2)</b>",
+            "ru" => "<b>:from(:k1)</b> плюсанул в карму <b>:to(:k2)</b>"
         ),
     "karma.minus" =>
         array(
-            "en" => "<b>:giver(:k1)</b> get some karma from <b>:getter(:k2)</b>",
-            "ru" => "<b>:giver(:k1)</b> минусанул в карму <  b>:getter(:k2)</b>"
+            "en" => "<b>:from(:k1)</b> get some karma from <b>:to(:k2)</b>",
+            "ru" => "<b>:from(:k1)</b> минусанул в карму <  b>:to(:k2)</b>"
         ),
     "karma.yourself" =>
         array(
@@ -41,10 +51,5 @@ return array(
         array(
             "en" => "I don't know him ¯\\_(ツ)_/¯",
             "ru" => "Я не знаю его ¯\\_(ツ)_/¯"
-        ),
-    "bot.pong" =>
-        array(
-            "en" => "Pong",
-            "ru" => "Понг"
         )
 );

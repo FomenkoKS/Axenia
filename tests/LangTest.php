@@ -6,4 +6,4 @@ require('../axenia/locale/Lang.php');
 Lang::init("ru");
 
 var_dump(Lang::message("user.pickChat", array("botName" => BOT_NAME)));
-var_dump(Lang::message("karma.plus", array("giver" => "formatq", "getter" => "abrikoseg", "k1" => "100", "k2" => "666")));
+var_dump(Lang::message("karma.plus", array("from" => "formatq", "to" => "abrikoseg", "k1" => "100", "k2" => "666")));
