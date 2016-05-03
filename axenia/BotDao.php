@@ -11,10 +11,14 @@ class BotDao extends AbstractDao
         return (!$res[0]) ? false : $res[0];
     }
 
-    public function AddUser($user_id, $username, $firstname, $lastname)
+    public function insertOrUpdateUser($user)
     {
-        $query = "INSERT INTO `Users` SET `id`='" . $user_id . "',`username`='" . $username . "',`firstname`='" . $firstname . "',`lastname`='" . $lastname . "' ON DUPLICATE KEY UPDATE `username`='" . $username . "' , `firstname`='" . $firstname . "' , `lastname`='" . $lastname . "'";
-        $this->insert($query);
+        $user_id = $user['id'];
+        $username = "'" . (isset($user['username']) ? $this->escape_mimic($user['username']) : '') . "'";
+        $firstname = "'" . (isset($user['first_name']) ? $this->escape_mimic($user['first_name']) : '') . "'";
+        $lastname = "'" . (isset($user['last_name']) ? $this->escape_mimic($user['last_name']) : '') . "'";
+        $query = "INSERT INTO Users (id, username, firstname, lastname) VALUES ($user_id,$username,$firstname,$lastname) ON DUPLICATE KEY UPDATE username=$username, firstname=$firstname, lastname=$lastname";
+        return $this->insert($query);
     }
 
     public function GetUserName($id)
@@ -44,8 +48,8 @@ class BotDao extends AbstractDao
     public function getLang($id, $chatType)
     {
         $table = $this->getTable($chatType);
-        if($table === false) return false;
-        
+        if ($table === false) return false;
+
         $res = $this->select("SELECT lang FROM " . $table . " WHERE id=" . $id);
 
         return !($res[0]) ? false : $res[0];
@@ -54,7 +58,7 @@ class BotDao extends AbstractDao
     public function setLang($id, $chatType, $lang)
     {
         $table = $this->getTable($chatType);
-        if($table === false) return false;
+        if ($table === false) return false;
 
         return $this->update("UPDATE " . $table . " SET lang = '" . $lang . "' WHERE id=" . $id);
     }
@@ -64,12 +68,12 @@ class BotDao extends AbstractDao
 
 // region -------------------- Chats
 
-    public function AddChat($chat_id, $title, $chatType)
+    public function addChat($chat_id, $title, $chatType)
     {
+        $title = "'" . (isset($title) ? $this->escape_mimic($title) : '') . "'";
         if (Util::isInEnum("group,supergroup", $chatType)) {
-            $query = "INSERT INTO `Chats` SET `id`=" . $chat_id . ",`title`='" . $title . "' ON DUPLICATE KEY UPDATE `title`='" . $title . "'";
-            $res = $this->insert($query);
-            return ($res === false) ? false : "Всем чмаффки в этом чатике.";
+            $query = "INSERT INTO Chats (id,title) VALUES ($chat_id,$title) ON DUPLICATE KEY UPDATE title=$title";
+            return $this->insert($query);
         }
         return false;
     }

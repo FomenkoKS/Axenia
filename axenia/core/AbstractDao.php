@@ -11,7 +11,7 @@ class AbstractDao
             self::$connection = new mysqli('localhost', MYSQL_USER, MYSQL_PASSWORD, MYSQL_DATABASE);
             /* проверка соединения */
             if (self::$connection->connect_errno) {
-                printf("Error connection: %s\n", self::$connection->connect_error);
+                error_log(printf("Error connection: %s\n", self::$connection->connect_error));
                 exit();
             }
             self::$connection->query("SET SESSION collation_connection = 'utf8_general_ci'");
@@ -40,7 +40,7 @@ class AbstractDao
                 }
             }
         } else {
-            error_log("Error query: %s\n %s\n", $query, $this->error());
+            error_log("Error query: ".$query."\n ".$this->error()."\n");
             return false;
         }
 
@@ -55,7 +55,7 @@ class AbstractDao
         if ($result) {
             return true;
         } else {
-            error_log("Error query: %s\n %s\n", $query, $this->error());
+            error_log("Error query: ".$query."\n ".$this->error()."\n");
             return false;
         }
     }

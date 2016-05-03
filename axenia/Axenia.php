@@ -27,7 +27,7 @@ class Axenia
         $from = $message['from'];
         $from_id = $from['id'];
 
-        $this->db->AddUser($from_id, $from['username'], $from['first_name'], $from['last_name']);
+        $this->db->insertOrUpdateUser($from);
 
         $lang = $this->db->getLang($chat_id, $chat['type']);
 
@@ -93,7 +93,7 @@ class Axenia
 
                     if (isset($message['reply_to_message'])) {
                         $replyUser = $message['reply_to_message']['from'];
-                        $this->db->AddUser($replyUser['id'], $replyUser['username'], $replyUser['first_name'], $replyUser['last_name']);
+                        $this->db->insertOrUpdateUser($replyUser);
 
                         if ($replyUser['username'] != BOT_NAME) {
                             Request::sendTyping($chat_id);
@@ -128,20 +128,18 @@ class Axenia
         if (isset($message['new_chat_member'])) {
             $newMember = $message['new_chat_member'];
             if (BOT_NAME == $newMember['username']) {
-                $chat = $message['chat'];
-                $output = $this->db->AddChat($chat_id, $chat['title'], $chat['type']);
-                if ($output !== false) {
+                $qrez = $this->db->addChat($chat_id, $chat['title'], $chat['type']);
+                if ($qrez !== false) {
                     Request::sendTyping($chat_id);
-                    Request::exec("sendMessage", array('chat_id' => $chat_id, "text" => $output, "parse_mode" => "Markdown"));
+                    Request::sendMessage($chat_id, array("text" => Lang::message('chat.greetings'), "parse_mode" => "Markdown"));
                 }
             } else {
-                $this->db->AddUser($newMember['id'], $newMember['username'], $newMember['first_name'], $newMember['last_name']);
+                $this->db->insertOrUpdateUser($newMember);
             }
         }
 
         if (isset($message['new_chat_title'])) {
-            $newtitle = $message['new_chat_title'];
-            $this->db->AddChat($chat_id, $newtitle, $chat = $message['chat']['type']);
+            $this->db->addChat($chat_id, $message['new_chat_title'], $chat['type']);
         }
 
         if (isset($message['sticker'])) {
