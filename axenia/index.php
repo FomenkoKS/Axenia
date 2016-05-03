@@ -5,6 +5,8 @@ require_once('core/util.php');
 require_once('core/AbstractDao.php');
 require_once('core/Request.php');
 
+require_once('locale/Lang.php');
+
 require_once('BotDao.php');
 require_once('Axenia.php');
 

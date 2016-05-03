@@ -5,6 +5,8 @@ require_once('../axenia/core/util.php');
 require_once('../axenia/core/AbstractDao.php');
 require_once('../axenia/core/Request.php');
 
+require_once('../axenia/locale/Lang.php');
+
 require_once('../axenia/BotDao.php');
 require_once('Zina.php');
 

@@ -24,6 +24,42 @@ class BotDao extends AbstractDao
     }
 
 
+    private function getTable($chatType)
+    {
+        if ($chatType == "private") {
+            $tableName = "Users";
+        } elseif (Util::isInEnum("group,supergroup", $chatType)) {
+            $tableName = "Chats";
+        }
+        if (!isset($tableName)) {
+            return false;
+        }
+        return $tableName;
+
+    }
+
+    /*
+     * Type of chat, can be either “private”, “group”, “supergroup” or “channel”
+     */
+    public function getLang($id, $chatType)
+    {
+        $table = $this->getTable($chatType);
+        if($table === false) return false;
+        
+        $res = $this->select("SELECT lang FROM " . $table . " WHERE id=" . $id);
+
+        return !($res[0]) ? false : $res[0];
+    }
+
+    public function setLang($id, $chatType, $lang)
+    {
+        $table = $this->getTable($chatType);
+        if($table === false) return false;
+
+        return $this->update("UPDATE " . $table . " SET lang = '" . $lang . "' WHERE id=" . $id);
+    }
+
+
 //endregion
 
 // region -------------------- Chats

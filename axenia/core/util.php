@@ -14,6 +14,27 @@ class Util
         return in_array($value, $enumArray);
     }
 
+    public static function posInEnum($enumString, $value)
+    {
+        $enumArray = explode(',', $enumString);
+        $res = array_search($value, $enumArray);
+        if ($res === false) {
+            return -1;
+        } else {
+            return $res;
+        }
+    }
+
+    public static function arrayInColumn($array)
+    {
+        $out = '';
+        foreach ($array as $item) {
+            $out .= $item;
+            $out .= "\r\n";
+        }
+        return $out;
+    }
+
 
     /**
      * Replaces variable placeholders inside a $str with any given $data. Each key in the $data array

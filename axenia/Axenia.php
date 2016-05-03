@@ -1,8 +1,8 @@
 <?php
 
-use BotDao;
-use Util;
-use Request;
+//use BotDao;
+//use Util;
+//use Request;
 
 class Axenia
 {
@@ -22,10 +22,19 @@ class Axenia
     public function processMessage($message)
     {
         $message_id = $message['message_id'];
-        $chat_id = $message['chat']['id'];
-        $from_id = $message['from']['id'];
+        $chat = $message['chat'];
+        $chat_id = $chat['id'];
+        $from = $message['from'];
+        $from_id = $from['id'];
 
-        $this->db->AddUser($from_id, $message['from']['username'], $message['from']['first_name'], $message['from']['last_name']);
+        $this->db->AddUser($from_id, $from['username'], $from['first_name'], $from['last_name']);
+
+        $lang = $this->db->getLang($chat_id, $chat['type']);
+
+        if ($lang === false) {
+            $lang = 'en';
+        }
+        Lang::init($lang);
 
         if (isset($message['text'])) {
             $text = str_replace("@" . BOT_NAME, "", $message['text']);
@@ -39,26 +48,46 @@ class Axenia
                         }
                     }
                     break;
-                case (preg_match('/^\/start/ui', $text, $matches) and $message['chat']['type'] == "private"):
-                    Request::sendTyping($chat_id);
-                    $out = "Привет! Меня зовут Аксинья, и я умею считать карму! Но надо <a href='telegram.me/" . BOT_NAME . "?startgroup=0'>выбрать чат</a>, в котором я буду это делать. ✌😊 ";
-                    Request::sendHtmlMessage($chat_id, $out);
+                case preg_match('/^\/lang/ui', $text, $matches):
+                    $array = array_values(Lang::$availableLangs);
+                    $replyKeyboardMarkup = array("keyboard" => array($array), "selective" => true, "one_time_keyboard" => true);
+                    $text = Lang::message('chat.lang.start', array("langs" => Util::arrayInColumn($array)));
+                    Request::sendMessage($chat_id, array("text" => $text, "reply_to_message_id" => $message_id, "reply_markup" => $replyKeyboardMarkup));
                     break;
+                case (($pos = array_search($text, Lang::$availableLangs)) !== false):
+                    $qrez = $this->db->setLang($chat_id, $chat['type'], $pos);
+                    $replyKeyboardHide = array("hide_keyboard" => true, "selective" => true);
+                    $text = Lang::message('bot.error');
+                    if ($qrez) {
+                        Lang::init($pos);
+                        $text = Lang::message('chat.lang.end');
+                    }
+                    Request::sendMessage($chat_id, array("text" => $text, "reply_to_message_id" => $message_id, "reply_markup" => $replyKeyboardHide));
+                    break;
+
+                case (preg_match('/^\/start/ui', $text, $matches) and $chat['type'] == "private"):
+                    Request::sendTyping($chat_id);
+                    Request::sendHtmlMessage($chat_id, Lang::message('chat.greetings'));
+                    sleep(1);
+                    Request::sendHtmlMessage($chat_id, Lang::message('user.pickChat', array('botName' => BOT_NAME)));
+                    break;
+
                 case preg_match('/^\/top/ui', $text, $matches):
                 case preg_match('/^\/Stats/ui', $text, $matches):
                     Request::sendTyping($chat_id);
 
-                    $out = "<b>Самые длинные кармописюны чата «" . $this->db->GetGroupName($chat_id) . "»:</b>\r\n";
+                    $out = Lang::message('karma.top.title', array("chatName" => $this->db->GetGroupName($chat_id)));
                     $top = $this->db->getTop($chat_id, 5);
                     $a = array_chunk($top, 4);
                     foreach ($a as $value) {
-                        $out .= ($value[0] == "") ? $value[1] . " " . $value[2] : $value[0];
-                        $out .= " (" . $value[3] . " см)\r\n";
+                        $username = ($value[0] == "") ? $value[1] . " " . $value[2] : $value[0];
+                        $out .= Lang::message('karma.top.row', array("username" => $username, "karma" => $value[3]));
                     }
-                    $out .= "<a href='" . PATH_TO_SITE . "?group_id=" . $chat_id . "'>Подробнее</a>";
-                    Request::sendHtmlMessage($chat_id, $out);
+                    $out .= Lang::message('karma.top.footer', array("pathToSite" => PATH_TO_SITE, "chatId" => $chat_id));
 
+                    Request::sendHtmlMessage($chat_id, $out);
                     break;
+
                 case preg_match('/^(\+|\-|👍|👎) ?([\s\S]+)?/ui', $text, $matches):
                     $dist = Util::isInEnum("+,👍", $matches[1]) ? "+" : "-";
 
@@ -77,7 +106,7 @@ class Axenia
                             if ($to) {
                                 Request::sendHtmlMessage($chat_id, $this->db->HandleKarma($dist, $from_id, $to, $chat_id));
                             } else {
-                                Request::sendHtmlMessage($chat_id, "Я его не знаю, считать карму не буду", array('reply_to_message_id' => $message_id));
+                                Request::sendHtmlMessage($chat_id, Lang::message('karma.unknownUser'), array('reply_to_message_id' => $message_id));
                             }
                         }
 
@@ -127,4 +156,5 @@ class Axenia
     }
 
 }
+
 ?>
