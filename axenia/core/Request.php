@@ -94,11 +94,6 @@ class Request
         return $response;
     }
 
-    public static function sendTyping($chat_id)
-    {
-        self::exec("sendChatAction", array('chat_id' => $chat_id, "action" => "typing"));
-    }
-
     public static function exec($method, $parameters)
     {
         if (!is_string($method)) {
@@ -128,9 +123,14 @@ class Request
         return self::exec_curl_request($handle);
     }
 
-    public static function sendMessage($chat_id, $addition = NULL)
+    public static function sendTyping($chat_id)
     {
-        $data = array('chat_id' => $chat_id);
+        self::exec("sendChatAction", array('chat_id' => $chat_id, "action" => "typing"));
+    }
+
+    public static function sendMessage($chat_id, $text, $addition = NULL)
+    {
+        $data = array('chat_id' => $chat_id, 'text' => $text);
         if ($addition != null) {
             $data = array_replace($data, $addition);
         }

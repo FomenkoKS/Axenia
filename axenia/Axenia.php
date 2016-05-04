@@ -23,8 +23,9 @@ class Axenia
     {
         $message_id = $message['message_id'];
         $chat = $message['chat'];
-        $chat_id = $chat['id'];
         $from = $message['from'];
+
+        $chat_id = $chat['id'];
         $from_id = $from['id'];
 
         $this->db->insertOrUpdateUser($from);
@@ -48,13 +49,12 @@ class Axenia
                         }
                     }
                     break;
+
                 case preg_match('/^\/lang/ui', $text, $matches):
-                    $array = array_values(Lang::$availableLangs);
-                    $replyKeyboardMarkup = array("keyboard" => array($array),"resize_keyboard"=>true, "selective" => true, "one_time_keyboard" => true);
-                    $text = Lang::message('chat.lang.start', array("langs" => Util::arrayInColumn($array)));
-                    Request::sendMessage($chat_id, array("text" => $text, "reply_to_message_id" => $message_id, "reply_markup" => $replyKeyboardMarkup));
+                    $this->sendLanguageKeyboard($chat_id, $message_id);
                     break;
                 case (($pos = array_search($text, Lang::$availableLangs)) !== false):
+                    Request::sendTyping($chat_id);
                     $qrez = $this->db->setLang($chat_id, $chat['type'], $pos);
                     $replyKeyboardHide = array("hide_keyboard" => true, "selective" => true);
                     $text = Lang::message('bot.error');
@@ -62,24 +62,19 @@ class Axenia
                         Lang::init($pos);
                         $text = Lang::message('chat.lang.end');
                     }
-                    Request::sendMessage($chat_id, array("text" => $text, "reply_to_message_id" => $message_id, "reply_markup" => $replyKeyboardHide));
+                    Request::sendMessage($chat_id, $text, array("reply_to_message_id" => $message_id, "reply_markup" => $replyKeyboardHide));
                     sleep(1);
-                    if($message['chat']['type']=="private")Request::sendHtmlMessage($chat_id, Lang::message('user.pickChat', array('botName' => BOT_NAME)));
-
+                    if ($chat['type'] == "private") {
+                        Request::sendHtmlMessage($chat_id, Lang::message('user.pickChat', array('botName' => BOT_NAME)));
+                    }
                     break;
 
                 case (preg_match('/^\/start/ui', $text, $matches) and $chat['type'] == "private"):
                     Request::sendTyping($chat_id);
                     Request::sendHtmlMessage($chat_id, Lang::message('chat.greetings'));
 
-
-                    $array = array_values(Lang::$availableLangs);
-                    $replyKeyboardMarkup = array("keyboard" => array($array),"resize_keyboard"=>true, "selective" => true, "one_time_keyboard" => true);
-                    $text = Lang::message('chat.lang.start', array("langs" => Util::arrayInColumn($array)));
-                    Request::sendMessage($chat_id, array("text" => $text, "reply_to_message_id" => $message_id, "reply_markup" => $replyKeyboardMarkup));
-
+                    $this->sendLanguageKeyboard($chat_id, $message_id);
                     break;
-
                 case preg_match('/^\/top/ui', $text, $matches):
                 case preg_match('/^\/Stats/ui', $text, $matches):
                     Request::sendTyping($chat_id);
@@ -135,15 +130,15 @@ class Axenia
         if (isset($message['new_chat_member'])) {
             $newMember = $message['new_chat_member'];
             if (BOT_NAME == $newMember['username']) {
-                $pos= $this->db->getLang($message['from']['id'],"private");
+                $pos = $this->db->getLang($message['from']['id'], "private");
                 $this->db->setLang($chat_id, $chat['type'], $pos);
                 sleep(1);
                 $qrez = $this->db->addChat($chat_id, $chat['title'], $chat['type']);
                 if ($qrez !== false) {
                     //получение языка добавителя
-                     Request::sendTyping($chat_id);
+                    Request::sendTyping($chat_id);
                     Lang::init($pos);
-                    Request::sendMessage($chat_id, array("text" => Lang::message('chat.greetings'), "parse_mode" => "Markdown"));
+                    Request::sendMessage($chat_id, Lang::message('chat.greetings'), array("parse_mode" => "Markdown"));
                 }
             } else {
                 $this->db->insertOrUpdateUser($newMember);
@@ -161,8 +156,18 @@ class Axenia
         if (isset($message['left_chat_member'])) {
             //не видит себя когда его удаляют из чата
             $member = $message['left_chat_member'];
-            if (BOT_NAME == $member['username']) $this->db->DeleteChat($chat_id);
+            if (BOT_NAME == $member['username']) {
+                $this->db->DeleteChat($chat_id);
+            }
         }
+    }
+
+    public function sendLanguageKeyboard($chat_id, $reply_to_message_id)
+    {
+        $array = array_values(Lang::$availableLangs);
+        $replyKeyboardMarkup = array("keyboard" => array($array), "resize_keyboard" => true, "selective" => true, "one_time_keyboard" => true);
+        $text = Lang::message('chat.lang.start', array("langs" => Util::arrayInColumn($array)));
+        Request::sendMessage($chat_id, $text, array("reply_to_message_id" => $reply_to_message_id, "reply_markup" => $replyKeyboardMarkup));
     }
 
 }

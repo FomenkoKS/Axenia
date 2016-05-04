@@ -7,6 +7,7 @@ class BotDao extends AbstractDao
 
     public function GetUserID($username)
     {
+        $username = "'" . (isset($username) ? $this->escape_mimic($username) : '') . "'";
         $res = $this->select("SELECT id FROM Users WHERE username='" . str_ireplace("@", "", $username) . "'");
         return (!$res[0]) ? false : $res[0];
     }
@@ -81,8 +82,7 @@ class BotDao extends AbstractDao
     public function DeleteChat($chat_id)
     {
         $query = "DELETE FROM `Chats` WHERE `id`=" . $chat_id;
-        $this->delete($query);
-        return true;
+        return $this->delete($query);
     }
 
 
@@ -262,7 +262,7 @@ class BotDao extends AbstractDao
 
     public function updateReward($new_type_id, $old_type_id, $desc, $user_id, $chat_id)
     {
-        $this->update("UPDATE Rewards SET type_id=" . $new_type_id . ", description='" . $desc . "' WHERE type_id=" . $old_type_id . " AND user_id=" . $user_id . " AND group_id=" . $chat_id);
+        return $this->update("UPDATE Rewards SET type_id=" . $new_type_id . ", description='" . $desc . "' WHERE type_id=" . $old_type_id . " AND user_id=" . $user_id . " AND group_id=" . $chat_id);
     }
 
     public function getRewardMessage($user_id, $title)
@@ -272,12 +272,12 @@ class BotDao extends AbstractDao
 
     public function deleteReward($user_id, $chat_id)
     {
-        $this->delete("DELETE FROM Rewards WHERE user_id=" . $user_id . " AND group_id=" . $chat_id . " AND (type_id>=2 AND type_id<=4)");
+        return $this->delete("DELETE FROM Rewards WHERE user_id=" . $user_id . " AND group_id=" . $chat_id . " AND (type_id>=2 AND type_id<=4)");
     }
 
     public function insertReward($new_type_id, $desc, $user_id, $chat_id)
     {
-        $this->insert("INSERT INTO Rewards(type_id,user_id,group_id,description) VALUES (" . $new_type_id . "," . $user_id . "," . $chat_id . ",'" . $desc . "')");
+        return $this->insert("INSERT INTO Rewards(type_id,user_id,group_id,description) VALUES (" . $new_type_id . "," . $user_id . "," . $chat_id . ",'" . $desc . "')");
     }
 
     public function generateRewardDesc($chat_id, $min)
