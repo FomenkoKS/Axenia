@@ -50,7 +50,7 @@ class Axenia
                     break;
                 case preg_match('/^\/lang/ui', $text, $matches):
                     $array = array_values(Lang::$availableLangs);
-                    $replyKeyboardMarkup = array("keyboard" => array($array), "selective" => true, "one_time_keyboard" => true);
+                    $replyKeyboardMarkup = array("keyboard" => array($array),"resize_keyboard"=>true, "selective" => true, "one_time_keyboard" => true);
                     $text = Lang::message('chat.lang.start', array("langs" => Util::arrayInColumn($array)));
                     Request::sendMessage($chat_id, array("text" => $text, "reply_to_message_id" => $message_id, "reply_markup" => $replyKeyboardMarkup));
                     break;

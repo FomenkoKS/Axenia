@@ -48,7 +48,7 @@ return array(
         ),
     "karma.top.title2" =>
         array(
-            "en" => "<b>Top list of Karma owners in the «:chatName»:</b>\r\n",
+            "en" => "<b>Top list of karma owners in the «:chatName»:</b>\r\n",
             "ru" => "<b>Самые почётные люди чата «:chatName»:</b>\r\n"
         ),
     "karma.top.row" =>
