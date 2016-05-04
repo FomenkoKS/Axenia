@@ -63,13 +63,21 @@ class Axenia
                         $text = Lang::message('chat.lang.end');
                     }
                     Request::sendMessage($chat_id, array("text" => $text, "reply_to_message_id" => $message_id, "reply_markup" => $replyKeyboardHide));
+                    sleep(1);
+                    if($message['chat']['type']=="private")Request::sendHtmlMessage($chat_id, Lang::message('user.pickChat', array('botName' => BOT_NAME)));
+
                     break;
 
                 case (preg_match('/^\/start/ui', $text, $matches) and $chat['type'] == "private"):
                     Request::sendTyping($chat_id);
                     Request::sendHtmlMessage($chat_id, Lang::message('chat.greetings'));
-                    sleep(1);
-                    Request::sendHtmlMessage($chat_id, Lang::message('user.pickChat', array('botName' => BOT_NAME)));
+
+
+                    $array = array_values(Lang::$availableLangs);
+                    $replyKeyboardMarkup = array("keyboard" => array($array),"resize_keyboard"=>true, "selective" => true, "one_time_keyboard" => true);
+                    $text = Lang::message('chat.lang.start', array("langs" => Util::arrayInColumn($array)));
+                    Request::sendMessage($chat_id, array("text" => $text, "reply_to_message_id" => $message_id, "reply_markup" => $replyKeyboardMarkup));
+
                     break;
 
                 case preg_match('/^\/top/ui', $text, $matches):
@@ -114,7 +122,6 @@ class Axenia
                     break;
                 case preg_match('/сис(ек|ьки|ечки|и|яндры)/ui', $text, $matches):
                     Request::exec("forwardMessage", array('chat_id' => $chat_id, "from_chat_id" => "@superboobs", "message_id" => rand(1, 2700)));
-
                     break;
                 case preg_match('/^(\/nash) ([\s\S]+)/ui', $text, $matches):
                     if (Util::isInEnum(ADMIN_IDS, $from_id)) {

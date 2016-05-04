@@ -38,7 +38,7 @@ return array(
         ),
     "user.pickChat" =>
         array(
-            "en" => "So, first, you need <a href='telegram.me/:botName?startgroup=0'>choose а group</a> where I'll be counting karma. ✌😊",
+            "en" => "So, you need <a href='telegram.me/:botName?startgroup=0'>choose а group</a> where I'll be counting karma. ✌😊",
             "ru" => "Итак, надо <a href='telegram.me/:botName?startgroup=0'>выбрать чат</a>, где я буду считать карму. ✌😊"
         ),
     "karma.top.title" =>

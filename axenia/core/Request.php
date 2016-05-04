@@ -34,6 +34,30 @@ class Request
         return true;
     }
 
+    public static function execJson($method, $parameters)
+    {
+        if (!is_string($method)) {
+            return false;
+        }
+
+        if (!$parameters) {
+            $parameters = array();
+        } else if (!is_array($parameters)) {
+            return false;
+        }
+
+        $parameters["method"] = $method;
+
+        $handle = curl_init(self::$url);
+        curl_setopt($handle, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($handle, CURLOPT_CONNECTTIMEOUT, 5);
+        curl_setopt($handle, CURLOPT_TIMEOUT, 60);
+        curl_setopt($handle, CURLOPT_POSTFIELDS, json_encode($parameters));
+        curl_setopt($handle, CURLOPT_HTTPHEADER, array("Content-Type: application/json"));
+
+        return self::exec_curl_request($handle);
+    }
+
     private static function exec_curl_request($handle)
     {
         $response = curl_exec($handle);
@@ -70,6 +94,11 @@ class Request
         return $response;
     }
 
+    public static function sendTyping($chat_id)
+    {
+        self::exec("sendChatAction", array('chat_id' => $chat_id, "action" => "typing"));
+    }
+
     public static function exec($method, $parameters)
     {
         if (!is_string($method)) {
@@ -99,35 +128,6 @@ class Request
         return self::exec_curl_request($handle);
     }
 
-    public static function execJson($method, $parameters)
-    {
-        if (!is_string($method)) {
-            return false;
-        }
-
-        if (!$parameters) {
-            $parameters = array();
-        } else if (!is_array($parameters)) {
-            return false;
-        }
-
-        $parameters["method"] = $method;
-
-        $handle = curl_init(self::$url);
-        curl_setopt($handle, CURLOPT_RETURNTRANSFER, true);
-        curl_setopt($handle, CURLOPT_CONNECTTIMEOUT, 5);
-        curl_setopt($handle, CURLOPT_TIMEOUT, 60);
-        curl_setopt($handle, CURLOPT_POSTFIELDS, json_encode($parameters));
-        curl_setopt($handle, CURLOPT_HTTPHEADER, array("Content-Type: application/json"));
-
-        return self::exec_curl_request($handle);
-    }
-
-    public static function sendTyping($chat_id)
-    {
-        self::exec("sendChatAction", array('chat_id' => $chat_id, "action" => "typing"));
-    }
-
     public static function sendMessage($chat_id, $addition = NULL)
     {
         $data = array('chat_id' => $chat_id);
@@ -146,13 +146,5 @@ class Request
         self::exec("sendMessage", $data);
     }
 
-
-    public static function sendKeyboard($chat_id, $message, $keyboard)
-    {
-
-        $data = array('chat_id' => $chat_id, "text" => $message, 'reply_markup' => array(
-            'keyboard' => $keyboard));
-        self::execJson("sendMessage", $data);
-    }
 
 }
