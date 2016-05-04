@@ -135,9 +135,14 @@ class Axenia
         if (isset($message['new_chat_member'])) {
             $newMember = $message['new_chat_member'];
             if (BOT_NAME == $newMember['username']) {
+                $pos= $this->db->getLang($message['from']['id'],"private");
+                $this->db->setLang($chat_id, $chat['type'], $pos);
+                sleep(1);
                 $qrez = $this->db->addChat($chat_id, $chat['title'], $chat['type']);
                 if ($qrez !== false) {
-                    Request::sendTyping($chat_id);
+                    //получение языка добавителя
+                     Request::sendTyping($chat_id);
+                    Lang::init($pos);
                     Request::sendMessage($chat_id, array("text" => Lang::message('chat.greetings'), "parse_mode" => "Markdown"));
                 }
             } else {
