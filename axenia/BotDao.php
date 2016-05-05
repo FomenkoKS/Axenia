@@ -8,7 +8,8 @@ class BotDao extends AbstractDao
     public function GetUserID($username)
     {
         $username = "'" . (isset($username) ? $this->escape_mimic($username) : '') . "'";
-        $res = $this->select("SELECT id FROM Users WHERE username='" . str_ireplace("@", "", $username) . "'");
+        $username = str_ireplace("@", "", $username);
+        $res = $this->select("SELECT id FROM Users WHERE username=$username");
         return (!$res[0]) ? false : $res[0];
     }
 
