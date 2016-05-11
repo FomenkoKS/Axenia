@@ -37,8 +37,10 @@ class Axenia
         }
         Lang::init($lang);
 
-        if (isset($message['text'])) {
-            $text = str_replace("@" . BOT_NAME, "", $message['text']);
+        if (isset($message['text']) || isset($message['sticker'])) {
+            if (isset($message['sticker'])) {
+                $text = $message['sticker']['emoji'];
+            }else $text = str_replace("@" . BOT_NAME, "", $message['text']);
             switch (true) {
                 case preg_match('/^(\/set) @([\w]+) (-?\d+)/ui ', $text, $matches):
                     if (Util::isInEnum(ADMIN_IDS, $from_id)) {
@@ -136,7 +138,7 @@ class Axenia
         if (isset($message['new_chat_member'])) {
             $newMember = $message['new_chat_member'];
             if (BOT_NAME == $newMember['username']) {
-                $qrez=$this->db->addChat($chat_id, $chat['title'], $chat['type'], $from_id);
+                $qrez = $this->db->addChat($chat_id, $chat['title'], $chat['type'], $from_id);
                 if ($qrez !== false) {
                     Request::sendTyping($chat_id);
                     Request::sendMessage($chat_id, array("text" => Lang::message('chat.greetings'), "parse_mode" => "Markdown"));
@@ -148,10 +150,6 @@ class Axenia
 
         if (isset($message['new_chat_title'])) {
             $this->db->addChat($chat_id, $message['new_chat_title'], $chat['type'], $from_id);
-        }
-
-        if (isset($message['sticker'])) {
-            //обработка получения стикеров
         }
 
         if (isset($message['left_chat_member'])) {
