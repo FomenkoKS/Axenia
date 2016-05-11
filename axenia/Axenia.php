@@ -53,6 +53,7 @@ class Axenia
                 case preg_match('/^\/lang/ui', $text, $matches):
                     $this->sendLanguageKeyboard($chat_id, $message_id);
                     break;
+
                 case (($pos = array_search($text, Lang::$availableLangs)) !== false):
                     Request::sendTyping($chat_id);
                     $qrez = $this->db->setLang($chat_id, $chat['type'], $pos);
@@ -75,6 +76,11 @@ class Axenia
 
                     $this->sendLanguageKeyboard($chat_id, $message_id);
                     break;
+
+                case (preg_match('/^\/start/ui', $text, $matches) and $chat['type'] != "private"):
+                    $this->db->addChat($chat_id, $chat['title'], $chat['type'], $from_id);
+                    break;
+
                 case preg_match('/^\/top/ui', $text, $matches):
                 case preg_match('/^\/Stats/ui', $text, $matches):
                     Request::sendTyping($chat_id);
@@ -130,15 +136,10 @@ class Axenia
         if (isset($message['new_chat_member'])) {
             $newMember = $message['new_chat_member'];
             if (BOT_NAME == $newMember['username']) {
-                $pos = $this->db->getLang($message['from']['id'], "private");
-                $this->db->setLang($chat_id, $chat['type'], $pos);
-                sleep(1);
-                $qrez = $this->db->addChat($chat_id, $chat['title'], $chat['type']);
+                $qrez=$this->db->addChat($chat_id, $chat['title'], $chat['type'], $from_id);
                 if ($qrez !== false) {
-                    //получение языка добавителя
                     Request::sendTyping($chat_id);
-                    Lang::init($pos);
-                    Request::sendMessage($chat_id, Lang::message('chat.greetings'), array("parse_mode" => "Markdown"));
+                    Request::sendMessage($chat_id, array("text" => Lang::message('chat.greetings'), "parse_mode" => "Markdown"));
                 }
             } else {
                 $this->db->insertOrUpdateUser($newMember);
@@ -146,7 +147,7 @@ class Axenia
         }
 
         if (isset($message['new_chat_title'])) {
-            $this->db->addChat($chat_id, $message['new_chat_title'], $chat['type']);
+            $this->db->addChat($chat_id, $message['new_chat_title'], $chat['type'], $from_id);
         }
 
         if (isset($message['sticker'])) {

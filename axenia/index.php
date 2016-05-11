@@ -1,5 +1,5 @@
 <?php
-require_once('../configs/axenia/config.php');
+require_once('../configs/format_fm/config.php');
 
 require_once('core/util.php');
 require_once('core/AbstractDao.php');
