@@ -59,7 +59,7 @@ return array(
         array(
             "en" => "<b>Top list of karma owners in the «:chatName»:</b>\r\n",
             "ru" => "<b>Самые почётные люди чата «:chatName»:</b>\r\n",
-            "ruUN" => "<b>Самые почётные люди чата «:chatName»:</b>\r\n"
+            "ruUN" => "<b>Самые охуенные люди чата «:chatName»:</b>\r\n"
         ),
     "karma.top.row" =>
         array(
@@ -89,12 +89,12 @@ return array(
         array(
             "en" => "<b>:from(:k1)</b> get some karma from <b>:to(:k2)</b>",
             "ru" => "<b>:from(:k1)</b> минусанул в карму <b>:to(:k2)</b>",
-            "ruUN" => "<b>:from(:k1)</b> минусанул в карму <b>:to(:k2)</b>"
+            "ruUN" => "<b>:from(:k1)</b> насрал в карму <b>:to(:k2)</b>"
         ),
     "karma.yourself" =>
         array(
             "en" => "Don't do it again!",
-            "ru" => "Давай без кармадрочерства",
+            "ru" => "Больше так не делай",
             "ruUN" => "Давай без кармадрочерства"
         ),
     "karma.unknownUser" =>
