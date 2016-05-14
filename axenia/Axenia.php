@@ -40,7 +40,9 @@ class Axenia
         if (isset($message['text']) || isset($message['sticker'])) {
             if (isset($message['sticker'])) {
                 $text = $message['sticker']['emoji'];
-            }else $text = str_replace("@" . BOT_NAME, "", $message['text']);
+            } else {
+                $text = str_replace("@" . BOT_NAME, "", $message['text']);
+            }
             switch (true) {
                 case preg_match('/^(\/set) @([\w]+) (-?\d+)/ui ', $text, $matches):
                     if (Util::isInEnum(ADMIN_IDS, $from_id)) {
@@ -141,7 +143,7 @@ class Axenia
                 $qrez = $this->db->addChat($chat_id, $chat['title'], $chat['type'], $from_id);
                 if ($qrez !== false) {
                     Request::sendTyping($chat_id);
-                    Request::sendMessage($chat_id, array("text" => Lang::message('chat.greetings'), "parse_mode" => "Markdown"));
+                    Request::sendMessage($chat_id, Lang::message('chat.greetings'), array("parse_mode" => "Markdown"));
                 }
             } else {
                 $this->db->insertOrUpdateUser($newMember);
