@@ -5,7 +5,7 @@ class BotDao extends AbstractDao
 
 // region -------------------- Users
 
-    public function GetUserID($username)
+    public function getUserID($username)
     {
         $username = "'" . (isset($username) ? $this->escape_mimic($username) : '') . "'";
         $username = str_ireplace("@", "", $username);
@@ -23,7 +23,7 @@ class BotDao extends AbstractDao
         return $this->insert($query);
     }
 
-    public function GetUserName($id)
+    public function getUserName($id)
     {
         $res = $this->select("SELECT username,firstname,lastname FROM Users WHERE id=" . $id);
         return (!$res[0]) ? $res[1] : $res[0];
@@ -87,14 +87,14 @@ class BotDao extends AbstractDao
         return false;
     }
 
-    public function DeleteChat($chat_id)
+    public function deleteChat($chat_id)
     {
         $query = "DELETE FROM `Chats` WHERE `id`=" . $chat_id;
         return $this->delete($query);
     }
 
 
-    public function GetGroupName($id)
+    public function getGroupName($id)
     {
         $res = $this->select("SELECT title FROM Chats WHERE id=" . $id);
         return (!$res[0]) ? false : $res[0];
@@ -105,7 +105,7 @@ class BotDao extends AbstractDao
 
 // region -------------------- Admins
 
-    public function SetAdmin($chat_id, $user_id)
+    public function insertAdmin($chat_id, $user_id)
     {
         if ($user_id !== false) {
             $res = $this->insert("INSERT INTO `Admins` SET `user_id`='" . $user_id . "',`chat_id`=" . $chat_id);
@@ -114,7 +114,7 @@ class BotDao extends AbstractDao
         return "Пользователь не найден";
     }
 
-    public function CheckAdmin($chat_id, $user_id)
+    public function checkAdmin($chat_id, $user_id)
     {
         $res = $this->select("SELECT id FROM Admins WHERE chat_id=" . $chat_id . " AND user_id=" . $user_id);
         return $res[0];
@@ -162,7 +162,7 @@ class BotDao extends AbstractDao
         return ($res === false) ? false : true;
     }
 
-    public function HandleKarma($dist, $from, $to, $chat_id)
+    public function handleKarma($dist, $from, $to, $chat_id)
     {
         $fromLevel = 0;
         if ($from == $to) return "Давай <b>без</b> кармадрочерства";
@@ -178,7 +178,7 @@ class BotDao extends AbstractDao
             if ($fromLevel < 0) {
                 return "Ты <b>не можешь</b> голосовать с отрицательной кармой";
             };
-            $output = "<b>" . $this->GetUserName($from) . " (" . $fromLevel . ")</b>";
+            $output = "<b>" . $this->getUserName($from) . " (" . $fromLevel . ")</b>";
         } else {
             $output = "<b>Аксинья</b>";
         }
@@ -197,7 +197,7 @@ class BotDao extends AbstractDao
                 $result = ($from != BOT_NAME) ? round($toLevel - $fromLevelSqrt, 1) : $toLevel - 0.1;
                 break;
         }
-        $output .= "<b>" . $this->GetUserName($to) . " (" . $result . ")</b>";
+        $output .= "<b>" . $this->getUserName($to) . " (" . $result . ")</b>";
         $this->setUserLevel($to, $chat_id, $result);
 
         //проверка наград
@@ -206,9 +206,9 @@ class BotDao extends AbstractDao
         return $output;
     }
 
-    public function Punish($user, $chat)
+    public function punishUser($user_id, $chat_id)
     {
-        return $this->HandleKarma("-", BOT_NAME, $user, $chat);
+        return $this->handleKarma("-", BOT_NAME, $user_id, $chat_id);
     }
 
 //endregion
@@ -290,7 +290,7 @@ class BotDao extends AbstractDao
 
     public function generateRewardDesc($chat_id, $min)
     {
-        return "Карма в группе " . $this->GetGroupName($chat_id) . " превысило отметку в " . $min;
+        return "Карма в группе " . $this->getGroupName($chat_id) . " превысило отметку в " . $min;
     }
 
 //endregion

@@ -69,7 +69,7 @@ class Zina
                 case preg_match('/^\/Stats/ui', $text, $matches):
                     Request::sendTyping($chat_id);
 
-                    $out = Lang::message('karma.top.title2', array("chatName" => $this->db->GetGroupName($chat_id)));
+                    $out = Lang::message('karma.top.title2', array("chatName" => $this->db->getGroupName($chat_id)));
                     $top = $this->db->getTop($chat_id, 5);
                     $a = array_chunk($top, 4);
                     foreach ($a as $value) {
@@ -90,14 +90,14 @@ class Zina
 
                         if ($replyUser['username'] != BOT_NAME) {
                             Request::sendTyping($chat_id);
-                            $output = $this->db->HandleKarma($dist, $from_id, $replyUser['id'], $chat_id);
+                            $output = $this->db->handleKarma($dist, $from_id, $replyUser['id'], $chat_id);
                             Request::sendHtmlMessage($chat_id, $output);
                         }
                     } else {
                         if (preg_match('/@([\w]+)/ui', $matches[2], $user)) {
-                            $to = $this->db->GetUserID($user[1]);
+                            $to = $this->db->getUserID($user[1]);
                             if ($to) {
-                                Request::sendHtmlMessage($chat_id, $this->db->HandleKarma($dist, $from_id, $to, $chat_id));
+                                Request::sendHtmlMessage($chat_id, $this->db->handleKarma($dist, $from_id, $to, $chat_id));
                             } else {
                                 Request::sendHtmlMessage($chat_id, Lang::message('karma.unknownUser'), array('reply_to_message_id' => $message_id));
                             }
@@ -138,7 +138,7 @@ class Zina
             //не видит себя когда его удаляют из чата
             $member = $message['left_chat_member'];
             if (BOT_NAME == $member['username']) {
-                $this->db->DeleteChat($chat_id);
+                $this->db->deleteChat($chat_id);
             }
         }
     }
