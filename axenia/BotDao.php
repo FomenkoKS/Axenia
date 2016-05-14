@@ -29,40 +29,30 @@ class BotDao extends AbstractDao
         return (!$res[0]) ? $res[1] : $res[0];
     }
 
+//endregion
 
-    private function getTable($chatType)
+// region -------------------- Lang
+
+    public function getChatLang($chat_id)
     {
-        if ($chatType == "private") {
-            $tableName = "Users";
-        } elseif (Util::isInEnum("group,supergroup", $chatType)) {
-            $tableName = "Chats";
-        }
-        if (!isset($tableName)) {
-            return false;
-        }
-        return $tableName;
-
-    }
-
-    /*
-     * Type of chat, can be either “private”, “group”, “supergroup” or “channel”
-     */
-    public function getLang($id, $chatType)
-    {
-        $table = $this->getTable($chatType);
-        if ($table === false) return false;
-
-        $res = $this->select("SELECT lang FROM " . $table . " WHERE id=" . $id);
-
+        $res = $this->select("SELECT lang FROM Chats WHERE id=" . $chat_id);
         return !($res[0]) ? false : $res[0];
     }
 
-    public function setLang($id, $chatType, $lang)
+    public function getUserLang($user_id)
     {
-        $table = $this->getTable($chatType);
-        if ($table === false) return false;
+        $res = $this->select("SELECT lang FROM Users WHERE id=" . $user_id);
+        return !($res[0]) ? false : $res[0];
+    }
 
-        return $this->update("UPDATE " . $table . " SET lang = '" . $lang . "' WHERE id=" . $id);
+    public function setChatLang($chat_id, $lang)
+    {
+        return $this->update("UPDATE Chats SET lang = '" . $lang . "' WHERE id=" . $chat_id);
+    }
+
+    public function setUserLang($user_id, $lang)
+    {
+        return $this->update("UPDATE Users SET lang = '" . $lang . "' WHERE id=" . $user_id);
     }
 
 
@@ -70,21 +60,11 @@ class BotDao extends AbstractDao
 
 // region -------------------- Chats
 
-    public function addChat($chat_id, $title, $chatType, $adder_id)
+    public function insertOrUpdateChat($chat_id, $title)
     {
         $title = "'" . (isset($title) ? $this->escape_mimic($title) : '') . "'";
-        if (Util::isInEnum("group,supergroup", $chatType)) {
-            $query = "INSERT INTO Chats (id,title) VALUES ($chat_id,$title) ON DUPLICATE KEY UPDATE title=$title";
-            $res=$this->insert($query);
-            //получение языка добавителя
-            $pos= $this->getLang($adder_id,"private");
-            $this->setLang($chat_id, $chatType, $pos);
-            Lang::init($pos);
-
-            return $res;
-        }
-
-        return false;
+        $query = "INSERT INTO Chats (id,title) VALUES ($chat_id,$title) ON DUPLICATE KEY UPDATE title=$title";
+        return $this->insert($query);
     }
 
     public function deleteChat($chat_id)
@@ -94,9 +74,9 @@ class BotDao extends AbstractDao
     }
 
 
-    public function getGroupName($id)
+    public function getGroupName($chat_id)
     {
-        $res = $this->select("SELECT title FROM Chats WHERE id=" . $id);
+        $res = $this->select("SELECT title FROM Chats WHERE id=" . $chat_id);
         return (!$res[0]) ? false : $res[0];
     }
 
@@ -105,6 +85,7 @@ class BotDao extends AbstractDao
 
 // region -------------------- Admins
 
+    //TODO прибрать
     public function insertAdmin($chat_id, $user_id)
     {
         if ($user_id !== false) {
@@ -114,15 +95,12 @@ class BotDao extends AbstractDao
         return "Пользователь не найден";
     }
 
+    //TODO прибрать
     public function checkAdmin($chat_id, $user_id)
     {
         $res = $this->select("SELECT id FROM Admins WHERE chat_id=" . $chat_id . " AND user_id=" . $user_id);
         return $res[0];
     }
-
-
-
-
 
 //endregion
 
@@ -158,110 +136,12 @@ class BotDao extends AbstractDao
     public function setUserLevel($user_id, $chat_id, $level)
     {
         $query = "INSERT INTO `Karma` SET `user_id`=" . $user_id . ",`chat_id`=" . $chat_id . ",`level`=" . $level . " ON DUPLICATE KEY UPDATE `level`=" . $level;
-        $res = $this->insert($query);
-        return ($res === false) ? false : true;
-    }
-
-    public function handleKarma($dist, $from, $to, $chat_id)
-    {
-        $fromLevel = 0;
-        if ($from == $to) return "Давай <b>без</b> кармадрочерства";
-        if ($from != BOT_NAME) {
-            $fromLevelResult = $this->getUserLevel($from, $chat_id);
-            if (!$fromLevelResult[0]) {
-                $this->setUserLevel($from, $chat_id, 0);
-                $fromLevel = 0;
-            } else {
-                $fromLevel = $fromLevelResult[0];
-            };
-
-            if ($fromLevel < 0) {
-                return "Ты <b>не можешь</b> голосовать с отрицательной кармой";
-            };
-            $output = "<b>" . $this->getUserName($from) . " (" . $fromLevel . ")</b>";
-        } else {
-            $output = "<b>Аксинья</b>";
-        }
-        $fromLevelSqrt = $fromLevel == 0 ? 1 : sqrt($fromLevel);
-
-        $toLevelResult = $this->getUserLevel($to, $chat_id);
-        $toLevel = !$toLevelResult[0] ? 0 : $toLevelResult[0];
-
-        switch ($dist) {
-            case "+":
-                $output .= " плюсанул в карму ";
-                $result = round($toLevel + $fromLevelSqrt, 1);
-                break;
-            case "-":
-                $output .= " минусанул в карму ";
-                $result = ($from != BOT_NAME) ? round($toLevel - $fromLevelSqrt, 1) : $toLevel - 0.1;
-                break;
-        }
-        $output .= "<b>" . $this->getUserName($to) . " (" . $result . ")</b>";
-        $this->setUserLevel($to, $chat_id, $result);
-
-        //проверка наград
-        $output .= $this->handleRewards($result, $chat_id, $to);
-
-        return $output;
-    }
-
-    public function punishUser($user_id, $chat_id)
-    {
-        return $this->handleKarma("-", BOT_NAME, $user_id, $chat_id);
+        return $this->insert($query);
     }
 
 //endregion
 
 //region -------------------- Rewards
-
-    public function handleRewards($currentCarma, $chat_id, $user_id)
-    {
-        $output = "";
-        //проверка наград
-        switch ($currentCarma) {
-            case $currentCarma >= 200 and $currentCarma < 500:
-                $newType = 2;
-                $title = "Кармодрочер";
-                $min = 200;
-                break;
-            case $currentCarma >= 500 and $currentCarma < 1000:
-                $newType = 3;
-                $title = "Карманьяк";
-                $min = 500;
-                break;
-            case $currentCarma >= 1000:
-                $newType = 4;
-                $title = "Кармонстр";
-                $min = 1000;
-                break;
-            default:
-                $title = "title";
-                $min = "min";
-                break;
-        }
-        $oldType = $this->getRewardOldType($user_id, $chat_id);
-        if ($oldType != false) {
-            //если есть награды
-            if (isset($newType)) {
-                if ($newType <> $oldType[0]) {
-                    $desc = $this->generateRewardDesc($chat_id, $min);
-                    $this->updateReward($newType, $oldType[0], $desc, $user_id, $chat_id);
-                }
-                if ($newType > $oldType[0]) {
-                    $output .= $this->getRewardMessage($user_id, $title);
-                }
-            } else {
-                $this->deleteReward($user_id, $chat_id);
-            }
-        } elseif (isset($newType)) {
-            //Если нет наград, но
-            $desc = $this->generateRewardDesc($chat_id, $min);
-            $this->insertReward($newType, $desc, $user_id, $chat_id);
-            $output .= $this->getRewardMessage($user_id, $title);
-        }
-        return $output;
-    }
 
     public function getRewardOldType($user_id, $chat_id)
     {
@@ -273,11 +153,6 @@ class BotDao extends AbstractDao
         return $this->update("UPDATE Rewards SET type_id=" . $new_type_id . ", description='" . $desc . "' WHERE type_id=" . $old_type_id . " AND user_id=" . $user_id . " AND group_id=" . $chat_id);
     }
 
-    public function getRewardMessage($user_id, $title)
-    {
-        return "\r\nТоварищ награждается отличительным знаком «<a href='" . PATH_TO_SITE . "?user_id=" . $user_id . "'>" . $title . "</a>»";
-    }
-
     public function deleteReward($user_id, $chat_id)
     {
         return $this->delete("DELETE FROM Rewards WHERE user_id=" . $user_id . " AND group_id=" . $chat_id . " AND (type_id>=2 AND type_id<=4)");
@@ -286,11 +161,6 @@ class BotDao extends AbstractDao
     public function insertReward($new_type_id, $desc, $user_id, $chat_id)
     {
         return $this->insert("INSERT INTO Rewards(type_id,user_id,group_id,description) VALUES (" . $new_type_id . "," . $user_id . "," . $chat_id . ",'" . $desc . "')");
-    }
-
-    public function generateRewardDesc($chat_id, $min)
-    {
-        return "Карма в группе " . $this->getGroupName($chat_id) . " превысило отметку в " . $min;
     }
 
 //endregion

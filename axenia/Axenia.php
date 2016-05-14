@@ -3,15 +3,15 @@
 class Axenia
 {
 
-    private $db;
+    private $service;
 
     /**
      * Axenia constructor.
-     * @param $db BotDao
+     * @param $service BotService
      */
-    public function __construct($db)
+    public function __construct($service)
     {
-        $this->db = $db;
+        $this->service = $service;
     }
 
 
@@ -24,14 +24,8 @@ class Axenia
         $chat_id = $chat['id'];
         $from_id = $from['id'];
 
-        $this->db->insertOrUpdateUser($from);
-
-        $lang = $this->db->getLang($chat_id, $chat['type']);
-
-        if ($lang === false) {
-            $lang = 'en';
-        }
-        Lang::init($lang);
+        $this->service->insertOrUpdateUser($from);
+        $this->service->initLang($chat_id, $chat['type']);
 
         if (isset($message['text']) || isset($message['sticker'])) {
             if (isset($message['sticker'])) {
@@ -42,11 +36,7 @@ class Axenia
             switch (true) {
                 case preg_match('/^(\/set) @([\w]+) (-?\d+)/ui ', $text, $matches):
                     if (Util::isInEnum(ADMIN_IDS, $from_id)) {
-                        $userForSetCarma = $this->db->getUserID($matches[2]);
-                        if ($this->db->setUserLevel($userForSetCarma, $chat_id, $matches[3])) {
-                            $text = "У " . $matches[2] . " (" . $userForSetCarma . ") в чате " . $chat_id . " карма " . $matches[3];
-                            Request::exec("sendMessage", array('chat_id' => $from_id, "text" => $text));
-                        }
+                        Request::sendMessage($from_id, $this->service->setLevelByUsername($matches[2], $chat_id, $matches[3]));
                     }
                     break;
 
@@ -56,7 +46,7 @@ class Axenia
 
                 case (($pos = array_search($text, Lang::$availableLangs)) !== false):
                     Request::sendTyping($chat_id);
-                    $qrez = $this->db->setLang($chat_id, $chat['type'], $pos);
+                    $qrez = $this->service->setLang($chat_id, $chat['type'], $pos);
                     $replyKeyboardHide = array("hide_keyboard" => true, "selective" => true);
                     $text = Lang::message('bot.error');
                     if ($qrez) {
@@ -78,15 +68,15 @@ class Axenia
                     break;
 
                 case (preg_match('/^\/start/ui', $text, $matches) and $chat['type'] != "private"):
-                    $this->db->addChat($chat_id, $chat['title'], $chat['type'], $from_id);
+                    $this->service->rememberChat($chat_id, $chat['title'], $chat['type'], $from_id);
                     break;
 
                 case preg_match('/^\/top/ui', $text, $matches):
                 case preg_match('/^\/Stats/ui', $text, $matches):
                     Request::sendTyping($chat_id);
 
-                    $out = Lang::message('karma.top.title', array("chatName" => $this->db->getGroupName($chat_id)));
-                    $top = $this->db->getTop($chat_id, 5);
+                    $out = Lang::message('karma.top.title', array("chatName" => $this->service->getGroupName($chat_id)));
+                    $top = $this->service->getTop($chat_id, 5);
                     $a = array_chunk($top, 4);
                     foreach ($a as $value) {
                         $username = ($value[0] == "") ? $value[1] . " " . $value[2] : $value[0];
@@ -98,22 +88,22 @@ class Axenia
                     break;
 
                 case preg_match('/^(\+|\-|👍|👎) ?([\s\S]+)?/ui', $text, $matches):
-                    $dist = Util::isInEnum("+,👍", $matches[1]) ? "+" : "-";
+                    $isRise = Util::isInEnum("+,👍", $matches[1]);
 
                     if (isset($message['reply_to_message'])) {
                         $replyUser = $message['reply_to_message']['from'];
-                        $this->db->insertOrUpdateUser($replyUser);
+                        $this->service->insertOrUpdateUser($replyUser);
 
                         if ($replyUser['username'] != BOT_NAME) {
                             Request::sendTyping($chat_id);
-                            $output = $this->db->handleKarma($dist, $from_id, $replyUser['id'], $chat_id);
+                            $output = $this->service->handleKarma($isRise, $from_id, $replyUser['id'], $chat_id);
                             Request::sendHtmlMessage($chat_id, $output);
                         }
                     } else {
                         if (preg_match('/@([\w]+)/ui', $matches[2], $user)) {
-                            $to = $this->db->getUserID($user[1]);
+                            $to = $this->service->getUserID($user[1]);
                             if ($to) {
-                                Request::sendHtmlMessage($chat_id, $this->db->handleKarma($dist, $from_id, $to, $chat_id));
+                                Request::sendHtmlMessage($chat_id, $this->service->handleKarma($isRise, $from_id, $to, $chat_id));
                             } else {
                                 Request::sendHtmlMessage($chat_id, Lang::message('karma.unknownUser'), array('reply_to_message_id' => $message_id));
                             }
@@ -136,25 +126,25 @@ class Axenia
         if (isset($message['new_chat_member'])) {
             $newMember = $message['new_chat_member'];
             if (BOT_NAME == $newMember['username']) {
-                $qrez = $this->db->addChat($chat_id, $chat['title'], $chat['type'], $from_id);
+                $qrez = $this->service->rememberChat($chat_id, $chat['title'], $chat['type'], $from_id);
                 if ($qrez !== false) {
                     Request::sendTyping($chat_id);
                     Request::sendMessage($chat_id, Lang::message('chat.greetings'), array("parse_mode" => "Markdown"));
                 }
             } else {
-                $this->db->insertOrUpdateUser($newMember);
+                $this->service->insertOrUpdateUser($newMember);
             }
         }
 
         if (isset($message['new_chat_title'])) {
-            $this->db->addChat($chat_id, $message['new_chat_title'], $chat['type'], $from_id);
+            $this->service->rememberChat($chat_id, $message['new_chat_title'], $chat['type'], $from_id);
         }
 
         if (isset($message['left_chat_member'])) {
             //не видит себя когда его удаляют из чата
             $member = $message['left_chat_member'];
             if (BOT_NAME == $member['username']) {
-                $this->db->deleteChat($chat_id);
+                $this->service->deleteChat($chat_id);
             }
         }
     }

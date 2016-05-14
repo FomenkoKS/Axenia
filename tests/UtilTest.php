@@ -12,6 +12,7 @@ require_once('../axenia/locale/Lang.php');
 //}
 
 print_r(Util::insert(':name is :age years old.', array('name' => 'Bob', 'age' => '65')));
+print_r(Util::insert(':0 is :1 years old.', array('Bob', '65')));
 
 print_r("\r\n\r\n-------Test for posInEnum\r\n");
 

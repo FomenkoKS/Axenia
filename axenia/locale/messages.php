@@ -16,8 +16,8 @@ return array(
     "bot.error" =>
         array(
             "en" => "Ops! Something broken..",
-            "ru" => "Опа, кажись сломалось что-то..",
-            "ruUN" => "Опа, кажись сломалось что-то.."
+            "ru" => "Опа, кажись что-то сломалось..",
+            "ruUN" => "Оп, сломалось чот.."
         ),
     "chat.greetings" =>
         array(
@@ -81,26 +81,50 @@ return array(
         ),
     "karma.plus" =>
         array(
-            "en" => "<b>:from(:k1)</b> give some karma to <b>:to(:k2)</b>",
-            "ru" => "<b>:from(:k1)</b> плюсанул в карму <b>:to(:k2)</b>",
-            "ruUN" => "<b>:from(:k1)</b> плюсанул в карму <b>:to(:k2)</b>"
+            "en" => "<b>:from (:k1)</b> give some karma to <b>:to (:k2)</b>",
+            "ru" => "<b>:from (:k1)</b> плюсанул в карму <b>:to (:k2)</b>",
+            "ruUN" => "<b>:from (:k1)</b> подкинул в карму <b>:to (:k2)</b>"
         ),
     "karma.minus" =>
         array(
-            "en" => "<b>:from(:k1)</b> get some karma from <b>:to(:k2)</b>",
-            "ru" => "<b>:from(:k1)</b> минусанул в карму <b>:to(:k2)</b>",
-            "ruUN" => "<b>:from(:k1)</b> насрал в карму <b>:to(:k2)</b>"
+            "en" => "<b>:from (:k1)</b> get some karma from <b>:to (:k2)</b>",
+            "ru" => "<b>:from (:k1)</b> минусанул в карму <b>:to (:k2)</b>",
+            "ruUN" => "<b>:from (:k1)</b> насрал в карму <b>:to (:k2)</b>"
         ),
     "karma.yourself" =>
         array(
             "en" => "Don't do it again!",
             "ru" => "Больше так не делай",
-            "ruUN" => "Давай без кармадрочерства"
+            "ruUN" => "Давай <b>без</b> кармадрочерства"
+        ),
+    "karma.tooSmallKarma" =>
+        array(
+            "en" => "You <b>cannot</b> to vote with negative karma",
+            "ru" => "Ты <b>не можешь</b> голосовать с отрицательной кармой",
+            "ruUN" => "Ты <b>не можешь</b> голосовать с отрицательной кармой"
         ),
     "karma.unknownUser" =>
         array(
             "en" => "I don't know him ¯\\_(ツ)_/¯",
             "ru" => "Знать его не знаю ¯\\_(ツ)_/¯",
             "ruUN" => "Знать его не знаю ¯\\_(ツ)_/¯"
+        ),
+    "karma.manualSet" =>
+        array(
+            "en" => "User ':0' (id=:1) in group with id=:2 got new karma level :3",
+            "ru" => "У пользователя :0 (id=:1) в чате c id=:2 карма равна :3",
+            "ruUN" => "У пользователя :0 (id=:1) в чате c id=:2 карма равна :3"
+        ),
+    "reward.new" =>
+        array(
+            "en" => "User <b>:user</b> is awarded the achievement called «<a href=':path?user_id=:user_id'>:title</a>»",
+            "ru" => "Товарищ <b>:user</b> награждается отличительным знаком «<a href=':path?user_id=:user_id'>:title</a>»",
+            "ruUN" => "Товарищ <b>:user</b> заполучил ачивку «<a href=':path?user_id=:user_id'>:title</a>»"
+        ),
+    "reward.desc" =>
+        array(
+            "en" => "Karma in the group :0 exceeded :1",
+            "ru" => "Карма в группе :0 превысило отметку в :1",
+            "ruUN" => "Карма в группе :0 превысило отметку в :1"
         )
 );

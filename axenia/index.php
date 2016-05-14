@@ -8,6 +8,7 @@ require_once('core/Request.php');
 require_once('locale/Lang.php');
 
 require_once('BotDao.php');
+require_once('BotService.php');
 require_once('Axenia.php');
 
 $content = file_get_contents("php://input");
@@ -20,7 +21,7 @@ if (!$update) {
 
 if (isset($update["message"])) {
     Request::setUrl(API_URL);
-    $bot = new Axenia(new BotDao());
+    $bot = new Axenia(new BotService(new BotDao()));
     $bot->processMessage($update["message"]);
 }
 
