@@ -25,4 +25,10 @@ if (isset($update["message"])) {
     $bot->processMessage($update["message"]);
 }
 
+if (isset($update["inline_query"])) {
+    Request::setUrl(API_URL);
+    $bot = new Axenia(new BotService(new BotDao()));
+    $bot->processInline($update["inline_query"]);
+}
+
 ?>

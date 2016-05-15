@@ -37,12 +37,14 @@ class Request
     public static function execJson($method, $parameters)
     {
         if (!is_string($method)) {
+            error_log("Method name must be a string\n");
             return false;
         }
 
         if (!$parameters) {
             $parameters = array();
         } else if (!is_array($parameters)) {
+            error_log("Parameters must be an array\n");
             return false;
         }
 
@@ -144,6 +146,15 @@ class Request
             $data = array_replace($data, $addition);
         }
         self::exec("sendMessage", $data);
+    }
+
+    public static function answerInlineQuery($inline_id, $results, $addition = NULL)
+    {
+        $data = array('inline_query_id' => $inline_id, 'results' => $results);
+        if ($addition != null) {
+            $data = array_replace($data, $addition);
+        }
+        self::execJson("answerInlineQuery", $data);
     }
 
 

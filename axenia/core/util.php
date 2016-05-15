@@ -35,6 +35,46 @@ class Util
         return $out;
     }
 
+    public static function isNotEmpty($str)
+    {
+        return $str != null && $str != '';
+    }
+
+    public static function getFullName($username, $first, $last)
+    {
+        $map = array($username, $first, $last);
+
+        $out = '';
+        if (self::isNotEmpty($username)) {
+            $out .= ':0';
+            if (self::isNotEmpty($first) && self::isNotEmpty($last)) {
+                $out .= ' (:1 :2)';
+            } else {
+                if (self::isNotEmpty($first)) {
+                    $out .= ' (:1)';
+                } elseif (self::isNotEmpty($last)) {
+                    $out .= ' (:2)';
+                }
+            }
+        } else {
+            if (self::isNotEmpty($first) && self::isNotEmpty($last)) {
+                $out .= ':1 :2';
+            } else {
+                if (self::isNotEmpty($first)) {
+                    $out .= ':1';
+                } elseif (self::isNotEmpty($last)) {
+                    $out .= ':2';
+                }
+            }
+        }
+
+        if (self::isNotEmpty($out)) {
+            return self::insert($out, $map);
+        }
+        return false;
+
+    }
+
 
     /**
      * Replaces variable placeholders inside a $str with any given $data. Each key in the $data array

@@ -25,3 +25,17 @@ print_r("\r\n-------Test for search array\r\n");
 
 var_dump(array_search('🇬🇧 English', Lang::defaultLang()) == 'en');
 var_dump(array_search('🇬🇧 English2', Lang::defaultLang()) === false);
+
+
+print_r("\r\n-------\r\n");
+
+var_dump(Util::getFullName("username", "first", "last"));
+var_dump(Util::getFullName("", "first", "last"));
+var_dump(Util::getFullName("", "first", ""));
+var_dump(Util::getFullName("", "", "last"));
+var_dump(Util::getFullName("", "", ""));
+var_dump(Util::getFullName("username", "", ""));
+var_dump(Util::getFullName("username", "first", ""));
+var_dump(Util::getFullName("username", "", "last"));
+
+

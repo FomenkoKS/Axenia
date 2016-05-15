@@ -157,6 +157,29 @@ class Axenia
         Request::sendMessage($chat_id, $text, array("reply_to_message_id" => $reply_to_message_id, "reply_markup" => $replyKeyboardMarkup));
     }
 
+    public function processInline($inline)
+    {
+        $id = $inline['id'];
+        $from = $inline['from'];
+        $query = $inline['query'];
+        if (isset($query) && $query !== "") {
+            $users = $this->service->getUserList($query);
+
+            if ($users) {
+                Request::answerInlineQuery($id, $users);
+            } else {
+                Request::answerInlineQuery($id, array(
+                    array(
+                        "type" => "article",
+                        "id" => "0",
+                        "title" => Lang::message('chat.greetings'),
+                        "message_text" => Lang::message('chat.greetings'))
+                ));
+            }
+        }
+
+    }
+
 }
 
 ?>

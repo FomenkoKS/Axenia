@@ -37,6 +37,21 @@ class BotService
         return $this->db->getUserName($id);
     }
 
+    public function getUserList($query)
+    {
+        $users = $this->db->getUsersByName($query);
+        if ($users != false) {
+            $a = array_chunk($users, 4);
+            $stack = array();
+            foreach ($a as $user) {
+                $userTitle = Util::getFullName($user[1], $user[2], $user[3]);
+                array_push($stack, array('type' => 'article', 'id' => uniqid(), 'title' => '👤'.$userTitle, 'message_text' => $userTitle, 'parse_mode' => 'HTML'));
+            }
+            return $stack;
+        }
+        return false;
+    }
+
 //endregion
 
 // region -------------------- Lang
@@ -234,7 +249,7 @@ class BotService
                     $this->db->updateReward($newType, $oldType[0], $desc, $user_id, $chat_id);
                 }
                 if ($newType > $oldType[0]) {
-                    $output .= "\r\n" . Lang::message('reward.new', array('user'=> $usernameTo, 'path' => PATH_TO_SITE, 'user_id' => $user_id, 'title' => $title));
+                    $output .= "\r\n" . Lang::message('reward.new', array('user' => $usernameTo, 'path' => PATH_TO_SITE, 'user_id' => $user_id, 'title' => $title));
                 }
             } else {
                 $this->db->deleteReward($user_id, $chat_id);
@@ -243,7 +258,7 @@ class BotService
             //Если нет наград, но
             $desc = Lang::message('reward.desc', array($groupName, $min));
             $this->db->insertReward($newType, $desc, $user_id, $chat_id);
-            $output .= "\r\n" . Lang::message('reward.new', array('user'=> $usernameTo, 'path' => PATH_TO_SITE, 'user_id' => $user_id, 'title' => $title));
+            $output .= "\r\n" . Lang::message('reward.new', array('user' => $usernameTo, 'path' => PATH_TO_SITE, 'user_id' => $user_id, 'title' => $title));
         }
         return $output;
     }
