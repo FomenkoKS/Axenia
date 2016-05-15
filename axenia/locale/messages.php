@@ -25,12 +25,6 @@ return array(
             "ru" => "Привет! Меня зовут Аксения и я умею считать карму.",
             "ruUN" => "Привет! Меня зовут Аксения и я умею считать карму."
         ),
-    "chat.greetings2" =>
-        array(
-            "en" => "Hello! My name is Zinaida and I'm bot for counting karma.",
-            "ru" => "Привет! Меня зовут Зинаида и я умею считать карму.",
-            "ruUN" => "Привет! Меня зовут Зинаида и я умею считать карму."
-        ),
     "chat.lang.start" =>
         array(
             "en" => "Please, choose your language:\r\n:langs",
@@ -55,29 +49,23 @@ return array(
             "ru" => "<b>Самые почётные люди чата «:chatName»:</b>\r\n",
             "ruUN" => "<b>Самые длинные кармописюны чата «:chatName»:</b>\r\n"
         ),
-    "karma.top.title2" =>
-        array(
-            "en" => "<b>Top list of karma owners in the «:chatName»:</b>\r\n",
-            "ru" => "<b>Самые почётные люди чата «:chatName»:</b>\r\n",
-            "ruUN" => "<b>Самые охуенные люди чата «:chatName»:</b>\r\n"
-        ),
     "karma.top.row" =>
         array(
             "en" => ":username (:karma)\r\n",
             "ru" => ":username (:karma)\r\n",
             "ruUN" => ":username (:karma см)\r\n"
         ),
-    "karma.top.row2" =>
-        array(
-            "en" => ":username (:karma)\r\n",
-            "ru" => ":username (:karma)\r\n",
-            "ruUN" => ":username (:karma)\r\n"
-        ),
     "karma.top.footer" =>
         array(
             "en" => "<a href=':pathToSite?group_id=:chatId'>Read more</a>",
             "ru" => "<a href=':pathToSite?group_id=:chatId'>Подробнее</a>",
             "ruUN" => "<a href=':pathToSite?group_id=:chatId'>Подробнее</a>"
+        ),
+    "karma.top.private" =>
+        array(
+            "en" => "Top karma is only available in group chats.",
+            "ru" => "Топ кармы доступен только в групповых чатах.",
+            "ruUN" => "😐 Ты это действительно? \r\nТоп кармы доступен только в групповых чатах. В приватных чатах в топе только я 😊"
         ),
     "karma.plus" =>
         array(

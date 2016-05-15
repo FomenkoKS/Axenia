@@ -132,7 +132,16 @@ class BotService
 
     public function getTop($chat_id, $limit = 5)
     {
-        return $this->db->getTop($chat_id, $limit);
+        $out = Lang::message('karma.top.title', array("chatName" => $this->db->getGroupName($chat_id)));
+        $top = $this->db->getTop($chat_id, $limit);
+        $a = array_chunk($top, 4);
+        foreach ($a as $value) {
+            $username = ($value[0] == "") ? $value[1] . " " . $value[2] : $value[0];
+            $out .= Lang::message('karma.top.row', array("username" => $username, "karma" => $value[3]));
+        }
+        $out .= Lang::message('karma.top.footer', array("pathToSite" => PATH_TO_SITE, "chatId" => $chat_id));
+
+        return $out;
     }
 
     public function setLevelByUsername($username, $chat_id, $newLevel)

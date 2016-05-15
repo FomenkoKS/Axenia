@@ -16,10 +16,10 @@ class BotDao extends AbstractDao
     public function insertOrUpdateUser($user)
     {
         $user_id = $user['id'];
-        $username = "'" . (isset($user['username']) ? $this->escape_mimic($user['username']) : '') . "'";
-        $firstname = "'" . (isset($user['first_name']) ? $this->escape_mimic($user['first_name']) : '') . "'";
-        $lastname = "'" . (isset($user['last_name']) ? $this->escape_mimic($user['last_name']) : '') . "'";
-        $query = "INSERT INTO Users (id, username, firstname, lastname) VALUES ($user_id,$username,$firstname,$lastname) ON DUPLICATE KEY UPDATE username=$username, firstname=$firstname, lastname=$lastname";
+        $username = Util::wrapQuotes(isset($user['username']) ? $this->escape_mimic($user['username']) : '');
+        $firstname = Util::wrapQuotes(isset($user['first_name']) ? $this->escape_mimic($user['first_name']) : '');
+        $lastname = Util::wrapQuotes(isset($user['last_name']) ? $this->escape_mimic($user['last_name']) : '');
+        $query = "INSERT INTO Users (id, username, firstname, lastname) VALUES ($user_id,$username,$firstname,$lastname) ON DUPLICATE KEY UPDATE username=$username, firstname=$firstname, lastname=$lastname, last_updated=now()";
         return $this->insert($query);
     }
 
@@ -146,7 +146,7 @@ class BotDao extends AbstractDao
      */
     public function setUserLevel($user_id, $chat_id, $level)
     {
-        $query = "INSERT INTO `Karma` SET `user_id` = " . $user_id . ",`chat_id` = " . $chat_id . ",`level` = " . $level . " ON DUPLICATE KEY UPDATE `level` = " . $level;
+        $query = "INSERT INTO `Karma` SET `user_id` = " . $user_id . ",`chat_id` = " . $chat_id . ",`level` = " . $level . " ON DUPLICATE KEY UPDATE `level` = " . $level. ", `last_updated`=now()";
         return $this->insert($query);
     }
 

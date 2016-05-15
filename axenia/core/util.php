@@ -75,6 +75,11 @@ class Util
 
     }
 
+    public static function wrapQuotes($obj, $quote = "'")
+    {
+        return $quote . $obj . $quote;
+    }
+
 
     /**
      * Replaces variable placeholders inside a $str with any given $data. Each key in the $data array

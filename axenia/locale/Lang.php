@@ -2,7 +2,7 @@
 
 class Lang
 {
-    
+
     private static $messageArray;   //массив сообщений из messages.php
     private static $currentLang;   // 
     public static $availableLangs;
@@ -29,6 +29,11 @@ class Lang
             self::$messageArray = include 'messages.php';
         }
         self::$currentLang = $lang;
+    }
+
+    public static function isUncensored()
+    {
+        return self::$currentLang == 'ruUN';
     }
 
     public static function message($modificator, $param = NULL)

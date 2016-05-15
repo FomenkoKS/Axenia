@@ -74,17 +74,12 @@ class Axenia
                 case preg_match('/^\/top/ui', $text, $matches):
                 case preg_match('/^\/Stats/ui', $text, $matches):
                     Request::sendTyping($chat_id);
-
-                    $out = Lang::message('karma.top.title', array("chatName" => $this->service->getGroupName($chat_id)));
-                    $top = $this->service->getTop($chat_id, 5);
-                    $a = array_chunk($top, 4);
-                    foreach ($a as $value) {
-                        $username = ($value[0] == "") ? $value[1] . " " . $value[2] : $value[0];
-                        $out .= Lang::message('karma.top.row', array("username" => $username, "karma" => $value[3]));
+                    if ($chat['type'] == "private") {
+                        Request::sendMessage($chat_id, Lang::message("karma.top.private"));
+                    } else {
+                        $out = $this->service->getTop($chat_id, 5);
+                        Request::sendHtmlMessage($chat_id, $out);
                     }
-                    $out .= Lang::message('karma.top.footer', array("pathToSite" => PATH_TO_SITE, "chatId" => $chat_id));
-
-                    Request::sendHtmlMessage($chat_id, $out);
                     break;
 
                 case preg_match('/^(\+|\-|👍|👎) ?([\s\S]+)?/ui', $text, $matches):
@@ -112,12 +107,17 @@ class Axenia
                     }
                     break;
                 case preg_match('/сис(ек|ьки|ечки|и|яндры)/ui', $text, $matches):
-                    Request::exec("forwardMessage", array('chat_id' => $chat_id, "from_chat_id" => "@superboobs", "message_id" => rand(1, 2700)));
+                    if (Lang::isUncensored()) {
+                        Request::sendTyping(NASH_CHAT_ID);
+                        sleep(1);
+                        Request::exec("forwardMessage", array('chat_id' => $chat_id, "from_chat_id" => "@superboobs", "message_id" => rand(1, 2700)));
+                    }
                     break;
                 case preg_match('/^(\/nash) ([\s\S]+)/ui', $text, $matches):
                     if (Util::isInEnum(ADMIN_IDS, $from_id)) {
                         Request::sendTyping(NASH_CHAT_ID);
-                        Request::exec("sendMessage", array('chat_id' => NASH_CHAT_ID, "text" => $matches[2]));
+                        sleep(1);
+                        Request::sendMessage(NASH_CHAT_ID, $matches[2]);
                     }
                     break;
             }
@@ -162,21 +162,25 @@ class Axenia
         $id = $inline['id'];
         $from = $inline['from'];
         $query = $inline['query'];
-        if (isset($query) && $query !== "") {
-            $users = $this->service->getUserList($query);
 
-            if ($users) {
-                Request::answerInlineQuery($id, $users);
-            } else {
-                Request::answerInlineQuery($id, array(
-                    array(
-                        "type" => "article",
-                        "id" => "0",
-                        "title" => Lang::message('chat.greetings'),
-                        "message_text" => Lang::message('chat.greetings'))
-                ));
+        if (Util::isInEnum(ADMIN_IDS, $from['id'])) {
+            if (isset($query) && $query !== "") {
+                $users = $this->service->getUserList($query);
+
+                if ($users) {
+                    Request::answerInlineQuery($id, $users);
+                } else {
+                    Request::answerInlineQuery($id, array(
+                        array(
+                            "type" => "article",
+                            "id" => "0",
+                            "title" => Lang::message('chat.greetings'),
+                            "message_text" => Lang::message('chat.greetings'))
+                    ));
+                }
             }
         }
+
 
     }
 

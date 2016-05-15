@@ -9,7 +9,7 @@ require_once('../axenia/locale/Lang.php');
 
 require_once('../axenia/BotDao.php');
 require_once('../axenia/BotService.php');
-require_once('Zina.php');
+require_once('../axenia/Axenia.php');
 
 $content = file_get_contents("php://input");
 $update = json_decode($content, true);
@@ -21,8 +21,14 @@ if (!$update) {
 
 if (isset($update["message"])) {
     Request::setUrl(API_URL);
-    $bot = new Zina(new BotService(new BotDao()));
+    $bot = new Axenia(new BotService(new BotDao()));
     $bot->processMessage($update["message"]);
+}
+
+if (isset($update["inline_query"])) {
+    Request::setUrl(API_URL);
+    $bot = new Axenia(new BotService(new BotDao()));
+    $bot->processInline($update["inline_query"]);
 }
 
 ?>
