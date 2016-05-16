@@ -14,3 +14,6 @@ Welcome. I can count karma in group chats.
 Just write plus (+ or 👍) replying to any message for raising karma or minus (- or 👎) to lower the karma.
 You can use the message format "+ @username" to cheer up a friend.
 Statistics are available on the website axeni.ru also it can be viewed using the command "/top".
+
+# SQL query
+SELECT DISTINCT c.* from Chats c LEFT JOIN Karma k ON k.chat_id=c.id WHERE k.last_updated IS NOT NULL
