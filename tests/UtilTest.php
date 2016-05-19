@@ -38,4 +38,17 @@ var_dump(Util::getFullName("username", "", ""));
 var_dump(Util::getFullName("username", "first", ""));
 var_dump(Util::getFullName("username", "", "last"));
 
+print_r("\r\n-------\r\n");
 
+
+var_dump(Util::isBetween(200, 200, 500));
+var_dump(Util::isBetween(0, 200, 500));
+var_dump(Util::isBetween(500, 200, 500));
+
+print_r("\r\n-------\r\n");
+
+var_dump(Util::isBetween(0, -0.5, 0.5));
+var_dump(Util::isBetween(0.5, -0.5, 0.5));
+var_dump(Util::isBetween(-0.5, -0.5, 0.5));
+
+var_dump(round(-0.5));

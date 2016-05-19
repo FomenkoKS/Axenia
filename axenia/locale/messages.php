@@ -105,14 +105,38 @@ return array(
         ),
     "reward.new" =>
         array(
-            "en" => "User <b>:user</b> is awarded the achievement called «<a href=':path?user_id=:user_id'>:title</a>»",
-            "ru" => "Товарищ <b>:user</b> награждается отличительным знаком «<a href=':path?user_id=:user_id'>:title</a>»",
-            "ruUN" => "Товарищ <b>:user</b> заполучил ачивку «<a href=':path?user_id=:user_id'>:title</a>»"
+            "en" => "👏 User <b>:user</b> is awarded the achievement called «<a href=':path?user_id=:user_id'>:title</a>»",
+            "ru" => "👏 Товарищ <b>:user</b> награждается отличительным знаком «<a href=':path?user_id=:user_id'>:title</a>»",
+            "ruUN" => "👏 Товарищ <b>:user</b> заполучил ачивку «<a href=':path?user_id=:user_id'>:title</a>»"
         ),
     "reward.desc" =>
         array(
             "en" => "Karma in the group :0 exceeded :1",
             "ru" => "Карма в группе :0 превысило отметку в :1",
             "ruUN" => "Карма в группе :0 превысило отметку в :1"
-        )
+        ),
+    "reward.type.karma.desc" =>
+        array(
+            "en" => "Karma in the group :0 exceeded :1",
+            "ru" => "Карма в группе :0 превысило отметку в :1",
+            "ruUN" => "Карма в группе :0 превысило отметку в :1"
+        ),
+    "reward.type.karma1" =>
+        array(
+            "en" => "Karmachanic",
+            "ru" => "Кармодрочер",
+            "ruUN" => "Кармодрочер"
+        ),
+    "reward.type.karma2" =>
+        array(
+            "en" => "Karma-maniac",
+            "ru" => "Карманьяк",
+            "ruUN" => "Карманьяк"
+        ),
+    "reward.type.karma3" =>
+        array(
+            "en" => "Karma-monster",
+            "ru" => "Кармонстр",
+            "ruUN" => "Кармонстр"
+        ),
 );

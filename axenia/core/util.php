@@ -35,6 +35,11 @@ class Util
         return $out;
     }
 
+    public static function isBetween($val, $min, $max)
+    {
+        return ($val >= $min && $val < $max);
+    }
+
     public static function isNotEmpty($str)
     {
         return $str != null && $str != '';

@@ -90,15 +90,15 @@ class Axenia
                         $this->service->insertOrUpdateUser($replyUser);
 
                         if ($replyUser['username'] != BOT_NAME) {
+                            $user_id = $replyUser['id'];
                             Request::sendTyping($chat_id);
-                            $output = $this->service->handleKarma($isRise, $from_id, $replyUser['id'], $chat_id);
-                            Request::sendHtmlMessage($chat_id, $output);
+                            $this->doKarmaAction($isRise, $from_id, $user_id, $chat_id);
                         }
                     } else {
                         if (preg_match('/@([\w]+)/ui', $matches[2], $user)) {
                             $to = $this->service->getUserID($user[1]);
                             if ($to) {
-                                Request::sendHtmlMessage($chat_id, $this->service->handleKarma($isRise, $from_id, $to, $chat_id));
+                                $this->doKarmaAction($isRise, $from_id, $to, $chat_id);
                             } else {
                                 Request::sendHtmlMessage($chat_id, Lang::message('karma.unknownUser'), array('reply_to_message_id' => $message_id));
                             }
@@ -155,6 +155,24 @@ class Axenia
         $replyKeyboardMarkup = array("keyboard" => array($array), "resize_keyboard" => true, "selective" => true, "one_time_keyboard" => true);
         $text = Lang::message('chat.lang.start', array("langs" => Util::arrayInColumn($array)));
         Request::sendMessage($chat_id, $text, array("reply_to_message_id" => $reply_to_message_id, "reply_markup" => $replyKeyboardMarkup));
+    }
+
+    public function doKarmaAction($isRise, $from_id, $user_id, $chat_id)
+    {
+        $out = $this->service->handleKarma($isRise, $from_id, $user_id, $chat_id);
+        if ($out['good'] == true) {
+            Request::sendHtmlMessage($chat_id, $out['msg']);
+            if ($out['newLevel'] != null) {
+                $rewardMessages = $this->service->handleRewards($out['newLevel'], $chat_id, $user_id);
+                if (count($rewardMessages) > 0) {
+                    foreach ($rewardMessages as $msg) {
+                        Request::sendHtmlMessage($chat_id, $msg);
+                    }
+                }
+            }
+        } else {
+            Request::sendHtmlMessage($chat_id, $out['msg']);
+        }
     }
 
     public function processInline($inline)

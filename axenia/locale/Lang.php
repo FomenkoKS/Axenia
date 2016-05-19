@@ -47,4 +47,15 @@ class Lang
         return $param != NULL ? Util::insert($out, $param) : $out;
     }
 
+    public static function messageRu($modificator, $param = NULL)
+    {
+        if (!isset(self::$messageArray)) {
+            self::$messageArray = include 'messages.php';
+        }
+
+        $out = self::$messageArray[$modificator]['ru'];
+
+        return $param != NULL ? Util::insert($out, $param) : $out;
+    }
+
 }

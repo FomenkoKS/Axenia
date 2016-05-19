@@ -45,7 +45,7 @@ class BotService
             $stack = array();
             foreach ($a as $user) {
                 $userTitle = Util::getFullName($user[1], $user[2], $user[3]);
-                array_push($stack, array('type' => 'article', 'id' => uniqid(), 'title' => '👤'.$userTitle, 'message_text' => $userTitle, 'parse_mode' => 'HTML'));
+                array_push($stack, array('type' => 'article', 'id' => uniqid(), 'title' => '👤' . $userTitle, 'message_text' => $userTitle, 'parse_mode' => 'HTML'));
             }
             return $stack;
         }
@@ -166,33 +166,37 @@ class BotService
         }
     }
 
+    private function createHandleKarmaResult($good, $msg, $level)
+    {
+        return array('good' => $good, 'msg' => $msg, 'newLevel' => $level);
+    }
+
     public function handleKarma($isRise, $from, $to, $chat_id)
     {
-        if ($from == $to) return Lang::message('karma.yourself');
+        $newLevel = null;
+        if ($from == $to) return $this->createHandleKarmaResult(true, Lang::message('karma.yourself'), $newLevel);
 
         $fromLevel = $this->getUserLevel($from, $chat_id);
 
-        if ($fromLevel < 0) return Lang::message('karma.tooSmallKarma');
+        if ($fromLevel < 0) return $this->createHandleKarmaResult(true, Lang::message('karma.tooSmallKarma'), $newLevel);
 
         $userFrom = $this->getUserName($from);
         $fromLevelSqrt = $fromLevel == 0 ? 1 : sqrt($fromLevel);
         $toLevel = $this->getUserLevel($to, $chat_id);
-        $result = round($toLevel + ($isRise ? $fromLevelSqrt : -$fromLevelSqrt), 1);
+
+        $newLevel = round($toLevel + ($isRise ? $fromLevelSqrt : -$fromLevelSqrt), 1);
 
         $userTo = $this->getUserName($to);
 
-        $res = $this->db->setUserLevel($to, $chat_id, $result);
+        $res = $this->db->setUserLevel($to, $chat_id, $newLevel);
         if ($res) {
             $mod = $isRise ? 'karma.plus' : 'karma.minus';
-            $output = Lang::message($mod, array('from' => $userFrom, 'k1' => $fromLevel, 'to' => $userTo, 'k2' => $result));
-
-            //проверка наград
-            $output .= $this->handleRewards($result, $chat_id, $to, $userTo);
-            return $output;
-        } else {
-            return Lang::message('bot.error');
+            $msg = Lang::message($mod, array('from' => $userFrom, 'k1' => $fromLevel, 'to' => $userTo, 'k2' => $newLevel));
+            return $this->createHandleKarmaResult(true, $msg, $newLevel);
         }
+        return $this->createHandleKarmaResult(false, Lang::message('bot.error'), null);
     }
+
 
     public function handleKarmaFromBot($isRise, $user_id, $chat_id)
     {
@@ -201,77 +205,58 @@ class BotService
         if ($user2) {
             $toLevel = $this->getUserLevel($user_id, $chat_id);
 
-            $result = $isRise ? $toLevel + 1 : $toLevel - (($toLevel > 0 && $toLevel <= 1) ? 0.1 : 1);
+            $newLevel = $isRise ? $toLevel + 1 : $toLevel - (($toLevel > 0 && $toLevel <= 1) ? 0.1 : 1);
 
-            $res = $this->db->setUserLevel($user_id, $chat_id, $result);
+            $res = $this->db->setUserLevel($user_id, $chat_id, $newLevel);
             if ($res) {
                 $mod = $isRise ? 'karma.plus' : 'karma.minus';
-                $output = Lang::message($mod, array('from' => Lang::message('bot.name'), 'k1' => '∞', 'to' => $user2, 'k2' => $result));
-
-                //проверка наград
-                $output .= $this->handleRewards($result, $chat_id, $user_id, $user2);
-                return $output;
+                $msg = Lang::message($mod, array('from' => Lang::message('bot.name'), 'k1' => '∞', 'to' => $user2, 'k2' => $newLevel));
+                return $this->createHandleKarmaResult(true, $msg, $newLevel);
             }
-            return Lang::message('bot.error');
+            return $this->createHandleKarmaResult(false, Lang::message('bot.error'), null);
         } else {
-            return Lang::message('karma.unknownUser');
+            return $this->createHandleKarmaResult(false, Lang::message('karma.unknownUser'), null);
         }
-
     }
 
 //endregion
 
 //region -------------------- Rewards
 
-    public function handleRewards($currentCarma, $chat_id, $user_id, $usernameTo)
+    public function handleRewards($currentCarma, $chat_id, $user_id)
     {
-        $output = "";
-        //проверка наград
-        switch ($currentCarma) {
-            case $currentCarma >= 200 and $currentCarma < 500:
-                $newType = 2;
-                $title = "Кармодрочер";
-                $min = 200;
-                break;
-            case $currentCarma >= 500 and $currentCarma < 1000:
-                $newType = 3;
-                $title = "Карманьяк";
-                $min = 500;
-                break;
-            case $currentCarma >= 1000:
-                $newType = 4;
-                $title = "Кармонстр";
-                $min = 1000;
-                break;
-            default:
-                $title = "title";
-                $min = "min";
-                break;
-        }
-        $oldType = $this->db->getRewardOldType($user_id, $chat_id);
-        $groupName = $this->getGroupName($chat_id);
-        if ($oldType != false) {
-            //если есть награды
-            if (isset($newType)) {
-                if ($newType <> $oldType[0]) {
-                    $desc = Lang::message('reward.desc', array($groupName, $min));
-                    $this->db->updateReward($newType, $oldType[0], $desc, $user_id, $chat_id);
-                }
-                if ($newType > $oldType[0]) {
-                    $output .= "\r\n" . Lang::message('reward.new', array('user' => $usernameTo, 'path' => PATH_TO_SITE, 'user_id' => $user_id, 'title' => $title));
-                }
-            } else {
-                $this->db->deleteReward($user_id, $chat_id);
-            }
-        } elseif (isset($newType)) {
-            //Если нет наград, но
-            $desc = Lang::message('reward.desc', array($groupName, $min));
-            $this->db->insertReward($newType, $desc, $user_id, $chat_id);
-            $output .= "\r\n" . Lang::message('reward.new', array('user' => $usernameTo, 'path' => PATH_TO_SITE, 'user_id' => $user_id, 'title' => $title));
-        }
-        return $output;
-    }
+        $out = array();
+        $oldRewards = $this->db->getUserRewards($user_id, $chat_id);
 
+        $newRewards = array();
+        if ($currentCarma >= 200) {
+            array_push($newRewards, 2);
+        }
+        if ($currentCarma >= 500) {
+            array_push($newRewards, 3);
+        }
+        if ($currentCarma >= 1000) {
+            array_push($newRewards, 4);
+        }
+
+        $newRewards = array_diff($newRewards, $oldRewards);
+
+        if (count($newRewards) > 0) {
+            $groupName = $this->getGroupName($chat_id);
+            $rewardTypes = $this->db->getRewardTypes($newRewards);
+            $username = $this->getUserName($user_id);
+            foreach ($rewardTypes as $type) {
+                $desc = Lang::messageRu('reward.type.karma.desc', array($groupName, $type['karma_min']));
+
+                $insertRes = $this->db->insertReward2($type['id'], $desc, $user_id, $chat_id);
+                if ($insertRes !== false) {
+                    $msg = Lang::message('reward.new', array('user' => $username, 'path' => PATH_TO_SITE, 'user_id' => $user_id, 'title' => Lang::message('reward.type.' . $type['code'])));
+                    array_push($out, $msg);
+                }
+            }
+        }
+        return $out;
+    }
 
 //endregion
 

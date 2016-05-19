@@ -25,7 +25,7 @@ class AbstractDao
         return self::$connection;
     }
 
-    public function select($query)
+    public function select($query, $isNeedToConvert = true)
     {
         $out = array();
 
@@ -33,14 +33,21 @@ class AbstractDao
         $result = $connection->query($query);
 
         if ($result) {
-            while ($row = $result->fetch_assoc()) {
-                //$rows[] = $row;
-                foreach ($row as $value) {
-                    array_push($out, $value);
+            if ($isNeedToConvert) {
+                while ($row = $result->fetch_assoc()) {
+                    //$rows[] = $row;
+                    foreach ($row as $value) {
+                        array_push($out, $value);
+                    }
+                }
+            } else {
+                while ($row = $result->fetch_assoc()) {
+                    array_push($out, $row);
                 }
             }
+
         } else {
-            error_log("Error query: ".$query."\n ".$this->error()."\n");
+            error_log("Error query: " . $query . "\n " . $this->error() . "\n");
             return false;
         }
 
@@ -55,7 +62,7 @@ class AbstractDao
         if ($result) {
             return true;
         } else {
-            error_log("Error query: ".$query."\n ".$this->error()."\n");
+            error_log("Error query: " . $query . "\n " . $this->error() . "\n");
             return false;
         }
     }

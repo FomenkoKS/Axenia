@@ -99,18 +99,15 @@ class BotDao extends AbstractDao
     public function insertAdmin($chat_id, $user_id)
     {
         if ($user_id !== false) {
-            $res = $this->insert("INSERT INTO `Admins` SET `user_id` = '" . $user_id . "',`chat_id` = " . $chat_id);
-            return ($res === false) ? false : "{
-                username}, жду твоих указаний . ";
+            return $this->insert("INSERT INTO `Admins` SET `user_id` = '" . $user_id . "',`chat_id` = " . $chat_id);
         }
-        return "Пользователь не найден";
+        return false;
     }
 
-    //TODO прибрать
-    public function checkAdmin($chat_id, $user_id)
+    public function isAdmin($chat_id, $user_id)
     {
         $res = $this->select("SELECT id FROM Admins WHERE chat_id = " . $chat_id . " AND user_id = " . $user_id);
-        return $res[0];
+        return $res !== false ? ($res[0] !== false ? true : false) : false;
     }
 
 //endregion
@@ -146,13 +143,34 @@ class BotDao extends AbstractDao
      */
     public function setUserLevel($user_id, $chat_id, $level)
     {
-        $query = "INSERT INTO `Karma` SET `user_id` = " . $user_id . ",`chat_id` = " . $chat_id . ",`level` = " . $level . " ON DUPLICATE KEY UPDATE `level` = " . $level. ", `last_updated`=now()";
+        $query = "INSERT INTO `Karma` SET `user_id` = " . $user_id . ",`chat_id` = " . $chat_id . ",`level` = " . $level . " ON DUPLICATE KEY UPDATE `level` = " . $level . ", `last_updated`=now()";
         return $this->insert($query);
     }
 
 //endregion
 
 //region -------------------- Rewards
+
+    public function getUserRewards($user_id, $chat_id)
+    {
+        $res = $this->select("SELECT type_id FROM Rewards WHERE user_id = " . $user_id . " AND group_id = " . $chat_id);
+        if ($res !== false) {
+            return $res;
+        }
+        return array();
+    }
+
+    public function getRewardTypes($types_array)
+    {
+        if (is_array($types_array) && count($types_array) > 0) {
+            $types_array = join(',', $types_array);
+            $res = $this->select("SELECT id, code, karma_min FROM Reward_Type WHERE id in ($types_array)", false);
+            if ($res !== false) {
+                return $res;
+            }
+        }
+        return array();
+    }
 
     public function getRewardOldType($user_id, $chat_id)
     {
@@ -172,6 +190,13 @@ class BotDao extends AbstractDao
     public function insertReward($new_type_id, $desc, $user_id, $chat_id)
     {
         return $this->insert("INSERT INTO Rewards(type_id, user_id, group_id, description) VALUES(" . $new_type_id . ", " . $user_id . ", " . $chat_id . ", '" . $desc . "')");
+    }
+
+    public function insertReward2($type_id, $desc, $user_id, $chat_id)
+    {
+        $user_id = "'" . (isset($user_id) ? $this->escape_mimic($user_id) : '') . "'";
+        $desc = "'" . (isset($desc) ? $this->escape_mimic($desc) : '') . "'";
+        return $this->insert("INSERT INTO Rewards(type_id, user_id, group_id, description) VALUES($type_id, $user_id, $chat_id , $desc)");
     }
 
 //endregion
