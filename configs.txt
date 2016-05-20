@@ -1,8 +1,9 @@
 # Commands
-top - Top of karma / Топ кармы<br>
+top - Top of karma / Топ кармы
 lang - Switch language / Сменить язык
-help - Help / Помощь
+awards - Get yours awards / Узнать список своих наград
 settings - Settings / Настройки
+help - Help / Помощь
 
 # Greetings
 Приветствую. Я умею считать карму.

@@ -226,7 +226,7 @@ class BotService
     public function handleRewards($currentCarma, $chat_id, $user_id)
     {
         $out = array();
-        $oldRewards = $this->db->getUserRewards($user_id, $chat_id);
+        $oldRewards = $this->db->getUserRewardIds($user_id, $chat_id);
 
         $newRewards = array();
         if ($currentCarma >= 200) {
@@ -248,7 +248,7 @@ class BotService
             foreach ($rewardTypes as $type) {
                 $desc = Lang::messageRu('reward.type.karma.desc', array($groupName, $type['karma_min']));
 
-                $insertRes = $this->db->insertReward2($type['id'], $desc, $user_id, $chat_id);
+                $insertRes = $this->db->insertReward($type['id'], $desc, $user_id, $chat_id);
                 if ($insertRes !== false) {
                     $msg = Lang::message('reward.new', array('user' => $username, 'path' => PATH_TO_SITE, 'user_id' => $user_id, 'title' => Lang::message('reward.type.' . $type['code'])));
                     array_push($out, $msg);

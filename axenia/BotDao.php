@@ -45,8 +45,11 @@ class BotDao extends AbstractDao
 
     public function getChatLang($chat_id)
     {
-        $res = $this->select("SELECT lang FROM Chats WHERE id = " . $chat_id);
-        return !($res[0]) ? false : $res[0];
+        $res = $this->select("SELECT lang FROM Chats WHERE id = " . $chat_id, true);
+        if (isset($res[0])) {
+            return !($res[0]) ? false : $res[0];
+        }
+        return false;
     }
 
     public function getUserLang($user_id)
@@ -151,9 +154,18 @@ class BotDao extends AbstractDao
 
 //region -------------------- Rewards
 
-    public function getUserRewards($user_id, $chat_id)
+    public function getUserRewardIds($user_id, $chat_id)
     {
         $res = $this->select("SELECT type_id FROM Rewards WHERE user_id = " . $user_id . " AND group_id = " . $chat_id);
+        if ($res !== false) {
+            return $res;
+        }
+        return array();
+    }
+
+    public function getUserRewards($user_id, $chat_id)
+    {
+        $res = $this->select("SELECT r.type_id AS type_id, rt.code AS code  FROM Rewards r LEFT JOIN Reward_Type rt ON r.type_id=rt.id WHERE r.user_id = " . $user_id . " AND r.group_id = " . $chat_id);
         if ($res !== false) {
             return $res;
         }
@@ -172,27 +184,7 @@ class BotDao extends AbstractDao
         return array();
     }
 
-    public function getRewardOldType($user_id, $chat_id)
-    {
-        return $this->select("SELECT type_id FROM Rewards WHERE user_id = " . $user_id . " AND group_id = " . $chat_id . " AND type_id >= 2 AND type_id <= 4");
-    }
-
-    public function updateReward($new_type_id, $old_type_id, $desc, $user_id, $chat_id)
-    {
-        return $this->update("UPDATE Rewards SET type_id = " . $new_type_id . ", description = '" . $desc . "' WHERE type_id = " . $old_type_id . " AND user_id = " . $user_id . " AND group_id = " . $chat_id);
-    }
-
-    public function deleteReward($user_id, $chat_id)
-    {
-        return $this->delete("DELETE FROM Rewards WHERE user_id = " . $user_id . " AND group_id = " . $chat_id . " AND (type_id >= 2 AND type_id <= 4)");
-    }
-
-    public function insertReward($new_type_id, $desc, $user_id, $chat_id)
-    {
-        return $this->insert("INSERT INTO Rewards(type_id, user_id, group_id, description) VALUES(" . $new_type_id . ", " . $user_id . ", " . $chat_id . ", '" . $desc . "')");
-    }
-
-    public function insertReward2($type_id, $desc, $user_id, $chat_id)
+    public function insertReward($type_id, $desc, $user_id, $chat_id)
     {
         $user_id = "'" . (isset($user_id) ? $this->escape_mimic($user_id) : '') . "'";
         $desc = "'" . (isset($desc) ? $this->escape_mimic($desc) : '') . "'";
