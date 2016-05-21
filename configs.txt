@@ -1,7 +1,7 @@
 # Commands
 top - Top of karma / Топ кармы
 lang - Switch language / Сменить язык
-awards - Get yours awards / Узнать список своих наград
+rewards - Get yours rewards / Узнать список своих наград
 settings - Settings / Настройки
 help - Help / Помощь
 

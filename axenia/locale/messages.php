@@ -103,23 +103,35 @@ return array(
             "ru" => "У пользователя :0 (id=:1) в чате c id=:2 карма равна :3",
             "ruUN" => "У пользователя :0 (id=:1) в чате c id=:2 карма равна :3"
         ),
+    "reward.list" =>
+        array(
+            "en" => "Rewards list of <b>:user</b>:\r\n:list\r\n",
+            "ru" => "Список наград <b>:user</b>:\r\n:list\r\n",
+            "ruUN" => "Список наград <b>:user</b>:\r\n:list\r\n"
+        ),
+    "reward.listInGroup" =>
+        array(
+            "en" => "Rewards list of <b>:user</b> in group «:chatName»:\r\n:list\r\n",
+            "ru" => "Список наград <b>:user</b> в чате «:chatName»:\r\n:list\r\n",
+            "ruUN" => "Список наград <b>:user</b> в чате «:chatName»:\r\n:list\r\n"
+        ),
+    "reward.noRewards" =>
+        array(
+            "en" => "You don't nave rewards yet.",
+            "ru" => "Ни одной награды вы еще не получили.",
+            "ruUN" => "Ты еще не заслужил ни одной награды."
+        ),
     "reward.new" =>
         array(
             "en" => "👏 User <b>:user</b> is awarded the achievement called «<a href=':path?user_id=:user_id'>:title</a>»",
             "ru" => "👏 Товарищ <b>:user</b> награждается отличительным знаком «<a href=':path?user_id=:user_id'>:title</a>»",
             "ruUN" => "👏 Товарищ <b>:user</b> заполучил ачивку «<a href=':path?user_id=:user_id'>:title</a>»"
         ),
-    "reward.desc" =>
-        array(
-            "en" => "Karma in the group :0 exceeded :1",
-            "ru" => "Карма в группе :0 превысило отметку в :1",
-            "ruUN" => "Карма в группе :0 превысило отметку в :1"
-        ),
     "reward.type.karma.desc" =>
         array(
             "en" => "Karma in the group :0 exceeded :1",
-            "ru" => "Карма в группе :0 превысило отметку в :1",
-            "ruUN" => "Карма в группе :0 превысило отметку в :1"
+            "ru" => "Карма в чате :0 превысило отметку в :1",
+            "ruUN" => "Карма в чате :0 превысило отметку в :1"
         ),
     "reward.type.karma1" =>
         array(
@@ -138,5 +150,5 @@ return array(
             "en" => "Karma-monster",
             "ru" => "Кармонстр",
             "ruUN" => "Кармонстр"
-        ),
+        )
 );

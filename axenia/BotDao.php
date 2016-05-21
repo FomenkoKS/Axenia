@@ -163,9 +163,18 @@ class BotDao extends AbstractDao
         return array();
     }
 
-    public function getUserRewards($user_id, $chat_id)
+    public function getUserRewardsInChat($user_id, $chat_id)
     {
         $res = $this->select("SELECT r.type_id AS type_id, rt.code AS code  FROM Rewards r LEFT JOIN Reward_Type rt ON r.type_id=rt.id WHERE r.user_id = " . $user_id . " AND r.group_id = " . $chat_id);
+        if ($res !== false) {
+            return $res;
+        }
+        return array();
+    }
+
+    public function getUserRewards($user_id)
+    {
+        $res = $this->select("SELECT r.type_id AS type_id, rt.code AS code, c.title AS title FROM Rewards r LEFT JOIN Reward_Type rt ON r.type_id=rt.id LEFT JOIN Chats c ON r.group_id=c.id WHERE r.user_id = " . $user_id);
         if ($res !== false) {
             return $res;
         }

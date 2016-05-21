@@ -258,6 +258,26 @@ class BotService
         return $out;
     }
 
+    /**
+     * Формирует сообщения для отпарки по команде rewards
+     * @param $user_id
+     * @param $chat_id
+     */
+    public function getUserRewards($user_id, $chat_id)
+    {
+        if ($user_id != $chat_id) {
+            $res = $this->db->getUserRewardsInChat($user_id, $chat_id);
+            
+        } else {
+            $res = $this->db->getUserRewards($user_id);
+        }
+
+        if (count($res) > 0) {
+        } else {
+        }
+
+    }
+
 //endregion
 
 

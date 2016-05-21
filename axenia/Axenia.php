@@ -59,18 +59,16 @@ class Axenia
                         Request::sendHtmlMessage($chat_id, Lang::message('user.pickChat', array('botName' => BOT_NAME)));
                     }
                     break;
+                case (preg_match('/^\/start/ui', $text, $matches)):
+                    if ($chat['type'] == "private") {
+                        Request::sendTyping($chat_id);
+                        Request::sendHtmlMessage($chat_id, Lang::message('chat.greetings'));
+                        $this->sendLanguageKeyboard($chat_id, $message_id);
+                    } else {
+                        $this->service->rememberChat($chat_id, $chat['title'], $chat['type'], $from_id);
+                    }
 
-                case (preg_match('/^\/start/ui', $text, $matches) and $chat['type'] == "private"):
-                    Request::sendTyping($chat_id);
-                    Request::sendHtmlMessage($chat_id, Lang::message('chat.greetings'));
-
-                    $this->sendLanguageKeyboard($chat_id, $message_id);
                     break;
-
-                case (preg_match('/^\/start/ui', $text, $matches) and $chat['type'] != "private"):
-                    $this->service->rememberChat($chat_id, $chat['title'], $chat['type'], $from_id);
-                    break;
-
                 case preg_match('/^\/top/ui', $text, $matches):
                 case preg_match('/^\/Stats/ui', $text, $matches):
                     Request::sendTyping($chat_id);
