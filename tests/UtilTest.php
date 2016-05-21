@@ -1,54 +1,61 @@
 <?php
 require_once('../axenia/core/util.php');
-require_once('../axenia/locale/Lang.php');
 
-//test2
-//print_r(isInEnum("343434,434234,1", 434234), false);
-//print_r(isInEnum("343434,434234,1", "434234"), false);
-//print_r(false === isInEnum("343434,434234,1", "4342324"));
+class UtilTest extends PHPUnit_Framework_TestCase
+{
+    public function testIsInEnum()
+    {
+        $this->assertFalse(Util::isInEnum("343434,434234,1", 2));
+        $this->assertTrue(Util::isInEnum("343434,434234,1", 434234));
+    }
 
-//if(Util::isInEnum("343434,434234,1", "434234")){
-//    print_r(true);
-//}
+    public function testInsert()
+    {
+        $temp = Util::insert(':name is :age years old.', array('name' => 'Bob', 'age' => '65'));
+        $this->assertTrue($temp == "Bob is 65 years old.");
+        $temp = Util::insert(':0 is :1 years old.', array('Bob', '65'));
+        $this->assertTrue($temp == "Bob is 65 years old.");
+    }
 
-print_r(Util::insert(':name is :age years old.', array('name' => 'Bob', 'age' => '65')));
-print_r(Util::insert(':0 is :1 years old.', array('Bob', '65')));
+    public function testPosInEnum()
+    {
+        $this->assertTrue(Util::posInEnum("q,w,e", 'q') == 0);
+        $this->assertTrue(Util::posInEnum("q, w,e", 'w') == -1);
+        $this->assertTrue(Util::posInEnum("q,w,e", 'k') == -1);
+        $this->assertTrue(Util::posInEnum("q,w,e", 'e') == 2);
+    }
 
-print_r("\r\n\r\n-------Test for posInEnum\r\n");
+    public function testGetFullName()
+    {
+        $this->assertTrue(Util::getFullName("username", "first", "last") == "username (first last)");
+        $this->assertTrue(Util::getFullName("", "first", "last") == "first last");
+        $this->assertTrue(Util::getFullName("", "first", "") == "first");
+        $this->assertTrue(Util::getFullName("", "", "last") == "last");
+        $this->assertTrue(Util::getFullName("", "", "") == false);
+        $this->assertTrue(Util::getFullName("username", "", "") == "username");
+        $this->assertTrue(Util::getFullName("username", "first", "") == "username (first)");
+        $this->assertTrue(Util::getFullName("username", "", "last") == "username (last)");
+    }
 
-var_dump(Util::posInEnum("q,w,e", 'q') == 0);
-var_dump(Util::posInEnum("q, w,e", 'w') == -1);
-var_dump(Util::posInEnum("q,w,e", 'k') == -1);
-var_dump(Util::posInEnum("q,w,e", 'e') == 2);
+    public function testIsBetween()
+    {
+        $this->assertTrue(Util::isBetween(200, 200, 500));
+        $this->assertFalse(Util::isBetween(0, 200, 500));
+        $this->assertFalse(Util::isBetween(500, 200, 500));
 
-print_r("\r\n-------Test for search array\r\n");
+        $this->assertTrue(Util::isBetween(0, -0.5, 0.5));
+        $this->assertFalse(Util::isBetween(0.5, -0.5, 0.5));
+        $this->assertTrue(Util::isBetween(-0.5, -0.5, 0.5));
 
-var_dump(array_search('🇬🇧 English', Lang::defaultLang()) == 'en');
-var_dump(array_search('🇬🇧 English2', Lang::defaultLang()) === false);
+    }
 
+    public function testSomeTests()
+    {
+        $this->assertTrue(round(-0.5) == -1);
 
-print_r("\r\n-------\r\n");
+    }
 
-var_dump(Util::getFullName("username", "first", "last"));
-var_dump(Util::getFullName("", "first", "last"));
-var_dump(Util::getFullName("", "first", ""));
-var_dump(Util::getFullName("", "", "last"));
-var_dump(Util::getFullName("", "", ""));
-var_dump(Util::getFullName("username", "", ""));
-var_dump(Util::getFullName("username", "first", ""));
-var_dump(Util::getFullName("username", "", "last"));
-
-print_r("\r\n-------\r\n");
+}
 
 
-var_dump(Util::isBetween(200, 200, 500));
-var_dump(Util::isBetween(0, 200, 500));
-var_dump(Util::isBetween(500, 200, 500));
 
-print_r("\r\n-------\r\n");
-
-var_dump(Util::isBetween(0, -0.5, 0.5));
-var_dump(Util::isBetween(0.5, -0.5, 0.5));
-var_dump(Util::isBetween(-0.5, -0.5, 0.5));
-
-var_dump(round(-0.5));

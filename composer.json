@@ -1,0 +1,16 @@
+{
+  "name": "abrikoseg/axenia",
+  "description": "bot",
+  "minimum-stability": "dev",
+  "license": "proprietary",
+  "authors": [
+    {
+      "name": "Alex",
+      "email": "email@example.com"
+    },
+    {
+      "name": "Kir",
+      "email": "email@example.com"
+    }
+  ]
+}
