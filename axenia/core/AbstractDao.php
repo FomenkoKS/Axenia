@@ -54,6 +54,31 @@ class AbstractDao
         return $out;
     }
 
+    public function selectOne($query, $isNeedToConvert = true)
+    {
+        $out = array();
+
+        $connection = $this->connect();
+        $result = $connection->query($query);
+
+        if ($result) {
+            if ($isNeedToConvert) {
+                $row = $result->fetch_assoc();
+                foreach ($row as $value) {
+                    array_push($out, $value);
+                }
+            } else {
+                $row = $result->fetch_assoc();
+                array_push($out, $row);
+            }
+        } else {
+            error_log("Error query: " . $query . "\n " . $this->error() . "\n");
+            return false;
+        }
+
+        return $out;
+    }
+
     public function update($query)
     {
         $connection = $this->connect();

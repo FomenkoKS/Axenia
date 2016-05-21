@@ -45,6 +45,14 @@ class Util
         return $str != null && $str != '';
     }
 
+    public static function getFullNameUser($user)
+    {
+        $username = isset($user['username']) ? $user['username'] : '';
+        $first = isset($user['first_name']) ? $user['first_name'] : '';
+        $last = isset($user['last_name']) ? $user['last_name'] : '';
+        return self::getFullName($username, $first, $last);
+    }
+
     public static function getFullName($username, $first, $last)
     {
         $map = array($username, $first, $last);
@@ -77,7 +85,6 @@ class Util
             return self::insert($out, $map);
         }
         return false;
-
     }
 
     public static function wrapQuotes($obj, $quote = "'")
