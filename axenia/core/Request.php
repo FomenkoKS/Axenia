@@ -132,7 +132,7 @@ class Request
 
     public static function sendMessage($chat_id, $text, $addition = NULL)
     {
-        $data = array('chat_id' => $chat_id, 'text' => $text);
+        $data = ['chat_id' => $chat_id, 'text' => $text];
         if ($addition != null) {
             $data = array_replace($data, $addition);
         }
@@ -141,11 +141,20 @@ class Request
 
     public static function sendHtmlMessage($chat_id, $message, $addition = NULL)
     {
-        $data = array('chat_id' => $chat_id, "text" => $message, "parse_mode" => "HTML", "disable_web_page_preview" => true);
+        $data = ['chat_id' => $chat_id, "text" => $message, "parse_mode" => "HTML", "disable_web_page_preview" => true];
         if ($addition != null) {
             $data = array_replace($data, $addition);
         }
         self::exec("sendMessage", $data);
+    }
+
+    public static function editMessageText($chat_id,$message_id, $text, $addition = NULL)
+    {
+        $data = ['chat_id' => $chat_id,"message_id"=>$message_id, "text" => $text];
+        if ($addition != null) {
+            $data = array_replace($data, $addition);
+        }
+        self::execJson("editMessageText", $data);
     }
 
     public static function answerInlineQuery($inline_id, $results, $addition = NULL)

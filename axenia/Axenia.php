@@ -69,8 +69,11 @@ class Axenia
                     }
 
                     break;
+                case preg_match('/^\/buy/ui', $text, $matches):
+                    $this->sendShowcase($chat_id);
+                    break;
                 case preg_match('/^\/top/ui', $text, $matches):
-                case preg_match('/^\/Stats/ui', $text, $matches):
+                case preg_match('/^\/stats/ui', $text, $matches):
                     Request::sendTyping($chat_id);
                     if ($chat['type'] == "private") {
                         Request::sendMessage($chat_id, Lang::message("karma.top.private"));
@@ -147,10 +150,36 @@ class Axenia
         }
     }
 
+    public function sendShowcase($chat_id,$message_id=NULL, $text = NULL)
+    {
+        $inline_keyboard[] = [
+            [
+                'text' => 'Сиськи',
+                'callback_data' => 'buy_tits'
+            ],
+            [
+                'text' => 'Жопы',
+                'callback_data' => 'buy_butts'
+            ],
+            [
+                'text' => 'Котята',
+                'callback_data' => 'buy_cats'
+            ]
+        ];
+        $inline_keyboards[] = $inline_keyboard;
+        //придумать более интересный текст, перевести, засунуть в lang
+        if($message_id==NULL && $text = NULL){
+            $text = "Сиськи за 300, булки за 200, котята за 100. Что берём?";
+            Request::sendMessage($chat_id, $text, ["reply_markup" =>  ['inline_keyboard' => $inline_keyboard]]);
+        }else{
+            Request::editMessageText($chat_id,$message_id, $text,["reply_markup" =>  ['inline_keyboard' => $inline_keyboard]]);
+        }
+    }
+
     public function sendLanguageKeyboard($chat_id, $reply_to_message_id)
     {
         $array = array_values(Lang::$availableLangs);
-        $replyKeyboardMarkup = array("keyboard" => array($array), "resize_keyboard" => true, "selective" => true, "one_time_keyboard" => true);
+        $replyKeyboardMarkup = ["keyboard" => [$array], "resize_keyboard" => true, "selective" => true, "one_time_keyboard" => true];
         $text = Lang::message('chat.lang.start', array("langs" => Util::arrayInColumn($array)));
         Request::sendMessage($chat_id, $text, array("reply_to_message_id" => $reply_to_message_id, "reply_markup" => $replyKeyboardMarkup));
     }
@@ -186,18 +215,27 @@ class Axenia
                 if ($users) {
                     Request::answerInlineQuery($id, $users);
                 } else {
-                    Request::answerInlineQuery($id, array(
-                        array(
+                    Request::answerInlineQuery($id, [
+                        [
                             "type" => "article",
                             "id" => "0",
                             "title" => Lang::message('chat.greetings'),
-                            "message_text" => Lang::message('chat.greetings'))
-                    ));
+                            "message_text" => Lang::message('chat.greetings')
+                        ]
+                    ]);
                 }
             }
         }
+    }
 
-
+    public function processCallback($callback)
+    {
+        $from=$callback['from'];
+        $message=$callback['message'];
+        $inline_message_id=$callback['inline_message_id'];
+        $data=$callback['data'];
+        $chat_id=$message['chat']['id'];
+        $this->sendShowcase($chat_id,$message['message_id'], $data);
     }
 
 }
