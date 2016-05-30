@@ -59,6 +59,7 @@ class Axenia
                         Request::sendHtmlMessage($chat_id, Lang::message('user.pickChat', array('botName' => BOT_NAME)));
                     }
                     break;
+
                 case (preg_match('/^\/start/ui', $text, $matches)):
                     if ($chat['type'] == "private") {
                         Request::sendTyping($chat_id);
@@ -168,7 +169,7 @@ class Axenia
         ];
         $inline_keyboards[] = $inline_keyboard;
         //придумать более интересный текст, перевести, засунуть в lang
-        if($message_id==NULL && $text = NULL){
+        if($message_id==NULL && $text == NULL){
             $text = "Сиськи за 300, булки за 200, котята за 100. Что берём?";
             Request::sendMessage($chat_id, $text, ["reply_markup" =>  ['inline_keyboard' => $inline_keyboard]]);
         }else{
@@ -235,6 +236,7 @@ class Axenia
         $inline_message_id=$callback['inline_message_id'];
         $data=$callback['data'];
         $chat_id=$message['chat']['id'];
+
         $this->sendShowcase($chat_id,$message['message_id'], $data);
     }
 

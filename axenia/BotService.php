@@ -108,7 +108,6 @@ class BotService
                     Lang::init($lang);
                 }
             }
-
             return $res;
         }
         return false;
