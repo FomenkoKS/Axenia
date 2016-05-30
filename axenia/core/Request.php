@@ -165,5 +165,11 @@ class Request
         self::execJson("answerInlineQuery", $data);
     }
 
+    public static function getChatAdministrators($chat_id)
+    {
+        $data = array('chat_id' => $chat_id);
+        return self::execJson("getChatAdministrators", $data);
+    }
+
 
 }

@@ -54,6 +54,19 @@ class BotService
 
 //endregion
 
+// region -------------------- Admins
+    public function isAdmin($user_id,$chat_id)
+    {
+        $result=false;
+        $admins = Request::getChatAdministrators($chat_id);
+        foreach($admins as $admin){
+            if($admin['user']['id']==$user_id)$result=true;
+        }
+        return $result;
+    }
+
+//endregion
+
 // region -------------------- Lang
 
     /*

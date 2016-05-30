@@ -44,6 +44,14 @@ class Axenia
                     $this->sendLanguageKeyboard($chat_id, $message_id);
                     break;
 
+
+                case preg_match('/^\/getAdmins/ui', $text, $matches):
+                    Request::sendMessage($chat_id, $this->service->isAdmin($from_id,$chat_id));
+                    $admins = Request::getChatAdministrators($chat_id);
+                    Request::sendMessage($chat_id, $admins);
+                    //if(in_array($from_id,$admins['user']['id'])) Request::sendMessage($chat_id, "success");
+                    break;
+
                 case (($pos = array_search($text, Lang::$availableLangs)) !== false):
                     Request::sendTyping($chat_id);
                     $qrez = $this->service->setLang($chat_id, $chat['type'], $pos);

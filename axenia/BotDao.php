@@ -99,19 +99,7 @@ class BotDao extends AbstractDao
 // region -------------------- Admins
 
     //TODO прибрать
-    public function insertAdmin($chat_id, $user_id)
-    {
-        if ($user_id !== false) {
-            return $this->insert("INSERT INTO `Admins` SET `user_id` = '" . $user_id . "',`chat_id` = " . $chat_id);
-        }
-        return false;
-    }
 
-    public function isAdmin($chat_id, $user_id)
-    {
-        $res = $this->select("SELECT id FROM Admins WHERE chat_id = " . $chat_id . " AND user_id = " . $user_id);
-        return $res !== false ? ($res[0] !== false ? true : false) : false;
-    }
 
 //endregion
 
