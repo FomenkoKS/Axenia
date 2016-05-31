@@ -41,7 +41,7 @@ class Axenia
                     break;
 
                 case preg_match('/^\/lang/ui', $text, $matches):
-                    $this->sendLanguageKeyboard($chat_id, $message_id);
+                    if($this->service->isAdmin($from['id'],$chat_id) || $message['chat']['type']=="private")$this->sendLanguageKeyboard($chat_id);
                     break;
 
 
@@ -52,21 +52,7 @@ class Axenia
                     //if(in_array($from_id,$admins['user']['id'])) Request::sendMessage($chat_id, "success");
                     break;
 
-                case (($pos = array_search($text, Lang::$availableLangs)) !== false):
-                    Request::sendTyping($chat_id);
-                    $qrez = $this->service->setLang($chat_id, $chat['type'], $pos);
-                    $replyKeyboardHide = array("hide_keyboard" => true, "selective" => true);
-                    $text = Lang::message('bot.error');
-                    if ($qrez) {
-                        Lang::init($pos);
-                        $text = Lang::message('chat.lang.end');
-                    }
-                    Request::sendMessage($chat_id, $text, array("reply_to_message_id" => $message_id, "reply_markup" => $replyKeyboardHide));
-                    sleep(1);
-                    if ($chat['type'] == "private") {
-                        Request::sendHtmlMessage($chat_id, Lang::message('user.pickChat', array('botName' => BOT_NAME)));
-                    }
-                    break;
+
 
                 case (preg_match('/^\/start/ui', $text, $matches)):
                     if ($chat['type'] == "private") {
@@ -153,9 +139,10 @@ class Axenia
         if (isset($message['left_chat_member'])) {
             //не видит себя когда его удаляют из чата
             $member = $message['left_chat_member'];
-            if (BOT_NAME == $member['username']) {
+            //if (BOT_NAME == $member['username']) {
+                Request::sendMessage("32512143", $member['username']." leave chat ".$chat_id);
                 $this->service->deleteChat($chat_id);
-            }
+            //}
         }
     }
 
@@ -175,7 +162,6 @@ class Axenia
                 'callback_data' => 'buy_cats'
             ]
         ];
-        $inline_keyboards[] = $inline_keyboard;
         //придумать более интересный текст, перевести, засунуть в lang
         if($message_id==NULL && $text == NULL){
             $text = "Сиськи за 300, булки за 200, котята за 100. Что берём?";
@@ -185,12 +171,24 @@ class Axenia
         }
     }
 
-    public function sendLanguageKeyboard($chat_id, $reply_to_message_id)
+    public function sendLanguageKeyboard($chat_id,$message_id=NULL, $text=NULL)
     {
-        $array = array_values(Lang::$availableLangs);
-        $replyKeyboardMarkup = ["keyboard" => [$array], "resize_keyboard" => true, "selective" => true, "one_time_keyboard" => true];
-        $text = Lang::message('chat.lang.start', array("langs" => Util::arrayInColumn($array)));
-        Request::sendMessage($chat_id, $text, array("reply_to_message_id" => $reply_to_message_id, "reply_markup" => $replyKeyboardMarkup));
+        if($message_id==NULL && $text==NULL){
+            $ln=Lang::$availableLangs;
+            $keys=array_keys($ln);
+            $values = array_values($ln);
+            $inline_keyboard=array();
+            for($i=0;$i<count($ln);$i++){
+                $inline_keyboard[$i]['text']=$values[$i];
+                $inline_keyboard[$i]['callback_data']=$keys[$i];
+            }
+            if($chat_id<0) $text=Lang::message('chat.lang.foradmins');
+            $inline_keyboard=array($inline_keyboard);
+            Request::sendMessage($chat_id, $text.Lang::message('chat.lang.start'), ["reply_markup" =>  ['inline_keyboard' => $inline_keyboard]]);
+        }else{
+            Request::editMessageText($chat_id,$message_id, $text);
+        }
+
     }
 
     public function doKarmaAction($isRise, $from_id, $user_id, $chat_id)
@@ -239,13 +237,29 @@ class Axenia
 
     public function processCallback($callback)
     {
+
         $from=$callback['from'];
         $message=$callback['message'];
         $inline_message_id=$callback['inline_message_id'];
         $data=$callback['data'];
         $chat_id=$message['chat']['id'];
 
-        $this->sendShowcase($chat_id,$message['message_id'], $data);
+        $this->service->initLang($chat_id, $message['chat']['type']);
+        if(in_array($data,array_keys(Lang::$availableLangs)) && ($this->service->isAdmin($from['id'],$chat_id) || $message['chat']['type']=="private")){
+            $qrez = $this->service->setLang($chat_id, $message['chat']['type'], $data);
+            $text = Lang::message('bot.error');
+            if ($qrez) {
+                Lang::init($data);
+                $text = Lang::message('chat.lang.end');
+            }
+            $this->sendLanguageKeyboard($chat_id,$message['message_id'], $text);
+            sleep(1);
+            if ($message['chat']['type'] == "private") {
+                Request::sendHtmlMessage($chat_id, Lang::message('user.pickChat', array('botName' => BOT_NAME)));
+            }
+        }elseif(strpos($data,"buy_")!==false) {
+            $this->sendShowcase($chat_id,$message['message_id'], $data);
+        }
     }
 
 }

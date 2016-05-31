@@ -10,7 +10,7 @@ class Lang
     public static function defaultLang()
     {
         if (!isset(self::$availableLangs)) {
-            self::$availableLangs = array('en' => '🇬🇧 English', 'ru' => '🇷🇺 Русский', 'ruUN' => '🔞 Русский (неценз)');
+            self::$availableLangs = array('en' => '🇬🇧 English', 'ru' => '🇷🇺 Русский', 'ruUN' => '🔞 Русский (матерный)');
         }
 
         return self::$availableLangs;
@@ -23,7 +23,7 @@ class Lang
     public static function init($lang = 'en')
     {
         if (!isset(self::$availableLangs)) {
-            self::$availableLangs = array('en' => '🇬🇧 English', 'ru' => '🇷🇺 Русский', 'ruUN' => '🔞 Русский (неценз)');
+            self::$availableLangs = array('en' => '🇬🇧 English', 'ru' => '🇷🇺 Русский', 'ruUN' => '🔞 Русский (матерный)');
         }
         if (!isset(self::$messageArray)) {
             self::$messageArray = include 'messages.php';

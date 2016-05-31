@@ -27,15 +27,21 @@ return array(
         ),
     "chat.lang.start" =>
         array(
-            "en" => "Please, choose your language:\r\n:langs",
-            "ru" => "Пожалуйста, выбери язык:\r\n:langs",
-            "ruUN" => "Пожалуйста, выбери язык:\r\n:langs"
+            "en" => "Please, choose your language:",
+            "ru" => "Пожалуйста, выбери язык:",
+            "ruUN" => "В группах смена языка только для администраторов.\r\nВыбери язык на котором ты общаешься:"
         ),
     "chat.lang.end" =>
         array(
             "en" => "Ok, now I'm speaking English!",
             "ru" => "Проверка языка: борщ, балалайка. Теперь я могу говорить по-русски!",
             "ruUN" => "Проверка языка: борщ, балалайка. Теперь я могу говорить по-русски, блеать!"
+        ),
+    "chat.lang.foradmins" =>
+        array(
+            "en" => "For admins only.\r\n",
+            "ru" => "Только для администраторов группы.\r\n",
+            "ruUN" => "Только для админов.\r\n"
         ),
     "user.pickChat" =>
         array(
