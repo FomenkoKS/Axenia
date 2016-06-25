@@ -51,19 +51,19 @@ return array(
         ),
     "user.stat" =>
         array(
-            "en" => ":user statistic",
+            "en" => ":user statistics",
             "ru" => "Статистика пользователя :user",
             "ruUN" => "Статистика пользователя :user"
         ),
     "user.stat.sum" =>
         array(
-            "en" => "Karma value: ",
+            "en" => "Karma: ",
             "ru" => "Количество кармы: ",
             "ruUN" => "Наебашил кармы: "
         ),
     "user.stat.place" =>
         array(
-            "en" => "Place in rating: ",
+            "en" => "Rating: ",
             "ru" => "Место в рейтинге: ",
             "ruUN" => "Место в рейтинге: "
         ),
@@ -74,12 +74,6 @@ return array(
             "ruUN" => "Заседает в группах: "
         ),
     "user.stat.rewards" =>
-        array(
-            "en" => "Rewards: ",
-            "ru" => "Награды: ",
-            "ruUN" => "Медальки: "
-        ),
-    "user.stat.link" =>
         array(
             "en" => "Rewards: ",
             "ru" => "Награды: ",
