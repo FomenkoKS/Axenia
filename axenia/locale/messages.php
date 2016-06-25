@@ -49,11 +49,41 @@ return array(
             "ru" => "Итак, надо <a href='telegram.me/:botName?startgroup=0'>выбрать чат</a>, где я буду считать карму. ✌😊",
             "ruUN" => "Итак, надо <a href='telegram.me/:botName?startgroup=0'>выбрать чат</a>, где я буду считать карму. ✌😊"
         ),
-    "karma.top.title" =>
+    "user.stat" =>
         array(
-            "en" => "<b>Top list of Karma owners in the «:chatName»:</b>\r\n",
-            "ru" => "<b>Самые почётные люди чата «:chatName»:</b>\r\n",
-            "ruUN" => "<b>Самые длинные кармописюны чата «:chatName»:</b>\r\n"
+            "en" => ":user statistic",
+            "ru" => "Статистика пользователя :user",
+            "ruUN" => "Статистика пользователя :user"
+        ),
+    "user.stat.sum" =>
+        array(
+            "en" => "Karma value: ",
+            "ru" => "Количество кармы: ",
+            "ruUN" => "Наебашил кармы: "
+        ),
+    "user.stat.place" =>
+        array(
+            "en" => "Place in rating: ",
+            "ru" => "Место в рейтинге: ",
+            "ruUN" => "Место в рейтинге: "
+        ),
+    "user.stat.membership" =>
+        array(
+            "en" => "Membership: ",
+            "ru" => "Состоит в группах: ",
+            "ruUN" => "Заседает в группах: "
+        ),
+    "user.stat.rewards" =>
+        array(
+            "en" => "Rewards: ",
+            "ru" => "Награды: ",
+            "ruUN" => "Медальки: "
+        ),
+    "user.stat.link" =>
+        array(
+            "en" => "Rewards: ",
+            "ru" => "Награды: ",
+            "ruUN" => "Медальки: "
         ),
     "karma.top.row" =>
         array(
@@ -156,5 +186,11 @@ return array(
             "en" => "Karma-monster",
             "ru" => "Кармонстр",
             "ruUN" => "Кармонстр"
+        ),
+    "possessive" =>
+        array(
+            "en" => "'s",
+            "ru" => "",
+            "ruUN" => ""
         )
 );

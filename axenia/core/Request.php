@@ -171,5 +171,11 @@ class Request
         return self::execJson("getChatAdministrators", $data);
     }
 
+    public static function getChat($chat_id)
+    {
+        $data = array('chat_id' =>$chat_id);
+        return self::execJson("getChat", $data);
+    }
+
 
 }

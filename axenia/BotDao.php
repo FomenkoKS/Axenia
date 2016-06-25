@@ -32,13 +32,22 @@ class BotDao extends AbstractDao
     public function getUsersByName($query)
     {
         if ($query != '') {
-            $query = "'" . strtolower($query . "%") . "'";
-            $res = $this->select("SELECT id,username,firstname,lastname FROM Users WHERE username LIKE $query or ((username is NULL or username='') and lastname LIKE $query ) or ((username is NULL or username='') and (lastname is NULL or lastname='')  and firstname LIKE $query)");
+            $query = "'" . strtolower("%". $query . "%") . "'";
+            $res = $this->select("SELECT id,username,firstname,lastname FROM Users WHERE concat(username,firstname,lastname) LIKE $query;");
             return $res;
         }
         return false;
     }
 
+    public function SumKarma($user_id){
+        $res=$this->select("select sum(level) from Karma where user_id=".$user_id);
+        return (!$res[0]) ? 0 : $res[0];
+    }
+
+    public function UsersPlace($user_id){
+        $res=$this->select("select count(a.Sumlevel) from (select sum(level) as SumLevel FROM Karma k group by k.user_id) a,(SELECT sum(level) as SumLevel FROM Karma WHERE user_id=".$user_id.") u where u.SumLevel<=a.SumLevel order by a.SumLevel asc;");
+        return (!$res[0]) ? false : $res[0];
+    }
 //endregion
 
 // region -------------------- Lang
@@ -82,7 +91,7 @@ class BotDao extends AbstractDao
 
     public function deleteChat($chat_id)
     {
-        $query = "DELETE FROM `Chats` WHERE `id` = " . $chat_id;
+        $query = "DELETE FROM Chats WHERE id = " . $chat_id;
         return $this->delete($query);
     }
 
@@ -91,6 +100,13 @@ class BotDao extends AbstractDao
     {
         $res = $this->select("SELECT title FROM Chats WHERE id = " . $chat_id);
         return (!$res[0]) ? false : $res[0];
+    }
+
+    public function getGroupsMistakes()
+    {
+        $res = $this->select("select DISTINCT k.chat_id from Karma k where not(k.last_updated is NULL) and k.chat_id not in (select id from Chats)");
+        $res = array_merge($res,$this->select("select DISTINCT k.chat_id, c.title from Chats c,Karma k where not(k.last_updated is NULL) and k.chat_id=c.id and (c.title='')"));
+        return (!$res) ? false : $res;
     }
 
 

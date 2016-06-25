@@ -40,6 +40,25 @@ class Axenia
                     }
                     break;
 
+//Хотел прибраться в БД ток не вышел каменный цветок(( А, не, норм
+                case preg_match('/^(\/cleanDB)/ui ', $text, $matches):
+                    if (Util::isInEnum(ADMIN_IDS, $from_id)) {
+                        if($groups_id=$this->service->getGroupsMistakes()){
+                            foreach($groups_id as $id){
+                                //Request::sendMessage($from_id,$id);
+                                $chat=Request::getChat($id);
+                                if($chat!==false){
+                                    $this->service->rememberChat($chat['id'],$chat['title'],$chat['type'],$from_id);
+                                    //Request::sendMessage($from_id,$id);
+                                }else{
+                                    $this->service->deleteChat($id);
+                                }
+                            }
+
+                        }
+                    }
+                    break;
+
                 case preg_match('/^\/lang/ui', $text, $matches):
                     if($this->service->isAdmin($from['id'],$chat_id) || $message['chat']['type']=="private")$this->sendLanguageKeyboard($chat_id);
                     break;
@@ -51,8 +70,6 @@ class Axenia
                     Request::sendMessage($chat_id, $admins);
                     //if(in_array($from_id,$admins['user']['id'])) Request::sendMessage($chat_id, "success");
                     break;
-
-
 
                 case (preg_match('/^\/start/ui', $text, $matches)):
                     if ($chat['type'] == "private") {
@@ -76,6 +93,10 @@ class Axenia
                         $out = $this->service->getTop($chat_id, 5);
                         Request::sendHtmlMessage($chat_id, $out);
                     }
+                    break;
+
+                case preg_match('/^\/mystat/ui', $text, $matches):
+                    Request::sendMessage($chat_id, $this->service->GenStats($from_id));
                     break;
 
                 case preg_match('/^(\+|\-|👍|👎) ?([\s\S]+)?/ui', $text, $matches):
@@ -137,12 +158,11 @@ class Axenia
         }
 
         if (isset($message['left_chat_member'])) {
-            //не видит себя когда его удаляют из чата
             $member = $message['left_chat_member'];
-            //if (BOT_NAME == $member['username']) {
+            if (BOT_NAME == $member['username']) {
                 Request::sendMessage("32512143", $member['username']." leave chat ".$chat_id);
                 $this->service->deleteChat($chat_id);
-            //}
+            }
         }
     }
 
@@ -165,9 +185,9 @@ class Axenia
         //придумать более интересный текст, перевести, засунуть в lang
         if($message_id==NULL && $text == NULL){
             $text = "Сиськи за 300, булки за 200, котята за 100. Что берём?";
-            Request::sendMessage($chat_id, $text, ["reply_markup" =>  ['inline_keyboard' => $inline_keyboard]]);
+            Request::sendHtmlMessage($chat_id, $text, ["reply_markup" =>  ['inline_keyboard' => $inline_keyboard]]);
         }else{
-            Request::editMessageText($chat_id,$message_id, $text,["reply_markup" =>  ['inline_keyboard' => $inline_keyboard]]);
+            Request::editMessageText($chat_id,$message_id, $text,["parse_mode"=>"HTML","reply_markup" =>  ['inline_keyboard' => $inline_keyboard]]);
         }
     }
 
@@ -237,13 +257,11 @@ class Axenia
 
     public function processCallback($callback)
     {
-
         $from=$callback['from'];
         $message=$callback['message'];
         $inline_message_id=$callback['inline_message_id'];
         $data=$callback['data'];
         $chat_id=$message['chat']['id'];
-
         $this->service->initLang($chat_id, $message['chat']['type']);
         if(in_array($data,array_keys(Lang::$availableLangs)) && ($this->service->isAdmin($from['id'],$chat_id) || $message['chat']['type']=="private")){
             $qrez = $this->service->setLang($chat_id, $message['chat']['type'], $data);
@@ -258,7 +276,18 @@ class Axenia
                 Request::sendHtmlMessage($chat_id, Lang::message('user.pickChat', array('botName' => BOT_NAME)));
             }
         }elseif(strpos($data,"buy_")!==false) {
-            $this->sendShowcase($chat_id,$message['message_id'], $data);
+            switch($data){
+                case 'buy_tits':
+                    $tits=json_decode(file_get_contents("http://api.oboobs.ru/boobs/1/1/random"),true);
+                    $rez="<a href='http://media.oboobs.ru/boobs/".sprintf("%05d",$tits[0]['id']).".jpg'>-</a>";
+                    break;
+                case 'buy_butts':
+                    $butts=json_decode(file_get_contents("http://api.obutts.ru/butts/1/1/random"),true);
+                    $rez="<a href='http://media.obutts.ru/butts/".sprintf("%05d",$butts[0]['id']).".jpg'>-</a>";
+                    break;
+                default: $rez=$data;
+            }
+            $this->sendShowcase($chat_id,$message['message_id'], $rez);
         }
     }
 

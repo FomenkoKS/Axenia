@@ -45,12 +45,19 @@ class BotService
             $stack = array();
             foreach ($a as $user) {
                 $userTitle = Util::getFullName($user[1], $user[2], $user[3]);
-                array_push($stack, array('type' => 'article', 'id' => uniqid(), 'title' => '👤' . $userTitle, 'message_text' => $userTitle, 'parse_mode' => 'HTML'));
+                array_push($stack, array('type' => 'article', 'id' => uniqid(), 'title' => Lang::message("user.stat",array("user"=>'👤' . $userTitle)), 'message_text' => Lang::message("user.stat",array("user"=>'👤' . $userTitle)).":\r\n".$this->GenStats($user[0]) , 'parse_mode' => 'HTML'));
             }
             return $stack;
         }
         return false;
     }
+
+    public function GenStats($id){
+        return  "🔮".Lang::message("user.stat.sum").     round($this->db->SumKarma($id),0)."\r\n".
+                "📊".Lang::message("user.stat.place").   $this->db->UsersPlace($id)."\r\n";
+    }
+
+
 
 //endregion
 
@@ -135,6 +142,11 @@ class BotService
     public function getGroupName($chat_id)
     {
         return $this->db->getGroupName($chat_id);
+    }
+
+    public function getGroupsMistakes()
+    {
+        return $this->db->getGroupsMistakes();
     }
 
 

@@ -59,7 +59,7 @@ class Util
 
         $out = '';
         if (self::isNotEmpty($username)) {
-            $out .= ':0';
+            $out .= ':0'.Lang::message("possessive");
             if (self::isNotEmpty($first) && self::isNotEmpty($last)) {
                 $out .= ' (:1 :2)';
             } else {
@@ -71,12 +71,12 @@ class Util
             }
         } else {
             if (self::isNotEmpty($first) && self::isNotEmpty($last)) {
-                $out .= ':1 :2';
+                $out .= ':1 :2'.Lang::message("possessive");
             } else {
                 if (self::isNotEmpty($first)) {
-                    $out .= ':1';
+                    $out .= ':1'.Lang::message("possessive");
                 } elseif (self::isNotEmpty($last)) {
-                    $out .= ':2';
+                    $out .= ':2'.Lang::message("possessive");
                 }
             }
         }
