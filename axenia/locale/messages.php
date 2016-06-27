@@ -79,6 +79,12 @@ return array(
             "ru" => "Награды: ",
             "ruUN" => "Медальки: "
         ),
+    "karma.top.title" =>
+        array(
+            "en" => "<b>Top list of Karma owners in the «:chatName»:</b>\r\n",
+            "ru" => "<b>Самые почётные люди чата «:chatName»:</b>\r\n",
+            "ruUN" => "<b>Самые длинные кармописюны чата «:chatName»:</b>\r\n"
+        ),
     "karma.top.row" =>
         array(
             "en" => ":username (:karma)\r\n",
