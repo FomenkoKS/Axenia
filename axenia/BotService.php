@@ -116,11 +116,14 @@ class BotService
 
 // region -------------------- Chats
 
-    public function rememberChat($chat_id, $title, $chatType, $adder_id)
+    public function rememberChat($chat, $adder_id)
     {
+        $chat_id=$chat['id'];
+        $chatType=$chat['type'];
+        $title=$chat['title'];
+        $username=$chat['username'];
         if (Util::isInEnum("group,supergroup", $chatType)) {
-            $res = $this->db->insertOrUpdateChat($chat_id, $title);
-
+            $res = $this->db->insertOrUpdateChat($chat_id, $title,$username);
             if ($this->db->getChatLang($chat_id) === false) {
                 $lang = $this->db->getUserLang($adder_id); //получение языка добавителя
                 if ($lang !== false) {

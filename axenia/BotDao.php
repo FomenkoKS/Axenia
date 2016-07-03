@@ -82,10 +82,11 @@ class BotDao extends AbstractDao
 
 // region -------------------- Chats
 
-    public function insertOrUpdateChat($chat_id, $title)
+    public function insertOrUpdateChat($chat_id, $title,$username)
     {
         $title = "'" . (isset($title) ? $this->escape_mimic($title) : '') . "'";
-        $query = "INSERT INTO Chats(id, title) VALUES($chat_id, $title) ON DUPLICATE KEY UPDATE title = $title";
+        $username = "'" . (isset($username) ? $this->escape_mimic($username) : '') . "'";
+        $query = "INSERT INTO Chats(id, title,username) VALUES($chat_id, $title,$username) ON DUPLICATE KEY UPDATE title = $title,username=$username";
         return $this->insert($query);
     }
 

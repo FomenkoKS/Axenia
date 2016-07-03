@@ -48,7 +48,7 @@ class Axenia
                                 //Request::sendMessage($from_id,$id);
                                 $chat=Request::getChat($id);
                                 if($chat!==false){
-                                    $this->service->rememberChat($chat['id'],$chat['title'],$chat['type'],$from_id);
+                                    $this->service->rememberChat($chat,$from_id);
                                     //Request::sendMessage($from_id,$id);
                                 }else{
                                     $this->service->deleteChat($id);
@@ -77,7 +77,7 @@ class Axenia
                         Request::sendHtmlMessage($chat_id, Lang::message('chat.greetings'));
                         $this->sendLanguageKeyboard($chat_id, $message_id);
                     } else {
-                        $this->service->rememberChat($chat_id, $chat['title'], $chat['type'], $from_id);
+                        $this->service->rememberChat($chat, $from_id);
                     }
 
                     break;
@@ -143,7 +143,7 @@ class Axenia
         if (isset($message['new_chat_member'])) {
             $newMember = $message['new_chat_member'];
             if (BOT_NAME == $newMember['username']) {
-                $qrez = $this->service->rememberChat($chat_id, $chat['title'], $chat['type'], $from_id);
+                $qrez = $this->service->rememberChat($chat, $from_id);
                 if ($qrez !== false) {
                     Request::sendTyping($chat_id);
                     Request::sendMessage($chat_id, Lang::message('chat.greetings'), array("parse_mode" => "Markdown"));
@@ -154,7 +154,7 @@ class Axenia
         }
 
         if (isset($message['new_chat_title'])) {
-            $this->service->rememberChat($chat_id, $message['new_chat_title'], $chat['type'], $from_id);
+            $this->service->rememberChat($chat, $from_id);
         }
 
         if (isset($message['left_chat_member'])) {
