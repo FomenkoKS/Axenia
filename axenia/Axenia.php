@@ -96,7 +96,7 @@ class Axenia
                     break;
 
                 case preg_match('/^\/mystat/ui', $text, $matches):
-                    Request::sendMessage($chat_id, $this->service->GenStats($from_id));
+                    Request::sendHtmlMessage($chat_id, $this->service->GenStats($from_id));
                     break;
 
                 case preg_match('/^(\+|\-|👍|👎) ?([\s\S]+)?/ui', $text, $matches):

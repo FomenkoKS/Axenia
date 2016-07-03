@@ -48,6 +48,20 @@ class BotDao extends AbstractDao
         $res=$this->select("select count(a.Sumlevel) from (select sum(level) as SumLevel FROM Karma k group by k.user_id) a,(SELECT sum(level) as SumLevel FROM Karma WHERE user_id=".$user_id.") u where u.SumLevel<=a.SumLevel order by a.SumLevel asc;");
         return (!$res[0]) ? false : $res[0];
     }
+
+    public function UserMembership($user_id){
+        $a=$this->select("select c.title, c.username from Chats c, Karma k where k.chat_id=c.id and k.user_id=".$user_id." order by c.title");
+        if($a[0]){
+            $a=array_chunk($a,2);
+            $res=array();
+            foreach($a as $value){
+                array_push($res,(empty($value[1]))?$value[0]:"<a href='telegram.me/".$value[1]."'>".$value[0]."</a>");
+            }
+            return implode(", ",$res);
+        }else{
+            return false;
+        }
+    }
 //endregion
 
 // region -------------------- Lang

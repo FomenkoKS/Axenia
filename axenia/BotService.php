@@ -53,8 +53,9 @@ class BotService
     }
 
     public function GenStats($id){
-        return  "🔮".Lang::message("user.stat.sum").     round($this->db->SumKarma($id),0)."\r\n".
-                "📊".Lang::message("user.stat.place").   $this->db->UsersPlace($id)."\r\n";
+        return  "🔮".Lang::message("user.stat.sum").        round($this->db->SumKarma($id),0)."\r\n".
+                "📊".Lang::message("user.stat.place").      $this->db->UsersPlace($id)."\r\n".
+                "👥".Lang::message("user.stat.membership"). $this->db->UserMembership($id)."\r\n";
     }
 
 
