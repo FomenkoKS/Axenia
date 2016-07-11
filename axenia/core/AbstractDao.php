@@ -4,6 +4,35 @@ class AbstractDao
 {
     protected static $connection;
 
+    public function select($query, $isNeedToConvert = true)
+    {
+        $out = array();
+
+        $connection = $this->connect();
+        $result = $connection->query($query);
+
+        if ($result) {
+            if ($isNeedToConvert) {
+                while ($row = $result->fetch_assoc()) {
+                    //$rows[] = $row;
+                    foreach ($row as $value) {
+                        array_push($out, $value);
+                    }
+                }
+            } else {
+                while ($row = $result->fetch_assoc()) {
+                    array_push($out, $row);
+                }
+            }
+
+        } else {
+            error_log("Error query: " . $query . "\n " . $this->error() . "\n");
+            return false;
+        }
+
+        return $out;
+    }
+
     public function connect()
     {
         // Try and connect to the database
@@ -25,7 +54,16 @@ class AbstractDao
         return self::$connection;
     }
 
-    public function select($query)
+    /**
+     * Fetch the last error from the database
+     */
+    public function error()
+    {
+        $connection = $this->connect();
+        return $connection->error;
+    }
+
+    public function selectOne($query, $isNeedToConvert = true)
     {
         $out = array();
 
@@ -33,18 +71,26 @@ class AbstractDao
         $result = $connection->query($query);
 
         if ($result) {
-            while ($row = $result->fetch_assoc()) {
-                //$rows[] = $row;
+            if ($isNeedToConvert) {
+                $row = $result->fetch_assoc();
                 foreach ($row as $value) {
                     array_push($out, $value);
                 }
+            } else {
+                $row = $result->fetch_assoc();
+                array_push($out, $row);
             }
         } else {
-            error_log("Error query: ".$query."\n ".$this->error()."\n");
+            error_log("Error query: " . $query . "\n " . $this->error() . "\n");
             return false;
         }
 
         return $out;
+    }
+
+    public function delete($query)
+    {
+        return $this->update($query);
     }
 
     public function update($query)
@@ -55,28 +101,14 @@ class AbstractDao
         if ($result) {
             return true;
         } else {
-            error_log("Error query: ".$query."\n ".$this->error()."\n");
+            error_log("Error query: " . $query . "\n " . $this->error() . "\n");
             return false;
         }
-    }
-
-    public function delete($query)
-    {
-        return $this->update($query);
     }
 
     public function insert($query)
     {
         return $this->update($query);
-    }
-
-    /**
-     * Fetch the last error from the database
-     */
-    public function error()
-    {
-        $connection = $this->connect();
-        return $connection->error;
     }
 
     /**

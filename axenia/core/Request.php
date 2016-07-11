@@ -34,27 +34,36 @@ class Request
         return true;
     }
 
-    public static function execJson($method, $parameters)
+    public static function sendTyping($chat_id)
+    {
+        self::exec("sendChatAction", array('chat_id' => $chat_id, "action" => "typing"));
+    }
+
+    public static function exec($method, $parameters)
     {
         if (!is_string($method)) {
+            error_log("Method name must be a string\n");
             return false;
         }
 
         if (!$parameters) {
             $parameters = array();
         } else if (!is_array($parameters)) {
+            error_log("Parameters must be an array\n");
             return false;
         }
 
-        $parameters["method"] = $method;
-
-        $handle = curl_init(self::$url);
+        foreach ($parameters as $key => &$val) {
+            // encoding to JSON array parameters, for example reply_markup
+            if (!is_numeric($val) && !is_string($val)) {
+                $val = json_encode($val);
+            }
+        }
+        $url = self::$url . $method . '?' . http_build_query($parameters);
+        $handle = curl_init($url);
         curl_setopt($handle, CURLOPT_RETURNTRANSFER, true);
         curl_setopt($handle, CURLOPT_CONNECTTIMEOUT, 5);
         curl_setopt($handle, CURLOPT_TIMEOUT, 60);
-        curl_setopt($handle, CURLOPT_POSTFIELDS, json_encode($parameters));
-        curl_setopt($handle, CURLOPT_HTTPHEADER, array("Content-Type: application/json"));
-
         return self::exec_curl_request($handle);
     }
 
@@ -94,7 +103,34 @@ class Request
         return $response;
     }
 
-    public static function exec($method, $parameters)
+    public static function sendMessage($chat_id, $text, $addition = NULL)
+    {
+        $data = ['chat_id' => $chat_id, 'text' => $text];
+        if ($addition != null) {
+            $data = array_replace($data, $addition);
+        }
+        self::exec("sendMessage", $data);
+    }
+
+    public static function sendHtmlMessage($chat_id, $message, $addition = NULL)
+    {
+        $data = ['chat_id' => $chat_id, "text" => $message, "parse_mode" => "HTML", "disable_web_page_preview" => true];
+        if ($addition != null) {
+            $data = array_replace($data, $addition);
+        }
+        self::exec("sendMessage", $data);
+    }
+
+    public static function editMessageText($chat_id,$message_id, $text, $addition = NULL)
+    {
+        $data = ['chat_id' => $chat_id,"message_id"=>$message_id, "text" => $text];
+        if ($addition != null) {
+            $data = array_replace($data, $addition);
+        }
+        self::execJson("editMessageText", $data);
+    }
+
+    public static function execJson($method, $parameters)
     {
         if (!is_string($method)) {
             error_log("Method name must be a string\n");
@@ -108,42 +144,37 @@ class Request
             return false;
         }
 
-        foreach ($parameters as $key => &$val) {
-            // encoding to JSON array parameters, for example reply_markup
-            if (!is_numeric($val) && !is_string($val)) {
-                $val = json_encode($val);
-            }
-        }
-        $url = self::$url . $method . '?' . http_build_query($parameters);
+        $parameters["method"] = $method;
 
-        $handle = curl_init($url);
+        $handle = curl_init(self::$url);
         curl_setopt($handle, CURLOPT_RETURNTRANSFER, true);
         curl_setopt($handle, CURLOPT_CONNECTTIMEOUT, 5);
         curl_setopt($handle, CURLOPT_TIMEOUT, 60);
+        curl_setopt($handle, CURLOPT_POSTFIELDS, json_encode($parameters));
+        curl_setopt($handle, CURLOPT_HTTPHEADER, array("Content-Type: application/json"));
+
         return self::exec_curl_request($handle);
     }
 
-    public static function sendTyping($chat_id)
+    public static function answerInlineQuery($inline_id, $results, $addition = NULL)
     {
-        self::exec("sendChatAction", array('chat_id' => $chat_id, "action" => "typing"));
-    }
-
-    public static function sendMessage($chat_id, $text, $addition = NULL)
-    {
-        $data = array('chat_id' => $chat_id, 'text' => $text);
+        $data = array('inline_query_id' => $inline_id, 'results' => $results);
         if ($addition != null) {
             $data = array_replace($data, $addition);
         }
-        self::exec("sendMessage", $data);
+        self::execJson("answerInlineQuery", $data);
     }
 
-    public static function sendHtmlMessage($chat_id, $message, $addition = NULL)
+    public static function getChatAdministrators($chat_id)
     {
-        $data = array('chat_id' => $chat_id, "text" => $message, "parse_mode" => "HTML", "disable_web_page_preview" => true);
-        if ($addition != null) {
-            $data = array_replace($data, $addition);
-        }
-        self::exec("sendMessage", $data);
+        $data = array('chat_id' => $chat_id);
+        return self::execJson("getChatAdministrators", $data);
+    }
+
+    public static function getChat($chat_id)
+    {
+        $data = array('chat_id' =>$chat_id);
+        return self::execJson("getChat", $data);
     }
 
 

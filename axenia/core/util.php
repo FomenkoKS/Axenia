@@ -35,6 +35,57 @@ class Util
         return $out;
     }
 
+    public static function isBetween($val, $min, $max)
+    {
+        return ($val >= $min && $val < $max);
+    }
+
+    public static function getFullNameUser($user)
+    {
+        $username = isset($user['username']) ? $user['username'] : '';
+        $first = isset($user['first_name']) ? $user['first_name'] : '';
+        $last = isset($user['last_name']) ? $user['last_name'] : '';
+        return self::getFullName($username, $first, $last);
+    }
+
+    public static function getFullName($username, $first, $last)
+    {
+        $map = array($username, $first, $last);
+
+        $out = '';
+        if (self::isNotEmpty($username)) {
+            $out .= ':0'.Lang::message("possessive");
+            if (self::isNotEmpty($first) && self::isNotEmpty($last)) {
+                $out .= ' (:1 :2)';
+            } else {
+                if (self::isNotEmpty($first)) {
+                    $out .= ' (:1)';
+                } elseif (self::isNotEmpty($last)) {
+                    $out .= ' (:2)';
+                }
+            }
+        } else {
+            if (self::isNotEmpty($first) && self::isNotEmpty($last)) {
+                $out .= ':1 :2'.Lang::message("possessive");
+            } else {
+                if (self::isNotEmpty($first)) {
+                    $out .= ':1'.Lang::message("possessive");
+                } elseif (self::isNotEmpty($last)) {
+                    $out .= ':2'.Lang::message("possessive");
+                }
+            }
+        }
+
+        if (self::isNotEmpty($out)) {
+            return self::insert($out, $map);
+        }
+        return false;
+    }
+
+    public static function isNotEmpty($str)
+    {
+        return $str != null && $str != '';
+    }
 
     /**
      * Replaces variable placeholders inside a $str with any given $data. Each key in the $data array
@@ -169,5 +220,10 @@ class Util
                 break;
         }
         return $str;
+    }
+
+    public static function wrapQuotes($obj, $quote = "'")
+    {
+        return $quote . $obj . $quote;
     }
 }
