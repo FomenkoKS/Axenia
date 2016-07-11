@@ -8,3 +8,4 @@ define('API_URL', 'https://api.telegram.org/bot' . BOT_TOKEN . '/');
 define('PATH_TO_SITE', '');
 define('ADMIN_IDS', '');
 define('NASH_CHAT_ID', '');
+define('LOG_CHAT_ID', '');
