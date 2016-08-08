@@ -17,6 +17,7 @@ class Request
     {
         if (!is_string($method)) {
             error_log("Method name must be a string\n");
+
             return false;
         }
 
@@ -24,6 +25,7 @@ class Request
             $parameters = array();
         } else if (!is_array($parameters)) {
             error_log("Parameters must be an array\n");
+
             return false;
         }
 
@@ -31,6 +33,7 @@ class Request
 
         header("Content-Type: application/json");
         echo json_encode($parameters);
+
         return true;
     }
 
@@ -43,6 +46,7 @@ class Request
     {
         if (!is_string($method)) {
             error_log("Method name must be a string\n");
+
             return false;
         }
 
@@ -50,6 +54,7 @@ class Request
             $parameters = array();
         } else if (!is_array($parameters)) {
             error_log("Parameters must be an array\n");
+
             return false;
         }
 
@@ -64,6 +69,7 @@ class Request
         curl_setopt($handle, CURLOPT_RETURNTRANSFER, true);
         curl_setopt($handle, CURLOPT_CONNECTTIMEOUT, 5);
         curl_setopt($handle, CURLOPT_TIMEOUT, 60);
+
         return self::exec_curl_request($handle);
     }
 
@@ -76,6 +82,7 @@ class Request
             $error = curl_error($handle);
             error_log("Curl returned error $errno: $error\n");
             curl_close($handle);
+
             return false;
         }
 
@@ -85,6 +92,7 @@ class Request
         if ($http_code >= 500) {
             // do not wat to DDOS server if something goes wrong
             sleep(10);
+
             return false;
         } else if ($http_code != 200) {
             $response = json_decode($response, true);
@@ -92,6 +100,7 @@ class Request
             if ($http_code == 401) {
                 throw new Exception('Invalid access token provided');
             }
+
             return false;
         } else {
             $response = json_decode($response, true);
@@ -100,6 +109,7 @@ class Request
             }
             $response = $response['result'];
         }
+
         return $response;
     }
 
@@ -121,9 +131,9 @@ class Request
         self::exec("sendMessage", $data);
     }
 
-    public static function editMessageText($chat_id,$message_id, $text, $addition = NULL)
+    public static function editMessageText($chat_id, $message_id, $text, $addition = NULL)
     {
-        $data = ['chat_id' => $chat_id,"message_id"=>$message_id, "text" => $text];
+        $data = ['chat_id' => $chat_id, "message_id" => $message_id, "text" => $text];
         if ($addition != null) {
             $data = array_replace($data, $addition);
         }
@@ -134,6 +144,7 @@ class Request
     {
         if (!is_string($method)) {
             error_log("Method name must be a string\n");
+
             return false;
         }
 
@@ -141,6 +152,7 @@ class Request
             $parameters = array();
         } else if (!is_array($parameters)) {
             error_log("Parameters must be an array\n");
+
             return false;
         }
 
@@ -168,12 +180,14 @@ class Request
     public static function getChatAdministrators($chat_id)
     {
         $data = array('chat_id' => $chat_id);
+
         return self::execJson("getChatAdministrators", $data);
     }
 
     public static function getChat($chat_id)
     {
-        $data = array('chat_id' =>$chat_id);
+        $data = array('chat_id' => $chat_id);
+
         return self::execJson("getChat", $data);
     }
 

@@ -17,8 +17,8 @@ $update = json_decode($content, true);
 
 if (!$update) {
     exit;
-}else{
-    file_put_contents("array.txt",print_r($update,true));
+} else {
+    file_put_contents("array.txt", print_r($update, true));
     Request::setUrl(API_URL);
     $bot = new Axenia(new BotService(new BotDao()));
 }
@@ -52,7 +52,7 @@ if (isset($update["inline_query"])) {
 }
 
 if (isset($update["callback_query"])) {
-    $chat_id=$update["callback_query"]["message"]["chat"]["id"];
+    $chat_id = $update["callback_query"]["message"]["chat"]["id"];
     $bot->processCallback($update["callback_query"]);
 }
 ?>
