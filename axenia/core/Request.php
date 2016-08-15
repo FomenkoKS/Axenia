@@ -168,6 +168,39 @@ class Request
         return self::exec_curl_request($handle);
     }
 
+    public static function send($method, array $content, $post = true) {
+
+        $url = self::$url . $method;
+        if ($post)
+            $reply = self::sendAPIRequest($url, $content);
+        else
+            $reply = self::sendAPIRequest($url, array(), false);
+        return json_decode($reply, true);
+    }
+
+    public static function sendAPIRequest($url, array $content, $post = true) {
+        if (isset($content['chat_id'])) {
+            $url = $url . "?chat_id=" . $content['chat_id'];
+            unset($content['chat_id']);
+        }
+        $ch = curl_init();
+        curl_setopt($ch, CURLOPT_URL, $url);
+        curl_setopt($ch, CURLOPT_HTTPHEADER, array(
+            "Content-Type:multipart/form-data"
+        ));
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+        if ($post) {
+            curl_setopt($ch, CURLOPT_POST, 1);
+            curl_setopt($ch, CURLOPT_POSTFIELDS, $content);
+            $stat = fstat($content['photo']);
+            curl_setopt($ch, CURLOPT_INFILESIZE, 5555);
+        }
+        file_put_contents("log1", print_r($stat, true));
+        $result = curl_exec($ch);
+        curl_close($ch);
+        return $result;
+    }
+
     public static function answerInlineQuery($inline_id, $results, $addition = NULL)
     {
         $data = array('inline_query_id' => $inline_id, 'results' => $results);
