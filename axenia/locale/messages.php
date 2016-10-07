@@ -192,5 +192,39 @@ return array(
             "en" => "'s",
             "ru" => "",
             "ruUN" => ""
+        ),
+    "showcase.title" =>
+        array(
+            "en" => "What you want to buy for karma?",
+            "ru" => "На что желаете потратить карму?",
+            "ruUN" => "Что вам показать за карму?"
+        ),
+    "showcase.tits" =>
+        array(
+            "ruUN" => "Сиськи"
+        ),
+    "showcase.butts" =>
+        array(
+            "ruUN" => "Булки"
+        ),
+    "showcase.cats" =>
+        array(
+            "en" => "Cat",
+            "ru" => "Котики",
+            "ruUN" => "Киска"
+        ),
+    "showcase.buy_tits" =>
+        array(
+            "ruUN" => "купил сиськи"
+        ),
+    "showcase.buy_butts" =>
+        array(
+            "ruUN" => "купил булки"
+        ),
+    "showcase.buy_cats" =>
+        array(
+            "en" => "get cat",
+            "ru" => "взял котиков",
+            "ruUN" => "взял котэ"
         )
 );

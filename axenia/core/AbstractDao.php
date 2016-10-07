@@ -27,7 +27,6 @@ class AbstractDao
 
         } else {
             error_log("Error query: " . $query . "\n " . $this->error() . "\n");
-
             return false;
         }
 
@@ -52,7 +51,6 @@ class AbstractDao
         if (self::$connection === false) {
             return false;
         }
-
         return self::$connection;
     }
 
@@ -62,7 +60,6 @@ class AbstractDao
     public function error()
     {
         $connection = $this->connect();
-
         return $connection->error;
     }
 
@@ -85,7 +82,6 @@ class AbstractDao
             }
         } else {
             error_log("Error query: " . $query . "\n " . $this->error() . "\n");
-
             return false;
         }
 
@@ -106,7 +102,6 @@ class AbstractDao
             return true;
         } else {
             error_log("Error query: " . $query . "\n " . $this->error() . "\n");
-
             return false;
         }
     }
@@ -125,7 +120,6 @@ class AbstractDao
     public function quote($value)
     {
         $connection = $this->connect();
-
         return "'" . $connection->real_escape_string($value) . "'";
     }
 

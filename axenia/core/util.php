@@ -11,7 +11,6 @@ class Util
     public static function isInEnum($enumString, $value)
     {
         $enumArray = explode(',', $enumString);
-
         return in_array($value, $enumArray);
     }
 
@@ -33,7 +32,6 @@ class Util
             $out .= $item;
             $out .= "\r\n";
         }
-
         return $out;
     }
 
@@ -47,7 +45,6 @@ class Util
         $username = isset($user['username']) ? $user['username'] : '';
         $first = isset($user['first_name']) ? $user['first_name'] : '';
         $last = isset($user['last_name']) ? $user['last_name'] : '';
-
         return self::getFullName($username, $first, $last);
     }
 
@@ -57,7 +54,7 @@ class Util
 
         $out = '';
         if (self::isNotEmpty($username)) {
-            $out .= ':0' . Lang::message("possessive");
+            $out .= ':0'.Lang::message("possessive");
             if (self::isNotEmpty($first) && self::isNotEmpty($last)) {
                 $out .= ' (:1 :2)';
             } else {
@@ -69,12 +66,12 @@ class Util
             }
         } else {
             if (self::isNotEmpty($first) && self::isNotEmpty($last)) {
-                $out .= ':1 :2' . Lang::message("possessive");
+                $out .= ':1 :2'.Lang::message("possessive");
             } else {
                 if (self::isNotEmpty($first)) {
-                    $out .= ':1' . Lang::message("possessive");
+                    $out .= ':1'.Lang::message("possessive");
                 } elseif (self::isNotEmpty($last)) {
-                    $out .= ':2' . Lang::message("possessive");
+                    $out .= ':2'.Lang::message("possessive");
                 }
             }
         }
@@ -82,7 +79,6 @@ class Util
         if (self::isNotEmpty($out)) {
             return self::insert($out, $map);
         }
-
         return false;
     }
 
@@ -109,10 +105,10 @@ class Util
      *   (Overwrites before, after, breaks escape / clean)
      * - clean: A boolean or array with instructions for Text::cleanInsert
      *
-     * @param string $str     A string containing variable placeholders
-     * @param array  $data    A key => val array where each key stands for a placeholder variable name
-     *                        to be replaced with val
-     * @param array  $options An array of options, see description above
+     * @param string $str A string containing variable placeholders
+     * @param array $data A key => val array where each key stands for a placeholder variable name
+     *     to be replaced with val
+     * @param array $options An array of options, see description above
      * @return string
      */
     public static function insert($str, $data, array $options = array())
@@ -139,7 +135,6 @@ class Util
                 $offset = $pos + strlen($val);
                 $str = substr_replace($str, $val, $pos, 1);
             }
-
             return ($options['clean']) ? static::cleanInsert($str, $options) : $str;
         }
         asort($data);
@@ -159,7 +154,6 @@ class Util
         if (!isset($options['format']) && isset($options['before'])) {
             $str = str_replace($options['escape'] . $options['before'], $options['before'], $str);
         }
-
         return ($options['clean']) ? static::cleanInsert($str, $options) : $str;
     }
 
@@ -169,8 +163,8 @@ class Util
      * is to replace all whitespace and unneeded markup around placeholders that did not get replaced
      * by Text::insert().
      *
-     * @param string $str     String to clean.
-     * @param array  $options Options list.
+     * @param string $str String to clean.
+     * @param array $options Options list.
      * @return string
      * @see \Cake\Utility\Text::insert()
      */
@@ -225,7 +219,6 @@ class Util
                 $str = preg_replace($kleenex, $clean['replacement'], $str);
                 break;
         }
-
         return $str;
     }
 

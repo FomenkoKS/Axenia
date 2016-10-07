@@ -46,7 +46,6 @@ class Request
     {
         if (!is_string($method)) {
             error_log("Method name must be a string\n");
-
             return false;
         }
 
@@ -64,12 +63,14 @@ class Request
                 $val = json_encode($val);
             }
         }
+
         $url = self::$url . $method . '?' . http_build_query($parameters);
         $handle = curl_init($url);
+        /*$data = ['chat_id' => $parameters["chat_id"], 'text' => $parameters["chat_id"]];
+        self::exec("sendMessage", $data);*/
         curl_setopt($handle, CURLOPT_RETURNTRANSFER, true);
         curl_setopt($handle, CURLOPT_CONNECTTIMEOUT, 5);
         curl_setopt($handle, CURLOPT_TIMEOUT, 60);
-
         return self::exec_curl_request($handle);
     }
 
@@ -120,6 +121,15 @@ class Request
             $data = array_replace($data, $addition);
         }
         self::exec("sendMessage", $data);
+    }
+
+    public static function sendPhoto($chat_id, $path, $addition = NULL)
+    {
+        $data = ['chat_id' => $chat_id, 'photo' => $path];
+        if ($addition != null) {
+            $data = array_replace($data, $addition);
+        }
+        self::exec("sendPhoto", $data);
     }
 
     public static function sendHtmlMessage($chat_id, $message, $addition = NULL)

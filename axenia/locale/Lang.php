@@ -3,9 +3,9 @@
 class Lang
 {
 
-    public static $availableLangs;   //массив сообщений из messages.php
+        public static $availableLangs;   //массив сообщений из messages.php
     private static $messageArray;   //
-    private static $currentLang;
+private static $currentLang;
 
     public static function defaultLang()
     {

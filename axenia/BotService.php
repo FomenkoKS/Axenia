@@ -32,11 +32,6 @@ class BotService
         return $this->db->insertOrUpdateUser($user);
     }
 
-    public function getUserName($id)
-    {
-        return $this->db->getUserName($id);
-    }
-
     public function getUserList($query)
     {
         $users = $this->db->getUsersByName($query);
@@ -45,33 +40,64 @@ class BotService
             $stack = array();
             foreach ($a as $user) {
                 $userTitle = Util::getFullName($user[1], $user[2], $user[3]);
-                array_push($stack, array('type' => 'article', 'id' => uniqid(), 'title' => Lang::message("user.stat", array("user" => '👤' . $userTitle)), 'message_text' => Lang::message("user.stat", array("user" => '👤' . $userTitle)) . ":\r\n" . $this->GenStats($user[0]), 'parse_mode' => 'HTML'));
+                array_push($stack, array('type' => 'article', 'id' => uniqid(), 'title' => Lang::message("user.stat",array("user"=>'👤' . $userTitle)), 'message_text' => Lang::message("user.stat",array("user"=>'👤' . $userTitle)).":\r\n".$this->GenStats($user[0]) , 'parse_mode' => 'HTML'));
             }
-
             return $stack;
         }
-
         return false;
     }
 
-    public function GenStats($id)
-    {
-        return "🔮" . Lang::message("user.stat.sum") . round($this->db->SumKarma($id), 0) . "\r\n" .
-        "📊" . Lang::message("user.stat.place") . $this->db->UsersPlace($id) . "\r\n" .
-        "👥" . Lang::message("user.stat.membership") . $this->db->UserMembership($id) . "\r\n";
+    public function GenStats($id){
+        $res=   "🔮".Lang::message("user.stat.sum").        round($this->db->SumKarma($id),0)."\r\n".
+                "📊".Lang::message("user.stat.place").      $this->db->UsersPlace($id)."\r\n".
+                "👥".Lang::message("user.stat.membership"). implode(", ",$this->getUserGroup($id))."\r\n";
+        if($a=$this->getUserRewards($id))$res.="🏅".Lang::message("user.stat.rewards"). implode(", ",$a);
+        return $res;
     }
 
+    public function getUserGroup($id){
+        if($a=$this->db->UserMembership($id)){
+            $a=array_chunk($a,2);
+            $stack=array();
+            foreach($a as $value){
+                array_push($stack,(empty($value[1]))?$value[0]:"<a href='telegram.me/".$value[1]."'>".$value[0]."</a>");
+            }
+            return $stack;
+        }
+        return false;
+    }
+
+    /*
+     * Формирует сообщения для отпарки по команде rewards
+     * @param $user_id
+     * @param $chat_id
+     */
+    public function getUserRewards($user_id)
+    {
+        $res = $this->db->getUserRewards($user_id);
+        if ($res) {
+            $stack=array();
+            foreach(array_chunk($res,2) as $a){
+                $text=Lang::message("reward.type.".$a[0]);
+                if($a[1]>1)$text.="<b> x".$a[1]."</b>";
+                array_push($stack,$text);
+            }
+            return $stack;
+        }
+        return false;
+
+    }
 //endregion
 
 // region -------------------- Admins
-    public function isAdmin($user_id, $chat_id)
-    {
-        $result = false;
-        $admins = Request::getChatAdministrators($chat_id);
-        foreach ($admins as $admin) {
-            if ($admin['user']['id'] == $user_id) $result = true;
-        }
 
+    public function isAdmin($user_id,$chat_id)
+    {
+        $result=false;
+        $admins = Request::getChatAdministrators($chat_id);
+        foreach($admins as $admin){
+            if($admin['user']['id']==$user_id)$result=true;
+        }
         return $result;
     }
 
@@ -82,16 +108,6 @@ class BotService
     /*
      * Type of chat, can be either “private”, “group”, “supergroup” or “channel”
      */
-    public function getLang($id, $chatType)
-    {
-        if ($chatType == "private") {
-            return $this->db->getUserLang($id);
-        } elseif (Util::isInEnum("group,supergroup", $chatType)) {
-            return $this->db->getChatLang($id);
-        }
-
-        return false;
-    }
 
     public function setLang($id, $chatType, $lang)
     {
@@ -104,7 +120,6 @@ class BotService
         return false;
     }
 
-
     public function initLang($chat_id, $chatType)
     {
         $lang = $this->getLang($chat_id, $chatType);
@@ -115,18 +130,29 @@ class BotService
         Lang::init($lang);
     }
 
+    public function getLang($id, $chatType)
+    {
+        if ($chatType == "private") {
+            return $this->db->getUserLang($id);
+        } elseif (Util::isInEnum("group,supergroup", $chatType)) {
+            return $this->db->getChatLang($id);
+        }
+
+        return false;
+    }
+
 //endregion
 
 // region -------------------- Chats
 
     public function rememberChat($chat, $adder_id)
     {
-        $chat_id = $chat['id'];
-        $chatType = $chat['type'];
-        $title = $chat['title'];
-        $username = $chat['username'];
+        $chat_id=$chat['id'];
+        $chatType=$chat['type'];
+        $title=$chat['title'];
+        $username=$chat['username'];
         if (Util::isInEnum("group,supergroup", $chatType)) {
-            $res = $this->db->insertOrUpdateChat($chat_id, $title, $username);
+            $res = $this->db->insertOrUpdateChat($chat_id, $title,$username);
             if ($this->db->getChatLang($chat_id) === false) {
                 $lang = $this->db->getUserLang($adder_id); //получение языка добавителя
                 if ($lang !== false) {
@@ -134,10 +160,8 @@ class BotService
                     Lang::init($lang);
                 }
             }
-
             return $res;
         }
-
         return false;
     }
 
@@ -146,21 +170,10 @@ class BotService
         return $this->db->deleteChat($chat_id);
     }
 
-
-    public function getGroupName($chat_id)
-    {
-        return $this->db->getGroupName($chat_id);
-    }
-
     public function getGroupsMistakes()
     {
         return $this->db->getGroupsMistakes();
     }
-
-
-//endregion
-
-//region -------------------- Karma
 
     public function getTop($chat_id, $limit = 5)
     {
@@ -176,6 +189,11 @@ class BotService
         return $out;
     }
 
+
+//endregion
+
+//region -------------------- Karma
+
     public function setLevelByUsername($username, $chat_id, $newLevel)
     {
         $user_id = $this->db->getUserID($username);
@@ -184,25 +202,7 @@ class BotService
                 return Lang::message('karma.manualSet', array($username, $user_id, $chat_id, $newLevel));
             }
         }
-
         return Lang::message('bot.error');
-    }
-
-    private function getUserLevel($from, $chat_id)
-    {
-        $fromLevelResult = $this->db->getUserLevel($from, $chat_id);
-        if (!$fromLevelResult[0]) {
-            $this->db->setUserLevel($from, $chat_id, 0);
-
-            return 0;
-        } else {
-            return $fromLevelResult[0];
-        }
-    }
-
-    private function createHandleKarmaResult($good, $msg, $level)
-    {
-        return array('good' => $good, 'msg' => $msg, 'newLevel' => $level);
     }
 
     public function handleKarma($isRise, $from, $to, $chat_id)
@@ -226,13 +226,31 @@ class BotService
         if ($res) {
             $mod = $isRise ? 'karma.plus' : 'karma.minus';
             $msg = Lang::message($mod, array('from' => $userFrom, 'k1' => $fromLevel, 'to' => $userTo, 'k2' => $newLevel));
-
             return $this->createHandleKarmaResult(true, $msg, $newLevel);
         }
-
         return $this->createHandleKarmaResult(false, Lang::message('bot.error'), null);
     }
 
+    private function createHandleKarmaResult($good, $msg, $level)
+    {
+        return array('good' => $good, 'msg' => $msg, 'newLevel' => $level);
+    }
+
+    private function getUserLevel($from, $chat_id)
+    {
+        $fromLevelResult = $this->db->getUserLevel($from, $chat_id);
+        if (!$fromLevelResult[0]) {
+            $this->db->setUserLevel($from, $chat_id, 0);
+            return 0;
+        } else {
+            return $fromLevelResult[0];
+        }
+    }
+
+    public function getUserName($id)
+    {
+        return $this->db->getUserName($id);
+    }
 
     public function handleKarmaFromBot($isRise, $user_id, $chat_id)
     {
@@ -247,10 +265,8 @@ class BotService
             if ($res) {
                 $mod = $isRise ? 'karma.plus' : 'karma.minus';
                 $msg = Lang::message($mod, array('from' => Lang::message('bot.name'), 'k1' => '∞', 'to' => $user2, 'k2' => $newLevel));
-
                 return $this->createHandleKarmaResult(true, $msg, $newLevel);
             }
-
             return $this->createHandleKarmaResult(false, Lang::message('bot.error'), null);
         } else {
             return $this->createHandleKarmaResult(false, Lang::message('karma.unknownUser'), null);
@@ -293,34 +309,13 @@ class BotService
                 }
             }
         }
-
         return $out;
     }
 
-    /**
-     * Формирует сообщения для отпарки по команде rewards
-     * @param $user_id
-     * @param $chat_id
-     */
-    public function getUserRewards($user_id, $chat_id)
+    public function getGroupName($chat_id)
     {
-        if ($user_id != $chat_id) {
-            $res = $this->db->getUserRewardsInChat($user_id, $chat_id);
-
-        } else {
-            $res = $this->db->getUserRewards($user_id);
-        }
-
-        if (count($res) > 0) {
-        } else {
-        }
-
+        return $this->db->getGroupName($chat_id);
     }
 
 //endregion
-
-
 }
-
-
-?>
