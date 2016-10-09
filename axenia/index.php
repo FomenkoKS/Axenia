@@ -48,17 +48,13 @@ if (isset($update["message"])) {
             throw $e;
         }
     }
-}
-
-if (isset($update["inline_query"])) {
+} elseif (isset($update["inline_query"])) {
     try {
         $bot->processInline($update["inline_query"]);
     } catch (Exception $e) {
         $db_conn->disconnect();
     }
-}
-
-if (isset($update["callback_query"])) {
+} elseif (isset($update["callback_query"])) {
     try {
         $chat_id = $update["callback_query"]["message"]["chat"]["id"];
         $bot->processCallback($update["callback_query"]);

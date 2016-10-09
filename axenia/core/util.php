@@ -42,6 +42,28 @@ class Util
         return ($val >= $min && $val < $max);
     }
 
+    public static function startsWith($haystack, $needle)
+    {
+        if ($needle === "") {
+            return true;
+        }
+        if (is_array($needle)) {
+            if (count($needle) > 0) {
+                foreach ($needle as $key) {
+                    if (substr($haystack, 0, strlen($key)) === $key) {
+                        return true;
+                    }
+                }
+                return false;
+            } else {
+                return true;
+            }
+        } else {
+            return substr($haystack, 0, strlen($needle)) === $needle ? true : false;
+        }
+
+    }
+
     public static function getFullNameUser($user)
     {
         $username = isset($user['username']) ? $user['username'] : '';
