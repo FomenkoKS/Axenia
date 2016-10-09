@@ -62,8 +62,10 @@ class Axenia
                     }
                     break;
                 case (Util::startsWith($text, ("/lang@" . BOT_NAME)) || ($isPrivate && Util::startsWith($text, "/lang"))):
-                    if ($this->service->isAdmin($from_id, $chat_id) || @$isPrivate) {
+                    if ($this->service->isAdmin($from_id, $chat_id) || Util::isInEnum(ADMIN_IDS, $from_id) || @$isPrivate) {
                         $this->sendLanguageKeyboard($chat_id);
+                    } else {
+                        Request::sendMessage($chat_id, Lang::message("chat.lang.foradmins"));
                     }
                     break;
                 case (Util::startsWith($text, ("/buy@" . BOT_NAME)) || ($isPrivate && Util::startsWith($text, "/buy"))):
