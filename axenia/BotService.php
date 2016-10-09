@@ -210,11 +210,16 @@ class BotService
         return Lang::message('bot.error');
     }
 
-    private function getUserLevel($from, $chat_id)
+    public function setLevel($user_id, $chat_id, $newLevel)
     {
-        $fromLevelResult = $this->db->getUserLevel($from, $chat_id);
+        return $this->db->setUserLevel($user_id, $chat_id, $newLevel);
+    }
+
+    public function getUserLevel($from_id, $chat_id)
+    {
+        $fromLevelResult = $this->db->getUserLevel($from_id, $chat_id);
         if (!$fromLevelResult[0]) {
-            $this->db->setUserLevel($from, $chat_id, 0);
+            $this->db->setUserLevel($from_id, $chat_id, 0);
 
             return 0;
         } else {

@@ -109,10 +109,10 @@ class Util
      *   (Overwrites before, after, breaks escape / clean)
      * - clean: A boolean or array with instructions for Text::cleanInsert
      *
-     * @param string $str     A string containing variable placeholders
-     * @param array  $data    A key => val array where each key stands for a placeholder variable name
+     * @param string $str A string containing variable placeholders
+     * @param array $data A key => val array where each key stands for a placeholder variable name
      *                        to be replaced with val
-     * @param array  $options An array of options, see description above
+     * @param array $options An array of options, see description above
      * @return string
      */
     public static function insert($str, $data, array $options = array())
@@ -169,8 +169,8 @@ class Util
      * is to replace all whitespace and unneeded markup around placeholders that did not get replaced
      * by Text::insert().
      *
-     * @param string $str     String to clean.
-     * @param array  $options Options list.
+     * @param string $str String to clean.
+     * @param array $options Options list.
      * @return string
      * @see \Cake\Utility\Text::insert()
      */
@@ -232,5 +232,34 @@ class Util
     public static function wrapQuotes($obj, $quote = "'")
     {
         return $quote . $obj . $quote;
+    }
+
+    public static function html($str, $tag = NULL)
+    {
+        if ($tag == NULL) {
+            return $str;
+        } else {
+            return "<" . $tag . ">" . $str . "</" . $tag . ">";
+        }
+    }
+
+    public static function pre($str)
+    {
+        return self::html($str, "pre");
+    }
+
+    public static function b($str)
+    {
+        return self::html($str, "b");
+    }
+
+    public static function i($str)
+    {
+        return self::html($str, "i");
+    }
+
+    public static function code($str)
+    {
+        return self::html($str, "code");
     }
 }

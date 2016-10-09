@@ -42,7 +42,7 @@ if (isset($update["message"])) {
                     'cid' => $chat['id'],
                     'cName' => $chat['type'] == 'private' ? Util::getFullNameUser($chat) : $chat['title'])
             );
-            $errorMsg .= Util::insert("<i><b>Error message:</b></i> <code>:0</code>\n<i><b>Error description:</b></i>\n<pre>:1</pre>", array($e->getMessage(), $e));
+            $errorMsg .= Util::insert("<b>Error message:</b> <code>:0</code>\n<i>Error description:</i>\n<pre>:1</pre>", array($e->getMessage(), $e));
             Request::sendHtmlMessage(LOG_CHAT_ID, $errorMsg);
         } else {
             throw $e;

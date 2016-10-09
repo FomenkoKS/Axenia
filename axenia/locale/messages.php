@@ -193,46 +193,52 @@ return array(
             "ru" => "",
             "ruUN" => ""
         ),
-    "showcase.title" =>
+    "store.title" =>
         array(
-            "en" => "What you want to buy for karma?",
-            "ru" => "На что желаете потратить карму?",
-            "ruUN" => "Что вам показать за карму?"
+            "en" => "<b>:user(:k)</b>, what you want to buy for karma?",
+            "ru" => "<b>:user(:k)</b>, на что желаете потратить карму?",
+            "ruUN" => "<b>:user(:k)</b>, на что ты хочешь посмотреть?"
         ),
-    "showcase.tits" =>
+    "store.button.buy_tits" =>
         array(
             "en" => "*CENSORED*",
             "ru" => "*ЦЕНЗУРА*",
-            "ruUN" => "Сиськи"
+            "ruUN" => "Сиськи 30"
         ),
-    "showcase.butts" =>
+    "store.button.buy_butts" =>
         array(
             "en" => "*CENSORED*",
             "ru" => "*ЦЕНЗУРА*",
-            "ruUN" => "Булки"
+            "ruUN" => "Булки 20"
         ),
-    "showcase.cats" =>
+    "store.button.buy_cats" =>
         array(
-            "en" => "Cat",
-            "ru" => "Котики",
-            "ruUN" => "Киска"
+            "en" => "Cats 10",
+            "ru" => "Котики 10",
+            "ruUN" => "Котэ 10"
         ),
-    "showcase.buy_tits" =>
-        array(
-            "en" => "*CENSORED*",
-            "ru" => "*ЦЕНЗУРА*",
-            "ruUN" => "купил сиськи"
-        ),
-    "showcase.buy_butts" =>
+    "store.event.buy_tits" =>
         array(
             "en" => "*CENSORED*",
             "ru" => "*ЦЕНЗУРА*",
-            "ruUN" => "купил булки"
+            "ruUN" => "<b>:user(:k)</b> купил сиськи"
         ),
-    "showcase.buy_cats" =>
+    "store.event.buy_butts" =>
         array(
-            "en" => "get cat",
-            "ru" => "взял котиков",
-            "ruUN" => "взял котэ"
+            "en" => "*CENSORED*",
+            "ru" => "*ЦЕНЗУРА*",
+            "ruUN" => "<b>:user(:k)</b> купил булки"
+        ),
+    "store.event.buy_cats" =>
+        array(
+            "en" => "<b>:user(:k)</b> have bought cats",
+            "ru" => "<b>:user(:k)</b> купил котиков",
+            "ruUN" => "<b>:user(:k)</b> купил котэ"
+        ),
+    "store.event.cant_buy" =>
+        array(
+            "en" => "<b>:user(:k)</b> has enough karma for buying <i>':buy'</i>",
+            "ru" => "<b>:user(:k)</b> имеет недостаточно кармы для <i>':buy'</i>",
+            "ruUN" => "<b>:user(:k)</b>, у тебя слишком мало кармы для <i>':buy'</i>"
         )
 );

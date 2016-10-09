@@ -1,7 +1,8 @@
 # Commands
 top - Top of karma / Топ кармы
 lang - Switch language / Сменить язык
-my_stats - User statistics / Стфтистика пользователя
+my_stats - User statistics / Статистика пользователя
+buy - Call showcase / Вызвать витрину
 settings - Settings / Настройки
 help - Help / Помощь
 
