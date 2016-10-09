@@ -128,12 +128,12 @@ class Axenia
                     break;
                 case preg_match('/tits|(сис(ек|ьки|ечки|и|яндры))/ui', $text, $matches):
                     if (Lang::isUncensored()) {
-                        Request::sendTyping($chat_id);
                         $tits = json_decode(file_get_contents("http://api.oboobs.ru/boobs/1/1/random"), true);
                         $karma = $this->service->getUserLevel($from_id, $chat_id);
                         $username = $this->service->getUserName($from_id);
                         $newKarma = $karma - 30;
                         if ($newKarma > 0) {
+                            Request::sendTyping($chat_id);
                             Request::sendPhoto($chat_id, "http://media.oboobs.ru/boobs/" . sprintf("%05d", $tits[0]['id']) . ".jpg", ["caption" => $username . " подогнал эти сиськи за свои 30 кармы"]);
                             $this->service->setLevel($from_id, $chat_id, $newKarma);
                         }
