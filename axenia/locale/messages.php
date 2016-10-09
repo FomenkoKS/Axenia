@@ -39,9 +39,9 @@ return array(
         ),
     "chat.lang.foradmins" =>
         array(
-            "en" => "For admins only.\r\n",
-            "ru" => "Только для администраторов группы.\r\n",
-            "ruUN" => "Только для админов.\r\n"
+            "en" => "This command is for admins only.\r\n",
+            "ru" => "Смена языка доступна только админам группы.\r\n",
+            "ruUN" => "Сменить язык бота может только админ.\r\n"
         ),
     "user.pickChat" =>
         array(

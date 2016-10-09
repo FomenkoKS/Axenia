@@ -186,13 +186,15 @@ class Axenia
             $ln = Lang::$availableLangs;
             $keys = array_keys($ln);
             $values = array_values($ln);
-            $inline_keyboard = array();
+            $inline_keyboard = [];
+            $temp = [];
             for ($i = 0; $i < count($ln); $i++) {
-                $inline_keyboard[$i]['text'] = $values[$i];
-                $inline_keyboard[$i]['callback_data'] = $keys[$i];
+                $temp['text'] = $values[$i];
+                $temp['callback_data'] = $keys[$i];
+                $inline_keyboard[$i] = [];
+                array_push($inline_keyboard[$i], $temp);
             }
             if ($chat_id < 0) $text = Lang::message('chat.lang.foradmins');
-            $inline_keyboard = array($inline_keyboard);
             Request::sendMessage($chat_id, $text . Lang::message('chat.lang.start'), ["reply_markup" => ['inline_keyboard' => $inline_keyboard]]);
         } else {
             Request::editMessageText($chat_id, $message_id, $text);
