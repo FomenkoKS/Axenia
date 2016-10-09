@@ -14,19 +14,22 @@ require_once('Axenia.php');
 $content = file_get_contents("php://input");
 $update = json_decode($content, true);
 
+$db_conn = null;
 
 if (!$update) {
     exit;
 } else {
     file_put_contents("array.txt", print_r($update, true));
     Request::setUrl(API_URL);
-    $bot = new Axenia(new BotService(new BotDao()));
+    $db_conn = new BotDao();
+    $bot = new Axenia(new BotService($db_conn));
 }
 
 if (isset($update["message"])) {
     try {
         $bot->processMessage($update["message"]);
     } catch (Exception $e) {
+        $db_conn->disconnect();
         if (defined('LOG_CHAT_ID')) {
             $message = $update["message"];
             $chat = $message['chat'];
@@ -48,11 +51,19 @@ if (isset($update["message"])) {
 }
 
 if (isset($update["inline_query"])) {
-    $bot->processInline($update["inline_query"]);
+    try {
+        $bot->processInline($update["inline_query"]);
+    } catch (Exception $e) {
+        $db_conn->disconnect();
+    }
 }
 
 if (isset($update["callback_query"])) {
-    $chat_id = $update["callback_query"]["message"]["chat"]["id"];
-    $bot->processCallback($update["callback_query"]);
+    try {
+        $chat_id = $update["callback_query"]["message"]["chat"]["id"];
+        $bot->processCallback($update["callback_query"]);
+    } catch (Exception $e) {
+        $db_conn->disconnect();
+    }
 }
 ?>
