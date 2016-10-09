@@ -40,28 +40,31 @@ class Axenia
                     }
                     break;
 
-//Хотел прибраться в БД ток не вышел каменный цветок(( А, не, норм
-                case preg_match('/^(\/cleanDB)/ui ', $text, $matches):
+                case preg_match('/^\/cleanDB((?=@' . BOT_NAME . ')|$)/ui ', $text, $matches):
                     if (Util::isInEnum(ADMIN_IDS, $from_id)) {
-                        if($groups_id=$this->service->getGroupsMistakes()){
-                            foreach($groups_id as $id){
+                        if ($groups_id = $this->service->getGroupsMistakes()) {
+                            foreach ($groups_id as $id) {
                                 //Request::sendMessage($from_id,$id);
-                                $chat=Request::getChat($id);
-                                if($chat!==false){
-                                    $this->service->rememberChat($chat,$from_id);
+                                $chat = Request::getChat($id);
+                                if ($chat !== false) {
+                                    $this->service->rememberChat($chat, $from_id);
                                     //Request::sendMessage($from_id,$id);
-                                }else{
+                                } else {
                                     $this->service->deleteChat($id);
                                 }
                             }
                         }
+                        if (defined('LOG_CHAT_ID')) {
+                            Request::sendMessage(LOG_CHAT_ID, "The DB cleaning is completed.");
+                        }
                     }
                     break;
 
-                case preg_match('/^\/lang((?=@'.BOT_NAME.')|$)/ui', $text, $matches):
-                    if ($this->service->isAdmin($from['id'], $chat_id) || $message['chat']['type'] == "private") $this->sendLanguageKeyboard($chat_id);
+                case preg_match('/^\/lang((?=@' . BOT_NAME . ')|$)/ui', $text, $matches):
+                    if ($this->service->isAdmin($from_id, $chat_id) || $chat['type'] == "private") {
+                        $this->sendLanguageKeyboard($chat_id);
+                    }
                     break;
-
 
                 /*case preg_match('/^\/getAdmins/ui', $text, $matches):
                     Request::sendMessage($chat_id, $this->service->isAdmin($from_id, $chat_id));
@@ -70,7 +73,7 @@ class Axenia
                     //if(in_array($from_id,$admins['user']['id'])) Request::sendMessage($chat_id, "success");
                     break;*/
 
-                case (preg_match('/^\/start((?=@'.BOT_NAME.')|$)/ui', $text, $matches)):
+                case (preg_match('/^\/start((?=@' . BOT_NAME . ')|$)/ui', $text, $matches)):
                     if ($chat['type'] == "private") {
                         Request::sendTyping($chat_id);
                         Request::sendHtmlMessage($chat_id, Lang::message('chat.greetings'));
@@ -80,11 +83,12 @@ class Axenia
                     }
 
                     break;
-                case preg_match('/^\/buy((?=@'.BOT_NAME.')|$)/ui', $text, $matches):
+                case preg_match('/^\/buy((?=@' . BOT_NAME . ')|$)/ui', $text, $matches):
+                    Request::sendTyping($chat_id);
                     $this->sendShowcase($chat_id);
                     break;
-                case preg_match('/^\/top((?=@'.BOT_NAME.')|$)/ui', $text, $matches):
-                case preg_match('/^\/stats((?=@'.BOT_NAME.')|$)/ui', $text, $matches):
+                case preg_match('/^\/top((?=@' . BOT_NAME . ')|$)/ui', $text, $matches):
+                case preg_match('/^\/stats((?=@' . BOT_NAME . ')|$)/ui', $text, $matches):
                     Request::sendTyping($chat_id);
                     if ($chat['type'] == "private") {
                         Request::sendMessage($chat_id, Lang::message("karma.top.private"));
@@ -94,8 +98,9 @@ class Axenia
                     }
                     break;
 
-                case preg_match('/^\/mystat((?=@'.BOT_NAME.')|$)/ui', $text, $matches):
-                    Request::sendHtmlMessage($chat_id, $this->service->GenStats($from_id));
+                case preg_match('/^\/my_stats((?=@' . BOT_NAME . ')|$)/ui', $text, $matches):
+                    Request::sendTyping($chat_id);
+                    Request::sendHtmlMessage($chat_id, $this->service->getStats($from_id));
                     break;
 
                 case preg_match('/^(\+|\-|👍|👎) ?([\s\S]+)?/ui', $text, $matches):
@@ -122,11 +127,11 @@ class Axenia
 
                     }
                     break;
-                case preg_match('/сис(ек|ьки|ечки|и|яндры)/ui', $text, $matches):
+                case preg_match('/tits|(сис(ек|ьки|ечки|и|яндры))/ui', $text, $matches):
                     if (Lang::isUncensored()) {
-                        Request::sendTyping(NASH_CHAT_ID);
-                        sleep(1);
-                        Request::exec("forwardMessage", array('chat_id' => $chat_id, "from_chat_id" => "@superboobs", "message_id" => rand(1, 2700)));
+                        Request::sendTyping($chat_id);
+                        $tits = json_decode(file_get_contents("http://api.oboobs.ru/boobs/1/1/random"), true);
+                        Request::sendPhoto($chat_id, "http://media.oboobs.ru/boobs/" . sprintf("%05d", $tits[0]['id']) . ".jpg");
                     }
                     break;
                 case preg_match('/^(\/nash) ([\s\S]+)/ui', $text, $matches):
@@ -144,6 +149,9 @@ class Axenia
             if (BOT_NAME == $newMember['username']) {
                 $qrez = $this->service->rememberChat($chat, $from_id);
                 if ($qrez !== false) {
+                    if (defined('LOG_CHAT_ID')) {
+                        Request::sendMessage(LOG_CHAT_ID, "Enter in @" . $chat["username"]);
+                    }
                     Request::sendTyping($chat_id);
                     Request::sendMessage($chat_id, Lang::message('chat.greetings'), array("parse_mode" => "Markdown"));
                 }
@@ -159,54 +167,58 @@ class Axenia
         if (isset($message['left_chat_member'])) {
             $member = $message['left_chat_member'];
             if (BOT_NAME == $member['username']) {
-                Request::sendMessage("32512143", $member['username']." leave chat ".$chat_id);
+                if (defined('LOG_CHAT_ID')) {
+                    Request::sendMessage(LOG_CHAT_ID, $member['username'] . " leave chat @" . $chat["username"]);
+                }
                 $this->service->deleteChat($chat_id);
             }
         }
     }
 
-    public function sendLanguageKeyboard($chat_id,$message_id=NULL, $text=NULL)
+    public function sendLanguageKeyboard($chat_id, $message_id = NULL, $text = NULL)
     {
-        if($message_id==NULL && $text==NULL){
-            $ln=Lang::$availableLangs;
-            $keys=array_keys($ln);
+        if ($message_id == NULL && $text == NULL) {
+            $ln = Lang::$availableLangs;
+            $keys = array_keys($ln);
             $values = array_values($ln);
-            $inline_keyboard=array();
-            for($i=0;$i<count($ln);$i++){
-                $inline_keyboard[$i]['text']=$values[$i];
-                $inline_keyboard[$i]['callback_data']=$keys[$i];
+            $inline_keyboard = array();
+            for ($i = 0; $i < count($ln); $i++) {
+                $inline_keyboard[$i]['text'] = $values[$i];
+                $inline_keyboard[$i]['callback_data'] = $keys[$i];
             }
-            if($chat_id<0) $text=Lang::message('chat.lang.foradmins');
-            $inline_keyboard=array($inline_keyboard);
-            Request::sendMessage($chat_id, $text.Lang::message('chat.lang.start'), ["reply_markup" =>  ['inline_keyboard' => $inline_keyboard]]);
-        }else{
-            Request::editMessageText($chat_id,$message_id, $text);
+            if ($chat_id < 0) $text = Lang::message('chat.lang.foradmins');
+            $inline_keyboard = array($inline_keyboard);
+            Request::sendMessage($chat_id, $text . Lang::message('chat.lang.start'), ["reply_markup" => ['inline_keyboard' => $inline_keyboard]]);
+        } else {
+            Request::editMessageText($chat_id, $message_id, $text);
         }
 
     }
 
-    public function sendShowcase($chat_id,$message_id=NULL, $text = NULL)
+    public function sendShowcase($chat_id, $from = NULL, $message_id = NULL, $text = NULL, $callback = NULL)
     {
         $inline_keyboard[] = [
             [
-                'text' => 'Сиськи',
+                'text' => Lang::message('showcase.tits'),
                 'callback_data' => 'buy_tits'
             ],
             [
-                'text' => 'Жопы',
+                'text' => Lang::message('showcase.butts'),
                 'callback_data' => 'buy_butts'
             ],
             [
-                'text' => 'Котята',
+                'text' => Lang::message('showcase.cats'),
                 'callback_data' => 'buy_cats'
             ]
         ];
         //придумать более интересный текст, перевести, засунуть в lang
-        if($message_id==NULL && $text == NULL){
-            $text = "Сиськи за 300, булки за 200, котята за 100. Что берём?";
-            Request::sendHtmlMessage($chat_id, $text, ["reply_markup" =>  ['inline_keyboard' => $inline_keyboard]]);
-        }else{
-            Request::editMessageText($chat_id,$message_id, $text,["parse_mode"=>"HTML","reply_markup" =>  ['inline_keyboard' => $inline_keyboard]]);
+        if ($message_id == NULL && $text == NULL) {
+            $text = Lang::message('showcase.title');
+            Request::sendHtmlMessage($chat_id, $text, ["reply_markup" => ['inline_keyboard' => $inline_keyboard]]);
+        } else {
+            Request::sendPhoto($chat_id, $text);
+            //if($from['id']!=$chat_id)Request::sendPhoto($from['id'], $text);
+            Request::editMessageText($chat_id, $message_id, $this->service->getUserName($from['id']) . " " . Lang::message('showcase.' . $callback), ["parse_mode" => "HTML", "reply_markup" => ['inline_keyboard' => $inline_keyboard]]);
         }
     }
 
@@ -256,37 +268,42 @@ class Axenia
 
     public function processCallback($callback)
     {
-        $from=$callback['from'];
-        $message=$callback['message'];
-        $inline_message_id=$callback['inline_message_id'];
-        $data=$callback['data'];
-        $chat_id=$message['chat']['id'];
-        $this->service->initLang($chat_id, $message['chat']['type']);
-        if(in_array($data,array_keys(Lang::$availableLangs)) && ($this->service->isAdmin($from['id'],$chat_id) || $message['chat']['type']=="private")){
-            $qrez = $this->service->setLang($chat_id, $message['chat']['type'], $data);
+        $from = $callback['from'];
+        $message = $callback['message'];
+        $data = $callback['data'];
+        $chat_id = $message['chat']['id'];
+        $chat_type = $message['chat']['type'];
+        $this->service->initLang($chat_id, $chat_type);
+        if (in_array($data, array_keys(Lang::$availableLangs)) && ($this->service->isAdmin($from['id'], $chat_id) || $chat_type == "private")) {
+            $qrez = $this->service->setLang($chat_id, $chat_type, $data);
             $text = Lang::message('bot.error');
             if ($qrez) {
                 Lang::init($data);
                 $text = Lang::message('chat.lang.end');
             }
-            $this->sendLanguageKeyboard($chat_id,$message['message_id'], $text);
+            $this->sendLanguageKeyboard($chat_id, $message['message_id'], $text);
             sleep(1);
-            if ($message['chat']['type'] == "private") {
+            if ($chat_type == "private") {
                 Request::sendHtmlMessage($chat_id, Lang::message('user.pickChat', array('botName' => BOT_NAME)));
             }
-        }elseif(strpos($data,"buy_")!==false) {
-            switch($data){
+        } elseif (strpos($data, "buy_") !== false) {
+            switch ($data) {
                 case 'buy_tits':
-                    $tits=json_decode(file_get_contents("http://api.oboobs.ru/boobs/1/1/random"),true);
-                    $rez="<a href='http://media.oboobs.ru/boobs/".sprintf("%05d",$tits[0]['id']).".jpg'>-</a>";
+                    $tits = json_decode(file_get_contents("http://api.oboobs.ru/boobs/1/1/random"), true);
+                    $rez = "http://media.oboobs.ru/boobs/" . sprintf("%05d", $tits[0]['id']) . ".jpg";
                     break;
                 case 'buy_butts':
-                    $butts=json_decode(file_get_contents("http://api.obutts.ru/butts/1/1/random"),true);
-                    $rez="<a href='http://media.obutts.ru/butts/".sprintf("%05d",$butts[0]['id']).".jpg'>-</a>";
+                    $butts = json_decode(file_get_contents("http://api.obutts.ru/butts/1/1/random"), true);
+                    $rez = "http://media.obutts.ru/butts/" . sprintf("%05d", $butts[0]['id']) . ".jpg";
                     break;
-                default: $rez=$data;
+                case 'buy_cats':
+                    $cat = json_decode(file_get_contents("http://random.cat/meow"), true);
+                    $rez = $cat["file"];
+                    break;
+                default:
+                    $rez = $data;
             }
-            $this->sendShowcase($chat_id,$message['message_id'], $rez);
+            $this->sendShowcase($chat_id, $from, $message['message_id'], $rez, $data);
         }
     }
 

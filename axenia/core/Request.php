@@ -122,6 +122,15 @@ class Request
         self::exec("sendMessage", $data);
     }
 
+    public static function sendPhoto($chat_id, $path, $addition = NULL)
+    {
+        $data = ['chat_id' => $chat_id, 'photo' => $path];
+        if ($addition != null) {
+            $data = array_replace($data, $addition);
+        }
+        self::exec("sendPhoto", $data);
+    }
+
     public static function sendHtmlMessage($chat_id, $message, $addition = NULL)
     {
         $data = ['chat_id' => $chat_id, "text" => $message, "parse_mode" => "HTML", "disable_web_page_preview" => true];
