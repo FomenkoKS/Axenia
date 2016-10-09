@@ -99,7 +99,7 @@ class Axenia
 
                 case preg_match('/^\/my_stats((?=@' . BOT_NAME . ')|$)/ui', $text, $matches):
                     Request::sendTyping($chat_id);
-                    Request::sendHtmlMessage($chat_id, $this->service->getStats($from_id, $chat['type'] == "private" ? NULL : $chat_id));
+                    Request::sendHtmlMessage($chat_id, $this->service->getStats($from_id, $chat['type'] == "private" ? NULL : $chat_id), ['reply_to_message_id' => $message_id]);
                     break;
 
                 case preg_match('/^(\+|\-|👍|👎) ?([\s\S]+)?/ui', $text, $matches):
