@@ -59,12 +59,14 @@ class BotService
     //📊Место в рейтинге: 30
     //👥Заседает в группах: Axenia.Development, Perm Friends (http://telegram.me/permchat), Брейкинг Ньюс, КОРТ, НАШ ЧАТ, Плио, Флудиляторная
     //🏅Медальки: Кармодрочер x3, Карманьяк x3, Кармонстр x2,
-    public function getStats($id)
+    public function getStats($from_id, $chat_id = NULL)
     {
-        $res = "🔮 " . Lang::message("user.stat.sum") . round($this->db->SumKarma($id), 0) . "\r\n" .
-            "📊 " . Lang::message("user.stat.place") . $this->db->UsersPlace($id) . "\r\n" .
-            "👥 " . Lang::message("user.stat.membership") . implode(", ", $this->getUserGroup($id)) . "\r\n";
-        if ($a = $this->getAllUserRewards($id)) {
+        $res =
+            ($chat_id == NULL ? "" : ("📍 " . Lang::message("user.stat.inchat") . $this->getUserLevel($from_id, $chat_id) . "\r\n")) .
+            "🔮 " . Lang::message("user.stat.sum") . round($this->db->SumKarma($from_id), 0) . "\r\n" .
+            "📊 " . Lang::message("user.stat.place") . $this->db->UsersPlace($from_id) . "\r\n" .
+            "👥 " . Lang::message("user.stat.membership") . implode(", ", $this->getUserGroup($from_id)) . "\r\n";
+        if ($a = $this->getAllUserRewards($from_id)) {
             $res .= "🏅" . Lang::message("user.stat.rewards") . implode(", ", $a);
         }
         return $res;

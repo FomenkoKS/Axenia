@@ -55,10 +55,16 @@ return array(
             "ru" => "Статистика пользователя :user",
             "ruUN" => "Статистика пользователя :user"
         ),
+    "user.stat.inchat" =>
+        array(
+            "en" => "Karma in this group: ",
+            "ru" => "Карма в чате: ",
+            "ruUN" => "Карма в чате: "
+        ),
     "user.stat.sum" =>
         array(
             "en" => "Karma: ",
-            "ru" => "Количество кармы: ",
+            "ru" => "Всего кармы: ",
             "ruUN" => "Наебашил кармы: "
         ),
     "user.stat.place" =>
