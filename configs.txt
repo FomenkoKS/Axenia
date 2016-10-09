@@ -1,7 +1,6 @@
 # Commands
 top - Top of karma / Топ кармы
 lang - Switch language / Сменить язык
-stats - Chat statistics / Статистика чата
 my_stats - User statistics / Стфтистика пользователя
 settings - Settings / Настройки
 help - Help / Помощь

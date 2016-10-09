@@ -88,7 +88,6 @@ class Axenia
                     $this->sendShowcase($chat_id);
                     break;
                 case preg_match('/^\/top((?=@' . BOT_NAME . ')|$)/ui', $text, $matches):
-                case preg_match('/^\/stats((?=@' . BOT_NAME . ')|$)/ui', $text, $matches):
                     Request::sendTyping($chat_id);
                     if ($chat['type'] == "private") {
                         Request::sendMessage($chat_id, Lang::message("karma.top.private"));
