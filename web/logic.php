@@ -94,7 +94,7 @@ class FemaleLogic
             switch ($type) {
                 case "group":
                     $html .= "<div class='user_photo img-circle col-md-1' style='background-image:url(users/" . $value[4] . ".jpg)'></div><a class='col-md-1 title load_user' onclick='load_user(" . $value[4] . ")'>";
-                    $this->GetAvatar($value[4]);
+                    //$this->GetAvatar($value[4]);
                     $html .= ($value[0] == "") ? $value[1] . " " . $value[2] : $value[0];
                     $html .= "</a>";
                     break;

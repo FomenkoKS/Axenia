@@ -45,7 +45,8 @@ class BotService
             $stack = array();
             foreach ($a as $user) {
                 $userTitle = Util::getFullName($user[1], $user[2], $user[3]);
-                array_push($stack, array('type' => 'article', 'id' => uniqid(), 'title' => Lang::message("user.stat", array("user" => '👤' . $userTitle)), 'message_text' => Lang::message("user.stat", array("user" => '👤' . $userTitle)) . ":\r\n" . $this->GenStats($user[0]), 'parse_mode' => 'HTML'));
+                $text = Lang::message("user.stat", array("user" => '👤' . $userTitle));
+                array_push($stack, array('type' => 'article', 'id' => uniqid(), 'title' => $text, 'message_text' => $text . ":\r\n" . $this->getStats($user[0]), 'parse_mode' => 'HTML'));
             }
 
             return $stack;
@@ -54,11 +55,34 @@ class BotService
         return false;
     }
 
-    public function GenStats($id)
+    //🔮Наебашил кармы: 3829
+    //📊Место в рейтинге: 30
+    //👥Заседает в группах: Axenia.Development, Perm Friends (http://telegram.me/permchat), Брейкинг Ньюс, КОРТ, НАШ ЧАТ, Плио, Флудиляторная
+    //🏅Медальки: Кармодрочер x3, Карманьяк x3, Кармонстр x2,
+    public function getStats($from_id, $chat_id = NULL)
     {
-        return "🔮" . Lang::message("user.stat.sum") . round($this->db->SumKarma($id), 0) . "\r\n" .
-        "📊" . Lang::message("user.stat.place") . $this->db->UsersPlace($id) . "\r\n" .
-        "👥" . Lang::message("user.stat.membership") . $this->db->UserMembership($id) . "\r\n";
+        $res =
+            ($chat_id == NULL ? "" : ("📍 " . Lang::message("user.stat.inchat") . $this->getUserLevel($from_id, $chat_id) . "\r\n")) .
+            "🔮 " . Lang::message("user.stat.sum") . round($this->db->SumKarma($from_id), 0) . "\r\n" .
+            "📊 " . Lang::message("user.stat.place") . $this->db->UsersPlace($from_id) . "\r\n" .
+            "👥 " . Lang::message("user.stat.membership") . implode(", ", $this->getUserGroup($from_id)) . "\r\n";
+        if ($a = $this->getAllUserRewards($from_id)) {
+            $res .= "🏅" . Lang::message("user.stat.rewards") . implode(", ", $a);
+        }
+        return $res;
+    }
+
+    public function getUserGroup($id)
+    {
+        if ($a = $this->db->UserMembership($id)) {
+            $a = array_chunk($a, 2);
+            $stack = array();
+            foreach ($a as $value) {
+                array_push($stack, (empty($value[1])) ? $value[0] : "<a href='telegram.me/" . $value[1] . "'>" . $value[0] . "</a>");
+            }
+            return $stack;
+        }
+        return false;
     }
 
 //endregion
@@ -188,11 +212,16 @@ class BotService
         return Lang::message('bot.error');
     }
 
-    private function getUserLevel($from, $chat_id)
+    public function setLevel($user_id, $chat_id, $newLevel)
     {
-        $fromLevelResult = $this->db->getUserLevel($from, $chat_id);
+        return $this->db->setUserLevel($user_id, $chat_id, $newLevel);
+    }
+
+    public function getUserLevel($from_id, $chat_id)
+    {
+        $fromLevelResult = $this->db->getUserLevel($from_id, $chat_id);
         if (!$fromLevelResult[0]) {
-            $this->db->setUserLevel($from, $chat_id, 0);
+            $this->db->setUserLevel($from_id, $chat_id, 0);
 
             return 0;
         } else {
@@ -314,6 +343,22 @@ class BotService
         if (count($res) > 0) {
         } else {
         }
+
+    }
+
+    public function getAllUserRewards($user_id)
+    {
+        $res = $this->db->getUserRewards($user_id);
+        if ($res) {
+            $stack = array();
+            foreach (array_chunk($res, 2) as $a) {
+                $text = Lang::message("reward.type." . $a[0]);
+                if ($a[1] > 1) $text .= "<b> x" . $a[1] . "</b>";
+                array_push($stack, $text);
+            }
+            return $stack;
+        }
+        return false;
 
     }
 

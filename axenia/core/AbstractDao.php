@@ -56,14 +56,27 @@ class AbstractDao
         return self::$connection;
     }
 
+    public function disconnect()
+    {
+        if (!isset(self::$connection)) {
+            try {
+                self::$connection->close();
+            } catch (Exception $e) {
+                //do noting
+            }
+            self::$connection = null;
+        }
+    }
+
     /**
      * Fetch the last error from the database
      */
     public function error()
     {
         $connection = $this->connect();
-
-        return $connection->error;
+        $errorMessage = $connection->error;
+        $this->disconnect();
+        return $errorMessage;
     }
 
     public function selectOne($query, $isNeedToConvert = true)

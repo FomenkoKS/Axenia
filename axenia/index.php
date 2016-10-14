@@ -1,5 +1,5 @@
 <?php
-require_once('../configs/axenia/config.php');
+require_once('../configs/format_fm/config.php');
 
 require_once('core/util.php');
 require_once('core/AbstractDao.php');
@@ -55,4 +55,3 @@ if (isset($update["callback_query"])) {
     $chat_id = $update["callback_query"]["message"]["chat"]["id"];
     $bot->processCallback($update["callback_query"]);
 }
-?>
