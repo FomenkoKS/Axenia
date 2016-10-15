@@ -64,6 +64,11 @@ class Util
 
     }
 
+    public static function getFullNameUserId($user)
+    {
+        return self::getFullNameUser($user) . "[" . $user["id"] . "]";
+    }
+
     public static function getFullNameUser($user)
     {
         $username = isset($user['username']) ? $user['username'] : '';
@@ -106,6 +111,17 @@ class Util
         }
 
         return false;
+    }
+
+    public static function getChatLink($chat)
+    {
+        if (isset($chat["username"])) {
+            $out = "<a href='telegram.me/" . $chat["username"] . "'>" . $chat["title"] . "</a>";
+        } else {
+            $out = $chat["title"];
+        }
+
+        return $out;
     }
 
     public static function isNotEmpty($str)

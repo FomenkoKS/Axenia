@@ -158,4 +158,9 @@ class AbstractDao
 
         return $inp;
     }
+
+    public function clearForInsert($inp)
+    {
+        return "'" . isset($inp) ? $this->escape_mimic($inp) : '' . "'";
+    }
 }

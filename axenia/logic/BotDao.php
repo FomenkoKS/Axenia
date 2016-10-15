@@ -17,10 +17,15 @@ class BotDao extends AbstractDao
     public function insertOrUpdateUser($user)
     {
         $user_id = $user['id'];
+
         $username = Util::wrapQuotes(isset($user['username']) ? $this->escape_mimic($user['username']) : '');
         $firstname = Util::wrapQuotes(isset($user['first_name']) ? $this->escape_mimic($user['first_name']) : '');
         $lastname = Util::wrapQuotes(isset($user['last_name']) ? $this->escape_mimic($user['last_name']) : '');
-        $query = "INSERT INTO Users (id, username, firstname, lastname) VALUES ($user_id,$username,$firstname,$lastname) ON DUPLICATE KEY UPDATE username=$username, firstname=$firstname, lastname=$lastname, last_updated=now()";
+        $query = "
+            INSERT INTO Users (id, username, firstname, lastname) 
+            VALUES ($user_id,$username,$firstname,$lastname) 
+            ON DUPLICATE KEY UPDATE username=$username, firstname=$firstname, lastname=$lastname, last_updated=now()
+        ";
 
         return $this->insert($query);
     }
@@ -36,7 +41,11 @@ class BotDao extends AbstractDao
     {
         if ($query != '') {
             $query = "'" . strtolower("%" . $query . "%") . "'";
-            $res = $this->select("SELECT id,username,firstname,lastname FROM Users WHERE concat(username,firstname,lastname) LIKE $query;");
+            $res = $this->select(
+                "SELECT id,username,firstname,lastname 
+                  FROM Users 
+                  WHERE concat(username,firstname,lastname) LIKE $query;"
+            );
 
             return $res;
         }
@@ -47,7 +56,12 @@ class BotDao extends AbstractDao
 
     public function UserMembership($user_id)
     {
-        $res = $this->select("SELECT c.title, c.username FROM Chats c, Karma k WHERE k.chat_id=c.id AND k.user_id=" . $user_id . " ORDER BY c.title");
+        $res = $this->select(
+            "SELECT c.title, c.username 
+            FROM Chats c, Karma k 
+            WHERE k.chat_id=c.id AND k.user_id=" . $user_id . " 
+            ORDER BY c.title"
+        );
 
         return (!$res[0]) ? false : $res;
     }
@@ -89,9 +103,14 @@ class BotDao extends AbstractDao
 
     public function insertOrUpdateChat($chat_id, $title, $username)
     {
-        $title = "'" . (isset($title) ? $this->escape_mimic($title) : '') . "'";
-        $username = "'" . (isset($username) ? $this->escape_mimic($username) : '') . "'";
-        $query = "INSERT INTO Chats(id, title,username) VALUES($chat_id, $title,$username) ON DUPLICATE KEY UPDATE title = $title,username=$username";
+        $title = $this->clearForInsert($title);
+        $username = $this->clearForInsert($username);
+
+        $query = "
+            INSERT INTO Chats(id, title,username) 
+            VALUES($chat_id, $title,$username) 
+            ON DUPLICATE KEY UPDATE title = $title,username=$username
+        ";
 
         return $this->insert($query);
     }
@@ -113,8 +132,17 @@ class BotDao extends AbstractDao
 
     public function getGroupsMistakes()
     {
-        $res = $this->select("SELECT DISTINCT k.chat_id FROM Karma k WHERE NOT(k.last_updated IS NULL) AND k.chat_id NOT IN (SELECT id FROM Chats)");
-        $res = array_merge($res, $this->select("SELECT DISTINCT k.chat_id, c.title FROM Chats c,Karma k WHERE NOT(k.last_updated IS NULL) AND k.chat_id=c.id AND (c.title='')"));
+        $res = $this->select(
+            "SELECT DISTINCT k.chat_id 
+            FROM Karma k 
+            WHERE NOT(k.last_updated IS NULL) AND k.chat_id NOT IN (SELECT id FROM Chats)"
+        );
+        $temp = $this->select(
+            "SELECT DISTINCT k.chat_id, c.title 
+            FROM Chats c,Karma k 
+            WHERE NOT(k.last_updated IS NULL) AND k.chat_id=c.id AND (c.title='')"
+        );
+        $res = array_merge($res, $temp);
 
         return (!$res) ? false : $res;
     }
@@ -133,7 +161,12 @@ class BotDao extends AbstractDao
 
     public function getTop($chat_id, $limit = 5)
     {
-        $query = "SELECT u . username, u . firstname, u . lastname, k . level FROM Karma k, Users u WHERE k . user_id = u . id AND k . chat_id = " . $chat_id . " ORDER BY level DESC LIMIT " . $limit;
+        $query = "
+        SELECT u . username, u . firstname, u . lastname, k . level 
+        FROM Karma k, Users u 
+        WHERE k . user_id = u . id AND k . chat_id = " . $chat_id . " 
+        ORDER BY level 
+        DESC LIMIT " . $limit;
 
         return $this->select($query);
     }
@@ -162,7 +195,17 @@ class BotDao extends AbstractDao
      */
     public function setUserLevel($user_id, $chat_id, $level)
     {
-        $query = "INSERT INTO `Karma` SET `user_id` = " . $user_id . ",`chat_id` = " . $chat_id . ",`level` = " . $level . " ON DUPLICATE KEY UPDATE `level` = " . $level . ", `last_updated`=now()";
+        //$query = "INSERT INTO `Karma` SET `user_id` = " . $user_id . ",`chat_id` = " . $chat_id . ",`level` = " . $level . " ON DUPLICATE KEY UPDATE `level` = " . $level . ", `last_updated`=now()";
+
+        $user_id = $this->clearForInsert($user_id);
+        $chat_id = $this->clearForInsert($chat_id);
+        $level = $this->clearForInsert($level);
+
+        $query = "
+            INSERT INTO Karma (user_id, chat_id, level)
+            VALUES ($user_id,$chat_id,$level)
+            ON DUPLICATE KEY UPDATE level = " . $level . ", last_updated=now()
+        ";
 
         return $this->insert($query);
     }
@@ -176,9 +219,28 @@ class BotDao extends AbstractDao
 
     public function UsersPlace($user_id)
     {
-        $res = $this->select("SELECT count(a.Sumlevel) FROM (SELECT sum(level) AS SumLevel FROM Karma k GROUP BY k.user_id) a,(SELECT sum(level) AS SumLevel FROM Karma WHERE user_id=" . $user_id . ") u WHERE u.SumLevel<=a.SumLevel ORDER BY a.SumLevel ASC;");
+        $res = $this->select(
+            "SELECT count(a.Sumlevel) 
+              FROM (
+                  SELECT sum(level) AS SumLevel 
+                  FROM Karma k 
+                  GROUP BY k.user_id) a,
+                  (
+                  SELECT sum(level) AS SumLevel 
+                      FROM Karma 
+                      WHERE user_id=" . $user_id . ") u 
+                WHERE u.SumLevel<=a.SumLevel 
+                ORDER BY a.SumLevel ASC;"
+        );
 
         return (!$res[0]) ? false : $res[0];
+    }
+
+    public function deleteKarma($userId, $chatId)
+    {
+        $query = "DELETE FROM Karma WHERE user_id = " . $userId . " AND chat_id = " . $chatId;
+
+        return $this->delete($query);
     }
 
 //endregion
@@ -197,7 +259,12 @@ class BotDao extends AbstractDao
 
     public function getUserRewardsInChat($user_id, $chat_id)
     {
-        $res = $this->select("SELECT r.type_id AS type_id, rt.code AS code  FROM Rewards r LEFT JOIN Reward_Type rt ON r.type_id=rt.id WHERE r.user_id = " . $user_id . " AND r.group_id = " . $chat_id);
+        $res = $this->select(
+            "SELECT r.type_id AS type_id, rt.code AS code 
+            FROM Rewards r 
+            LEFT JOIN Reward_Type rt ON r.type_id=rt.id 
+            WHERE r.user_id = " . $user_id . " AND r.group_id = " . $chat_id
+        );
         if ($res !== false) {
             return $res;
         }
@@ -207,7 +274,12 @@ class BotDao extends AbstractDao
 
     public function getUserRewards($user_id)
     {
-        $res = $this->select("select rt.code,count(1) Count from Rewards r, Reward_Type rt where r.type_id=rt.id and r.user_id=$user_id group by rt.code");
+        $res = $this->select(
+            "select rt.code,count(1) Count 
+            from Rewards r, Reward_Type rt 
+            where r.type_id=rt.id and r.user_id=$user_id 
+            group by rt.code"
+        );
 
         return $res;
     }
@@ -227,10 +299,13 @@ class BotDao extends AbstractDao
 
     public function insertReward($type_id, $desc, $user_id, $chat_id)
     {
-        $user_id = "'" . (isset($user_id) ? $this->escape_mimic($user_id) : '') . "'";
-        $desc = "'" . (isset($desc) ? $this->escape_mimic($desc) : '') . "'";
+        $user_id = $this->clearForInsert($user_id);
+        $desc = $this->clearForInsert($desc);
 
-        return $this->insert("INSERT INTO Rewards(type_id, user_id, group_id, description) VALUES($type_id, $user_id, $chat_id , $desc)");
+        return $this->insert(
+            "INSERT INTO Rewards(type_id, user_id, group_id, description) 
+            VALUES($type_id, $user_id, $chat_id , $desc)"
+        );
     }
 
 //endregion

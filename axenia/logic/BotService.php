@@ -14,6 +14,32 @@ class BotService
         $this->db = $db;
     }
 
+    /**
+     * Handle exceptions
+     * TODO optimized this, need not only message but inline and etc
+     */
+    public function handleException(Exception $e, $update)
+    {
+        $this->db->disconnect();
+        if (defined('LOG_CHAT_ID')) {
+            $message = $update["message"];
+            $chat = $message['chat'];
+            $from = $message['from'];
+            $errorMsg = "<b>Caught Exception!</b>\n";
+            $temp = "On message of user :uName [<i>:uid</i>] in group ':cName' [<i>:cid</i>]\n";
+            $errorMsg .= Util::insert($temp,
+                array('uid' => $from['id'],
+                    'uName' => Util::getFullNameUser($from),
+                    'cid' => $chat['id'],
+                    'cName' => $chat['type'] == 'private' ? Util::getFullNameUser($chat) : $chat['title'])
+            );
+            $errorMsg .= Util::insert("<b>Error message:</b> <code>:0</code>\n<i>Error description:</i>\n<pre>:1</pre>", array($e->getMessage(), $e));
+            Request::sendHtmlMessage(LOG_CHAT_ID, $errorMsg);
+        } else {
+            throw $e;
+        }
+    }
+
 // region -------------------- Users
 
     public function getUserID($username)
@@ -284,6 +310,11 @@ class BotService
         } else {
             return $this->createHandleKarmaResult(false, Lang::message('karma.unknownUser'), null);
         }
+    }
+
+    public function deleteUserKarma($userId, $chatId)
+    {
+        return $this->db->deleteKarma($userId, $chatId);
     }
 
 //endregion
