@@ -86,12 +86,14 @@ class Axenia
                                     $this->doKarmaAction($isRise, $from_id, $user_id, $chat_id);
                                 }
                             } else {
-                                if (preg_match('/@([\w]+)/ui', $matches[2], $user)) {
-                                    $to = $this->service->getUserID($user[1]);
-                                    if ($to) {
-                                        $this->doKarmaAction($isRise, $from_id, $to, $chat_id);
-                                    } else {
-                                        Request::sendHtmlMessage($chat_id, Lang::message('karma.unknownUser'), array('reply_to_message_id' => $message_id));
+                                if(!$isPrivate) {
+                                    if (preg_match('/@([\w]+)/ui', $matches[2], $user)) {
+                                        $to = $this->service->getUserID($user[1]);
+                                        if ($to) {
+                                            $this->doKarmaAction($isRise, $from_id, $to, $chat_id);
+                                        } else {
+                                            Request::sendHtmlMessage($chat_id, Lang::message('karma.unknownUser'), array('reply_to_message_id' => $message_id));
+                                        }
                                     }
                                 }
                             }
@@ -139,20 +141,27 @@ class Axenia
                         break;
                     case Util::startsWith($text, ("/cleanDB")):
                         if (Util::isInEnum(ADMIN_IDS, $from_id)) {
+                            Request::sendTyping($chat_id);
+                            $count = 0;
+                            $updated = 0;
+                            $deleted = 0;
                             if ($groups_id = $this->service->getGroupsMistakes()) {
                                 foreach ($groups_id as $id) {
-                                    //Request::sendMessage($from_id,$id);
+                                    $count++;
                                     $chat = Request::getChat($id);
                                     if ($chat !== false) {
                                         $this->service->rememberChat($chat, $from_id);
-                                        //Request::sendMessage($from_id,$id);
+                                        $updated++;
                                     } else {
                                         $this->service->deleteChat($id);
+                                        $deleted++;
                                     }
                                 }
                             }
-                            if (defined('LOG_CHAT_ID')) {
-                                Request::sendMessage(LOG_CHAT_ID, "The DB cleaning is completed.");
+                            $out = Util::insert("The database was cleaned.\nChats count-:c. Updated-:u, deleted-:d.", ["c" => $count, "u" => $updated, "d" => $deleted]);
+                            Request::sendMessage($chat_id, $out);
+                            if (defined('LOG_CHAT_ID') && LOG_CHAT_ID != $chat_id) {
+                                Request::sendMessage(LOG_CHAT_ID, $out);
                             }
                         }
                         break;
@@ -206,14 +215,15 @@ class Axenia
                 $member = $message['left_chat_member'];
                 if (BOT_NAME == $member['username']) {
                     $isDeleted = $this->service->deleteChat($chat_id);
-                    if ($isDeleted && defined('LOG_CHAT_ID')) {
-                        Request::sendHtmlMessage(LOG_CHAT_ID, BOT_NAME . " leaves " . Util::getChatLink($chat));
+                    if (defined('LOG_CHAT_ID')) {
+                        Request::sendHtmlMessage(LOG_CHAT_ID, BOT_NAME . " leaves " . Util::getChatLink($chat) . ". Data is deleted:" . $isDeleted);
                     }
                 } else {
-                    $isDeleted = $this->service->deleteUserKarma($member['id'], $chat_id);
-                    if ($isDeleted) {
-                        Request::sendHtmlMessage(LOG_CHAT_ID, Util::getFullNameUserId($member) . " leaves " . Util::getChatLink($chat));
-                    }
+                    // пока не удаляем, вдруг по случайности удалили
+//                    $isDeleted = $this->service->deleteUserDataForChat($member['id'], $chat_id);
+//                    if ($isDeleted) {
+//                        Request::sendHtmlMessage(LOG_CHAT_ID, Util::getFullNameUserId($member) . " leaves " . Util::getChatLink($chat));
+//                    }
                 }
             }
         }

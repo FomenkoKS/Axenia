@@ -193,7 +193,14 @@ class BotService
 
     public function deleteChat($chat_id)
     {
-        return $this->db->deleteChat($chat_id);
+        if ($this->db->deleteChat($chat_id)) {
+            if ($this->db->deleteAllKarmaInChat($chat_id)) {
+                if ($this->db->deleteAllRewardsInChat($chat_id)) {
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 
 
@@ -312,10 +319,15 @@ class BotService
         }
     }
 
-    public function deleteUserKarma($userId, $chatId)
-    {
-        return $this->db->deleteKarma($userId, $chatId);
-    }
+//    public function deleteUserDataForChat($userId, $chatId)
+//    {
+//        if($this->db->deleteUserKarmaInChat($userId, $chatId)){
+//            if($this->db->deleteUserRewardsInChat($userId, $chatId)){
+//                return true;
+//            }
+//        }
+//        return false;
+//    }
 
 //endregion
 

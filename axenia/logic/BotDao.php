@@ -236,9 +236,16 @@ class BotDao extends AbstractDao
         return (!$res[0]) ? false : $res[0];
     }
 
-    public function deleteKarma($userId, $chatId)
+    public function deleteUserKarmaInChat($userId, $chatId)
     {
         $query = "DELETE FROM Karma WHERE user_id = " . $userId . " AND chat_id = " . $chatId;
+
+        return $this->delete($query);
+    }
+
+    public function deleteAllKarmaInChat($chatId)
+    {
+        $query = "DELETE FROM Karma WHERE chat_id = " . $chatId;
 
         return $this->delete($query);
     }
@@ -306,6 +313,20 @@ class BotDao extends AbstractDao
             "INSERT INTO Rewards(type_id, user_id, group_id, description) 
             VALUES($type_id, $user_id, $chat_id , $desc)"
         );
+    }
+
+    public function deleteUserRewardsInChat($userId, $chatId)
+    {
+        $query = "DELETE FROM Rewards WHERE user_id = " . $userId . " AND group_id = " . $chatId;
+
+        return $this->delete($query);
+    }
+
+    public function deleteAllRewardsInChat($chatId)
+    {
+        $query = "DELETE FROM Rewards WHERE group_id = " . $chatId;
+
+        return $this->delete($query);
     }
 
 //endregion
