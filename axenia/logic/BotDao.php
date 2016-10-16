@@ -53,18 +53,6 @@ class BotDao extends AbstractDao
         return false;
     }
 
-
-    public function UserMembership($user_id)
-    {
-        $res = $this->select(
-            "SELECT c.title, c.username 
-            FROM Chats c, Karma k 
-            WHERE k.chat_id=c.id AND k.user_id=" . $user_id . " 
-            ORDER BY c.title"
-        );
-
-        return (!$res[0]) ? false : $res;
-    }
 //endregion
 
 // region -------------------- Lang
@@ -101,6 +89,12 @@ class BotDao extends AbstractDao
 
 // region -------------------- Chats
 
+    public function getChatsIds()
+    {
+        $res = $this->select("SELECT id FROM Chats");
+        return (!$res) ? false : $res;
+    }
+
     public function insertOrUpdateChat($chat_id, $title, $username)
     {
         $title = $this->clearForInsert($title);
@@ -120,6 +114,18 @@ class BotDao extends AbstractDao
         $query = "DELETE FROM Chats WHERE id = " . $chat_id;
 
         return $this->delete($query);
+    }
+
+    public function getUserGroups($user_id)
+    {
+        $res = $this->select(
+            "SELECT c.title, c.username 
+            FROM Chats c, Karma k 
+            WHERE k.chat_id=c.id AND k.user_id=" . $user_id . " 
+            ORDER BY c.title"
+        );
+
+        return (!$res[0]) ? false : $res;
     }
 
 
@@ -234,6 +240,13 @@ class BotDao extends AbstractDao
         );
 
         return (!$res[0]) ? false : $res[0];
+    }
+
+    public function getAllKarmaPair()
+    {
+        $res = $this->select("SELECT k.user_id, k.chat_id FROM Karma k");
+
+        return (!$res[0]) ? false : $res;
     }
 
     public function deleteUserKarmaInChat($userId, $chatId)

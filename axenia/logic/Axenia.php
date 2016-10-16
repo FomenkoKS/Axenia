@@ -144,33 +144,60 @@ class Axenia
                             }
                         }
                         break;
-                    case Util::startsWith($text, ("/cleanDB")):
-                        if (Util::isInEnum(ADMIN_IDS, $from_id)) {
-                            Request::sendTyping($chat_id);
-                            $count = 0;
-                            $updated = 0;
-                            $deleted = 0;
-                            if ($groups_id = $this->service->getGroupsMistakes()) {
-                                foreach ($groups_id as $id) {
-                                    $count++;
-                                    $chat = Request::getChat($id);
-                                    $isStealInChat = Request::sendTyping($id);
-                                    if ($chat !== false && $isStealInChat !== false) {
-                                        $this->service->rememberChat($chat, $from_id);
-                                        $updated++;
-                                    } else {
-                                        $this->service->deleteChat($id);
-                                        $deleted++;
-                                    }
-                                }
-                            }
-                            $out = Util::insert("The database was cleaned.\nChats count-:c. Updated-:u, deleted-:d.", ["c" => $count, "u" => $updated, "d" => $deleted]);
-                            Request::sendMessage($chat_id, $out);
-                            if (defined('LOG_CHAT_ID') && LOG_CHAT_ID != $chat_id) {
-                                Request::sendMessage(LOG_CHAT_ID, $out);
-                            }
-                        }
-                        break;
+//                    case Util::startsWith($text, ("/cleanDB")):
+//                        if (Util::isInEnum(ADMIN_IDS, $from_id)) {
+//                            Request::sendTyping($chat_id);
+//                            $count = 0;
+//                            $updated = 0;
+//                            $deleted = 0;
+//                            if ($groups_id = $this->service->getChatsIds()) {
+//                                foreach ($groups_id as $id) {
+//                                    $count++;
+//                                    $chat = Request::getChat($id);
+//                                    $isStealInChat = Request::sendTyping($id);
+//                                    if ($chat !== false && $isStealInChat !== false) {
+//                                        $this->service->rememberChat($chat);
+//                                        $updated++;
+//                                    } else {
+//                                        $this->service->deleteChat($id);
+//                                        $deleted++;
+//                                    }
+//                                }
+//                            }
+//
+//                            $out = Util::insert("The database was cleaned.\nChats count-:c. Updated-:u, deleted-:d.", ["c" => $count, "u" => $updated, "d" => $deleted]);
+//                            Request::sendMessage($chat_id, $out);
+//                            if (defined('LOG_CHAT_ID') && LOG_CHAT_ID != $chat_id) {
+//                                Request::sendMessage(LOG_CHAT_ID, $out);
+//                            }
+//                        }
+//                        break;
+//                    case Util::startsWith($text, ("/cleanKarma")):
+//                        if (Util::isInEnum(ADMIN_IDS, $from_id)) {
+//                            Request::sendTyping($chat_id);
+//                            $count = 0;
+//                            $deleted = 0;
+//                            if ($userChatPair = $this->service->getAllKarmaPair()) {
+//                                foreach ($userChatPair as $pair) {
+//                                    $count++;
+//                                    $isUserStealInChat = Request::getChatMember($pair[0], $pair[1]);
+//                                    if ($isUserStealInChat === false ||
+//                                        (isset($isUserStealInChat['status']) &&
+//                                            $isUserStealInChat['status'] == 'left' || $isUserStealInChat['status'] == 'kicked')
+//                                    ) {
+//                                        $this->service->deleteUserDataInChat($pair[0], $pair[1]);
+//                                        $deleted++;
+//                                    }
+//                                }
+//                            }
+//
+//                            $out = Util::insert("The karma was cleaned.\nChats count-:c. Deleted-:d.", ["c" => $count, "d" => $deleted]);
+//                            Request::sendMessage($chat_id, $out);
+//                            if (defined('LOG_CHAT_ID') && LOG_CHAT_ID != $chat_id) {
+//                                Request::sendMessage(LOG_CHAT_ID, $out);
+//                            }
+//                        }
+//                        break;
 
                     /*case preg_match('/^\/getAdmins/ui', $text, $matches):
                         Request::sendMessage($chat_id, $this->service->isAdmin($from_id, $chat_id));
@@ -179,15 +206,15 @@ class Axenia
                         //if(in_array($from_id,$admins['user']['id'])) Request::sendMessage($chat_id, "success");
                         break;*/
 
-                    case Util::startsWith($text, ("/nash")):
-                        if (Util::isInEnum(ADMIN_IDS, $from_id)) {
-                            if (preg_match('/^(\/nash) ([\s\S]+)/ui', $text, $matches)) {
-                                Request::sendTyping(NASH_CHAT_ID);
-                                sleep(1);
-                                Request::sendMessage(NASH_CHAT_ID, $matches[2]);
-                            }
-                        }
-                        break;
+//                    case Util::startsWith($text, ("/nash")):
+//                        if (Util::isInEnum(ADMIN_IDS, $from_id)) {
+//                            if (preg_match('/^(\/nash) ([\s\S]+)/ui', $text, $matches)) {
+//                                Request::sendTyping(NASH_CHAT_ID);
+//                                sleep(1);
+//                                Request::sendMessage(NASH_CHAT_ID, $matches[2]);
+//                            }
+//                        }
+//                        break;
 //                case preg_match('/tits|(сис(ек|ьки|ечки|и|яндры))/ui', $text, $matches):
 //                    if (Lang::isUncensored()) {
 //                        $tits = json_decode(file_get_contents("http://api.oboobs.ru/boobs/1/1/random"), true);
@@ -238,7 +265,7 @@ class Axenia
     public function sendLanguageKeyboard($chat_id, $message_id = NULL, $text = NULL)
     {
         if ($message_id == NULL && $text == NULL) {
-            $ln = Lang::$availableLangs;
+            $ln = Lang::availableLangs();
             $keys = array_keys($ln);
             $values = array_values($ln);
             $inline_keyboard = [];
@@ -352,7 +379,7 @@ class Axenia
         $chat_id = $message['chat']['id'];
         $chat_type = $message['chat']['type'];
         $this->service->initLang($chat_id, $chat_type);
-        if (in_array($data, array_keys(Lang::$availableLangs)) && ($this->service->isAdmin($from['id'], $chat_id) || $chat_type == "private")) {
+        if (in_array($data, array_keys(Lang::availableLangs())) && ($this->service->isAdmin($from['id'], $chat_id) || $chat_type == "private")) {
             $qrez = $this->service->setLang($chat_id, $chat_type, $data);
             $text = Lang::message('bot.error');
             if ($qrez) {

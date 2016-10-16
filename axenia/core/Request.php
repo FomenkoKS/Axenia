@@ -188,7 +188,8 @@ class Request
         return self::exec_curl_request($handle);
     }
 
-    public static function send($method, array $content, $post = true) {
+    public static function send($method, array $content, $post = true)
+    {
 
         $url = self::$url . $method;
         if ($post)
@@ -198,7 +199,8 @@ class Request
         return json_decode($reply, true);
     }
 
-    public static function sendAPIRequest($url, array $content, $post = true) {
+    public static function sendAPIRequest($url, array $content, $post = true)
+    {
         if (isset($content['chat_id'])) {
             $url = $url . "?chat_id=" . $content['chat_id'];
             unset($content['chat_id']);
@@ -242,6 +244,13 @@ class Request
         $data = array('chat_id' => $chat_id);
 
         return self::execJson("getChat", $data);
+    }
+
+    public static function getChatMember($user_id, $chat_id)
+    {
+        $data = array('user_id' => $user_id, 'chat_id' => $chat_id);
+
+        return self::execJson("getChatMember", $data);
     }
 
 

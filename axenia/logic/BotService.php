@@ -100,7 +100,7 @@ class BotService
 
     public function getUserGroup($id)
     {
-        if ($a = $this->db->UserMembership($id)) {
+        if ($a = $this->db->getUserGroups($id)) {
             $a = array_chunk($a, 2);
             $stack = array();
             foreach ($a as $value) {
@@ -160,7 +160,7 @@ class BotService
         $isNewChat = false;
         $lang = $this->getLang($chat_id, $chatType);
         if ($lang === false) {
-            $lang = 'en';
+            $lang = Lang::defaultLangKey();
             $isNewChat = true;
         }
         Lang::init($lang);
@@ -171,7 +171,12 @@ class BotService
 
 // region -------------------- Chats
 
-    public function rememberChat($chat, $adder_id)
+    public function getChatsIds()
+    {
+        return $this->db->getChatsIds();
+    }
+
+    public function rememberChat($chat, $adder_id = null)
     {
         $chat_id = $chat['id'];
         $chatType = $chat['type'];
@@ -180,11 +185,15 @@ class BotService
         if (Util::isInEnum("group,supergroup", $chatType)) {
             $res = $this->db->insertOrUpdateChat($chat_id, $title, $username);
             if ($this->db->getChatLang($chat_id) === false) {
-                $lang = $this->db->getUserLang($adder_id); //получение языка добавителя
-                if ($lang !== false) {
-                    $this->db->setChatLang($chat_id, $lang);
-                    Lang::init($lang);
+                $lang = Lang::defaultLangKey();
+                if ($adder_id != null) {
+                    $lang = $this->db->getUserLang($adder_id); //получение языка добавителя
+                    if ($lang === false) {
+                        $lang = Lang::defaultLangKey();
+                    }
                 }
+                $this->db->setChatLang($chat_id, $lang);
+                Lang::init($lang);
             }
 
             return $res;
@@ -200,6 +209,16 @@ class BotService
                 if ($this->db->deleteAllRewardsInChat($chat_id)) {
                     return true;
                 }
+            }
+        }
+        return false;
+    }
+
+    public function deleteUserDataInChat($user_id, $chat_id)
+    {
+        if ($this->db->deleteUserKarmaInChat($user_id, $chat_id)) {
+            if ($this->db->deleteUserRewardsInChat($user_id, $chat_id)) {
+                return true;
             }
         }
         return false;
@@ -262,6 +281,16 @@ class BotService
         } else {
             return $fromLevelResult[0];
         }
+    }
+
+    public function getAllKarmaPair()
+    {
+        $pairs = $this->db->getAllKarmaPair();
+        if ($pairs !== false) {
+            return array_chunk($pairs, 2);
+        }
+
+        return false;
     }
 
     private function createHandleKarmaResult($good, $msg, $level)

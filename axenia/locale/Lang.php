@@ -3,28 +3,31 @@
 class Lang
 {
 
-    public static $availableLangs;   //массив сообщений из messages.php
-    private static $messageArray;   //
+    private static $availableLangs;  
+    private static $messageArray;   //массив сообщений из messages.php
     private static $currentLang;
 
-    public static function defaultLang()
+    public static function availableLangs()
     {
         if (!isset(self::$availableLangs)) {
-            self::$availableLangs = array('en' => '🇬🇧 English', 'ru' => '🇷🇺 Русский', 'ruUN' => '🔞 Русский (матерный)');
+            self::$availableLangs = array("en" => '🇬🇧 English', "ru" => '🇷🇺 Русский', "ruUN" => '🔞 Русский (матерный)');
         }
 
         return self::$availableLangs;
+    }
+
+    public static function defaultLangKey()
+    {
+        return "en";
     }
 
     /**
      * Обязательно должен вызваться
      * @param string $lang 'ru' or 'en' or etc.
      */
-    public static function init($lang = 'en')
+    public static function init($lang = "en")
     {
-        if (!isset(self::$availableLangs)) {
-            self::$availableLangs = array('en' => '🇬🇧 English', 'ru' => '🇷🇺 Русский', 'ruUN' => '🔞 Русский (матерный)');
-        }
+        self::availableLangs();
         if (!isset(self::$messageArray)) {
             self::$messageArray = include 'messages.php';
         }
@@ -42,7 +45,7 @@ class Lang
             self::$messageArray = include 'messages.php';
         }
 
-        $out = self::$messageArray[$modificator][isset(self::$currentLang) ? self::$currentLang : "en"];
+        $out = self::$messageArray[$modificator][isset(self::$currentLang) ? self::$currentLang : self::defaultLangKey()];
 
         return $param != NULL ? Util::insert($out, $param) : $out;
     }
@@ -53,7 +56,7 @@ class Lang
             self::$messageArray = include 'messages.php';
         }
 
-        $out = self::$messageArray[$modificator]['ru'];
+        $out = self::$messageArray[$modificator]["ru"];
 
         return $param != NULL ? Util::insert($out, $param) : $out;
     }
