@@ -157,12 +157,14 @@ class BotService
 
     public function initLang($chat_id, $chatType)
     {
+        $isNewChat = false;
         $lang = $this->getLang($chat_id, $chatType);
-
         if ($lang === false) {
             $lang = 'en';
+            $isNewChat = true;
         }
         Lang::init($lang);
+        return $isNewChat;
     }
 
 //endregion

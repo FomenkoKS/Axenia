@@ -39,14 +39,16 @@ class Axenia
      */
     private function needToHandle($message)
     {
-        if (isset($message['text'])) {
-            return Util::startsWith($message['text'], ["/", "+", "-", "👍", "👎"]);
-        }
-        if (isset($message['sticker'])) {
-            return Util::startsWith($message['sticker']['emoji'], ["👍", "👎"]);
-        }
-        if (isset($message['new_chat_member']) || isset($message['new_chat_title']) || isset($message['left_chat_member'])) {
-            return true;
+        if ($message['chat']['type'] != "channel") {
+            if (isset($message['text'])) {
+                return Util::startsWith($message['text'], ["/", "+", "-", "👍", "👎"]);
+            }
+            if (isset($message['sticker'])) {
+                return Util::startsWith($message['sticker']['emoji'], ["👍", "👎"]);
+            }
+            if (isset($message['new_chat_member']) || isset($message['new_chat_title']) || isset($message['left_chat_member'])) {
+                return true;
+            }
         }
         return false;
     }
@@ -62,7 +64,10 @@ class Axenia
             $from_id = $from['id'];
 
             $this->service->insertOrUpdateUser($from);
-            $this->service->initLang($chat_id, $chat['type']);
+            $isNewChat = $this->service->initLang($chat_id, $chat['type']);
+            if ($isNewChat) {
+                $this->service->rememberChat($chat, $from_id);
+            }
 
             if (isset($message['text']) || isset($message['sticker'])) {
                 $isPrivate = $chat['type'] == "private";
@@ -86,7 +91,7 @@ class Axenia
                                     $this->doKarmaAction($isRise, $from_id, $user_id, $chat_id);
                                 }
                             } else {
-                                if(!$isPrivate) {
+                                if (!$isPrivate) {
                                     if (preg_match('/@([\w]+)/ui', $matches[2], $user)) {
                                         $to = $this->service->getUserID($user[1]);
                                         if ($to) {
@@ -149,7 +154,8 @@ class Axenia
                                 foreach ($groups_id as $id) {
                                     $count++;
                                     $chat = Request::getChat($id);
-                                    if ($chat !== false) {
+                                    $isStealInChat = Request::sendTyping($id);
+                                    if ($chat !== false && $isStealInChat !== false) {
                                         $this->service->rememberChat($chat, $from_id);
                                         $updated++;
                                     } else {

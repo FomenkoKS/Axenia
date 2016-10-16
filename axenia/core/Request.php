@@ -39,7 +39,7 @@ class Request
 
     public static function sendTyping($chat_id)
     {
-        self::exec("sendChatAction", array('chat_id' => $chat_id, "action" => "typing"));
+        return self::exec("sendChatAction", array('chat_id' => $chat_id, "action" => "typing"));
     }
 
     public static function exec($method, $parameters)
