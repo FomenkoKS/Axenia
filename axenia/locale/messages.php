@@ -234,6 +234,12 @@ Statistics are available on the website axeni.ru also it can be viewed using the
             "ru" => "Котики 10",
             "ruUN" => "Котэ 10"
         ),
+    "store.button.buy_jokes" =>
+        array(
+            "en" => "Jokes 10",
+            "ru" => "Шутки 10",
+            "ruUN" => "Лулзы 10"
+        ),
     "store.event.buy_tits" =>
         array(
             "en" => "*CENSORED*",
@@ -251,6 +257,12 @@ Statistics are available on the website axeni.ru also it can be viewed using the
             "en" => "<b>:user(:k)</b> have bought cats",
             "ru" => "<b>:user(:k)</b> купил котиков",
             "ruUN" => "<b>:user(:k)</b> купил котэ"
+        ),
+    "store.event.buy_jokes" =>
+        array(
+            "en" => "<b>:user(:k)</b> have bought jokes",
+            "ru" => "<b>:user(:k)</b> купил шутки",
+            "ruUN" => "<b>:user(:k)</b> купил лулзы"
         ),
     "store.callback" =>
         array(
