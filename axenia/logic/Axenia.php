@@ -411,7 +411,8 @@ class Axenia
                         $rez = $data;
                 }
                 $this->sendStore($chat_id, $from, $message, $rez, $data, $callback['id']);
-
+            }else{
+                Request::answerCallbackQuery($callback['id'], Lang::message('store.wrongPick', array('user' => $data_array[1])));
             }
         }
     }

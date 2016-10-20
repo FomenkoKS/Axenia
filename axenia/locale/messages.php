@@ -281,5 +281,11 @@ Statistics are available on the website axeni.ru also it can be viewed using the
             "en" => "You don't have enough karma for buying ':buy'",
             "ru" => "У вас недостаточно кармы для ':buy'",
             "ruUN" => "У тебя слишком мало кармы для ':buy'"
+        ),
+    "store.wrongPick" =>
+        array(
+            "en" => "You can't pick that. This is for :user",
+            "ru" => "Это предназначено для :user",
+            "ruUN" => "Это не для тебя. :user должен сделать выбор."
         )
 );
