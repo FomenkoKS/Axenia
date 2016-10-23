@@ -105,7 +105,7 @@ class Axenia
                         }
                         break;
                     case (Util::startsWith($text, ("/lang@" . BOT_NAME)) || ($isPrivate && Util::startsWith($text, "/lang"))):
-                        if ($this->service->isAdmin($from_id, $chat_id) || @$isPrivate) {
+                        if ($this->service->isAdminInChat($from_id, $chat)) {
                             $this->sendLanguageKeyboard($chat_id);
                         } else {
                             Request::sendMessage($chat_id, Lang::message("chat.lang.foradmins"));
@@ -200,7 +200,7 @@ class Axenia
 //                        break;
 
                     /*case preg_match('/^\/getAdmins/ui', $text, $matches):
-                        Request::sendMessage($chat_id, $this->service->isAdmin($from_id, $chat_id));
+                        Request::sendMessage($chat_id, $this->service->isAdminInChat($from_id, $chat));
                         $admins = Request::getChatAdministrators($chat_id);
                         Request::sendMessage($chat_id, $admins);
                         //if(in_array($from_id,$admins['user']['id'])) Request::sendMessage($chat_id, "success");
@@ -379,7 +379,7 @@ class Axenia
         $chat_id = $message['chat']['id'];
         $chat_type = $message['chat']['type'];
         $this->service->initLang($chat_id, $chat_type);
-        if (in_array($data, array_keys(Lang::availableLangs())) && ($this->service->isAdmin($from['id'], $chat_id) || $chat_type == "private")) {
+        if (in_array($data, array_keys(Lang::availableLangs())) && ($this->service->isAdminInChat($from['id'], $message['chat']))) {
             $qrez = $this->service->setLang($chat_id, $chat_type, $data);
             $text = Lang::message('bot.error');
             if ($qrez) {
@@ -411,7 +411,7 @@ class Axenia
                         $rez = $data;
                 }
                 $this->sendStore($chat_id, $from, $message, $rez, $data, $callback['id']);
-            }else{
+            } else {
                 Request::answerCallbackQuery($callback['id'], Lang::message('store.wrongPick', array('user' => $data_array[1])));
             }
         }
