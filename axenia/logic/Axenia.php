@@ -132,7 +132,7 @@ class Axenia
                         if ($isPrivate) {
                             Request::sendTyping($chat_id);
                             Request::sendHtmlMessage($chat_id, Lang::message('chat.greetings'));
-                            $this->sendLanguageKeyboard($chat_id, $message_id);
+                            $this->sendLanguageKeyboard($chat_id);
                         } else {
                             $this->service->rememberChat($chat, $from_id);
                         }
