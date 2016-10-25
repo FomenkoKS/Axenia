@@ -1,5 +1,5 @@
 <?
-require_once("config.php");
+require_once("configs/site/config.php");
 require_once("functions.php");
 if (isset($_POST['please'])) {
     $logic = new FemaleLogic();

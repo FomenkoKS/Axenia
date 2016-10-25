@@ -12,7 +12,7 @@
                         <li><a href="#">Группу</a></li>
                     </ul>
                 </div>
-                <input type="text" class="form-control" id="searchline">
+                <input type="text" class="form-control" id="searchline"/>
                 <div id="suggestions"></div>
             </div>
         </div>

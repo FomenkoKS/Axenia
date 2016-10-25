@@ -68,14 +68,13 @@ $logic->CheckData();
                 <button class="btn btn-sm btn-dark" data-toggle="modal" data-target="#myModal" id="for_food">
                     Пожертвовать на проект
                 </button>
-                <p>Написать авторам <strong class="tg_user wrote">abrikos</strong>, <strong class="tg_user wrote">formatq</strong><br><a
+                <p>Написать автору <strong class="tg_user wrote">abrikos</strong><br><a
                         href="https://telegram.me/storebot?start=Axenia_bot">Оставить отзыв</a></p>
             </div>
             <div class="col-md-2 col-md-offset-7 text-right">
                 <strong>Добавить к себе:</strong>
                 <ul class="list-unstyled">
                     <li class="tg_user add_to_group">Axenia_Bot</li>
-                    <li class="tg_user add_to_group">ZinaBot</li>
                 </ul>
             </div>
         </div>
@@ -91,7 +90,7 @@ $logic->CheckData();
             <div class="modal-body center-block text-center">
                 <iframe frameborder="0" allowtransparency="true" scrolling="no"
                         src="https://money.yandex.ru/embed/donate.xml?account=41001224651196&quickpay=donate&payment-type-choice=on&mobile-payment-type-choice=on&default-sum=100&targets=%D0%90%D0%BA%D1%81%D0%B8%D0%BD%D1%8C%D0%B5+%D0%BD%D0%B0+%D0%B5%D0%B4%D1%83&target-visibility=on&project-name=&project-site=&button-text=05&comment=on&hint=%D0%9E%D1%81%D1%82%D0%B0%D0%B2%D1%8C%D1%82%D0%B5+%D1%81%D0%B2%D0%BE%D0%B9+%D1%8E%D0%B7%D0%B5%D1%80%D0%BD%D0%B5%D0%B9%D0%BC+%D0%B4%D0%BB%D1%8F+%D0%BF%D0%BE%D0%BB%D1%83%D1%87%D0%B5%D0%BD%D0%B8%D1%8F+%D0%B0%D1%87%D0%B8%D0%B2%D0%BA%D0%B8&successURL=https%3A%2F%2Fabrikoseg.ru%2Faxenia%2Fweb%2F"
-                        width="508" height="160"></iframe>
+                        width="508" height="160">
                 </iframe>
             </div>
         </div>

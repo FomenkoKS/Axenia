@@ -1,5 +1,5 @@
 <?php
-require_once("config.php");
+require_once("configs/site/config.php");
 function GetUserID($username)
 {
     $query = "SELECT id FROM Users WHERE username='" . str_ireplace("@", "", $username) . "'";
