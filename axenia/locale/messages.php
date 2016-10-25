@@ -119,7 +119,7 @@ Use \"/lang\" to change language." ,
         array(
             "en" => "Top karma is only available in group chats.",
             "ru" => "Топ кармы доступен только в групповых чатах.",
-            "ruUN" => "😐 Ты это действительно? \r\nТоп кармы доступен только в групповых чатах. В приватных чатах в топе только я 😊"
+            "ruUN" => '😐'." Ты это действительно? \r\nТоп кармы доступен только в групповых чатах. В приватных чатах в топе только я 😊"
         ),
     "karma.plus" =>
         array(
@@ -177,9 +177,9 @@ Use \"/lang\" to change language." ,
         ),
     "reward.new" =>
         array(
-            "en" => "👏 User <b>:user</b> is awarded the achievement called «<a href=':path?user_id=:user_id'>:title</a>»",
-            "ru" => "👏 Товарищ <b>:user</b> награждается отличительным знаком «<a href=':path?user_id=:user_id'>:title</a>»",
-            "ruUN" => "👏 Товарищ <b>:user</b> заполучил ачивку «<a href=':path?user_id=:user_id'>:title</a>»"
+            "en" => '👏'." User <b>:user</b> is awarded the achievement called «<a href=':path?user_id=:user_id'>:title</a>»",
+            "ru" => '👏'." Товарищ <b>:user</b> награждается отличительным знаком «<a href=':path?user_id=:user_id'>:title</a>»",
+            "ruUN" => '👏'." Товарищ <b>:user</b> заполучил ачивку «<a href=':path?user_id=:user_id'>:title</a>»"
         ),
     "reward.type.karma.desc" =>
         array(

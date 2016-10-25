@@ -88,13 +88,14 @@ class BotService
     public function getStats($from_id, $chat_id = NULL)
     {
         $res =
-            ($chat_id == NULL ? "" : ("📍 " . Lang::message("user.stat.inchat") . $this->getUserLevel($from_id, $chat_id) . "\r\n")) .
-            "🔮 " . Lang::message("user.stat.sum") . round($this->db->SumKarma($from_id), 0) . "\r\n" .
-            "📊 " . Lang::message("user.stat.place") . $this->db->UsersPlace($from_id) . "\r\n" .
-            "👥 " . Lang::message("user.stat.membership") . implode(", ", $this->getUserGroup($from_id)) . "\r\n";
+            ($chat_id == NULL ? "" : ('📍 ' . Lang::message("user.stat.inchat") . $this->getUserLevel($from_id, $chat_id) . "\r\n")) .
+            '🔮 ' . Lang::message("user.stat.sum") . round($this->db->SumKarma($from_id), 0) . "\r\n" .
+            '📊 ' . Lang::message("user.stat.place") . $this->db->UsersPlace($from_id) . "\r\n" .
+            '👥 ' . Lang::message("user.stat.membership") . implode(", ", $this->getUserGroup($from_id)) . "\r\n";
         if ($a = $this->getAllUserRewards($from_id)) {
-            $res .= "🏅" . Lang::message("user.stat.rewards") . implode(", ", $a);
+            $res .= '🏅 ' . Lang::message("user.stat.rewards") . implode(", ", $a);
         }
+
         return $res;
     }
 
@@ -106,8 +107,10 @@ class BotService
             foreach ($a as $value) {
                 array_push($stack, (empty($value[1])) ? $value[0] : "<a href='telegram.me/" . $value[1] . "'>" . $value[0] . "</a>");
             }
+
             return $stack;
         }
+
         return false;
     }
 
@@ -164,6 +167,7 @@ class BotService
             $isNewChat = true;
         }
         Lang::init($lang);
+
         return $isNewChat;
     }
 
@@ -211,6 +215,7 @@ class BotService
                 }
             }
         }
+
         return false;
     }
 
@@ -221,6 +226,7 @@ class BotService
                 return true;
             }
         }
+
         return false;
     }
 
@@ -430,16 +436,16 @@ class BotService
                 if ($a[1] > 1) $text .= "<b> x" . $a[1] . "</b>";
                 array_push($stack, $text);
             }
+
             return $stack;
         }
+
         return false;
 
     }
 
 //endregion
 
-
 }
-
 
 ?>

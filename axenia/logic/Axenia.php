@@ -41,15 +41,16 @@ class Axenia
     {
         if ($message['chat']['type'] != "channel") {
             if (isset($message['text'])) {
-                return Util::startsWith($message['text'], ["/", "+", "-", "👍", "👎"]);
+                return Util::startsWith($message['text'], ["/", "+", "-", '👍', '👎']);
             }
             if (isset($message['sticker'])) {
-                return Util::startsWith($message['sticker']['emoji'], ["👍", "👎"]);
+                return Util::startsWith($message['sticker']['emoji'], ['👍', '👎']);
             }
             if (isset($message['new_chat_member']) || isset($message['new_chat_title']) || isset($message['left_chat_member'])) {
                 return true;
             }
         }
+
         return false;
     }
 
@@ -77,7 +78,7 @@ class Axenia
                     $text = $message['text'];
                 }
                 switch (true) {
-                    case Util::startsWith($text, ["+", "-", "👍", "👎"]):
+                    case Util::startsWith($text, ["+", "-", '👍', '👎']):
                         if (preg_match('/^(\+|\-|👍|👎) ?([\s\S]+)?/ui', $text, $matches)) {
                             $isRise = Util::isInEnum("+,👍", $matches[1]);
 
