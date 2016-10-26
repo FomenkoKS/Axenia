@@ -337,11 +337,14 @@ class Axenia
             [
                 'text' => Lang::message('store.button.buy_cats'),
                 'callback_data' => 'buy_cats' . '|' . $from['id'] . '|' . '10'
+            ],[
+                'text' => Lang::message('store.button.buy_gif'),
+                'callback_data' => 'buy_gif' . '|' . $from['id'] . '|' . '10'
             ]
         ];
         $inline_keyboard = $button_list;
         if (Lang::isUncensored()) {
-            $button_list_uncensored[] = array_merge([$button_list[0][0]], [
+            $button_list_uncensored[] = array_merge([$button_list[0][0]],[$button_list[0][1]], [
                 ['text' => Lang::message('store.button.buy_tits'),
                     'callback_data' => 'buy_tits' . '|' . $from['id'] . '|' . '30'],
                 ['text' => Lang::message('store.button.buy_butts'),
@@ -359,7 +362,14 @@ class Axenia
             $command = explode("|", $callback);
             $newKarma = $karma - (int)$command[2];
             if ($newKarma >= 0) {
-                Request::sendPhoto($chat_id, $text, ['reply_to_message_id' => $message_id]);
+                switch($command[0]){
+                    case 'buy_gif':
+                        Request::sendDocument($chat_id, $text, ['reply_to_message_id' => $message_id]);
+                        break;
+                    default:
+                        Request::sendPhoto($chat_id, $text, ['reply_to_message_id' => $message_id]);
+                }
+
                 $newMessage = Util::insert(Lang::message('store.event.' . $command[0]), ["user" => $username, "k" => $newKarma]);
                 $callbackMessage = Util::insert(Lang::message('store.callback'), ["buy" => Lang::message('store.button.' . $command[0]), "k" => $newKarma]);
                 $this->service->setLevel($from['id'], $chat_id, $newKarma);
@@ -407,6 +417,10 @@ class Axenia
                     case 'buy_cats':
                         $cat = json_decode(file_get_contents("http://random.cat/meow"), true);
                         $rez = $cat["file"];
+                        break;
+                    case 'buy_gif':
+                        $gif = json_decode(file_get_contents("http://api.giphy.com/v1/gifs/random?api_key=dc6zaTOxFJmzC"), true);
+                        $rez = $gif["data"]["image_url"];
                         break;
                     default:
                         $rez = $data;

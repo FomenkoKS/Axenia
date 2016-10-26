@@ -241,6 +241,12 @@ Use \"/lang\" to change language." ,
             "ru" => "Шутки 10",
             "ruUN" => "Лулзы 10"
         ),
+    "store.button.buy_gif" =>
+        array(
+            "en" => "GIF 10",
+            "ru" => "GIF 10",
+            "ruUN" => "Гифка 10"
+        ),
     "store.event.buy_tits" =>
         array(
             "en" => "*CENSORED*",
@@ -264,6 +270,12 @@ Use \"/lang\" to change language." ,
             "en" => "<b>:user(:k)</b> have bought jokes",
             "ru" => "<b>:user(:k)</b> купил шутки",
             "ruUN" => "<b>:user(:k)</b> купил лулзы"
+        ),
+    "store.event.buy_gif" =>
+        array(
+            "en" => "<b>:user(:k)</b> have bought GIF",
+            "ru" => "<b>:user(:k)</b> купил gif-анимацию",
+            "ruUN" => "<b>:user(:k)</b> купил гифку"
         ),
     "store.callback" =>
         array(
