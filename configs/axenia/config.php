@@ -10,3 +10,4 @@ define('ADMIN_IDS', '');
 define('NASH_CHAT_ID', '');
 define('PATH_TO_WEBHOOK', '');
 define('LOG_CHAT_ID', '');
+define('TRASH_CHAT_ID', '');

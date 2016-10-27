@@ -145,6 +145,28 @@ class Axenia
                             }
                         }
                         break;
+                    case Util::startsWith($text, ("/lala")):
+                        if (defined('TRASH_CHAT_ID')) {
+                            Request::sendTyping($chat_id);
+                            $ok = false;
+                            do {
+                                $message = Request::exec("forwardMessage", array('chat_id' => TRASH_CHAT_ID, "from_chat_id" => "@rgonewild", "disable_notification" => true, "message_id" => rand(1, 5960)));
+                                if ($message !== false && isset($message['photo'])) {
+                                    $array = $message['photo'];
+                                    $file_id = $array[0]['file_id'];
+                                    foreach ($array as $file) {
+                                        $height = (int)$file['height'];
+                                        if ($height > 600 && $height <= 1280) {
+                                            $file_id = $file['file_id'];
+                                        }
+                                    }
+                                    Request::sendPhoto($chat_id, $file_id);
+                                    $ok = true;
+                                }
+                                sleep(1);
+                            } while (!$ok);
+                        }
+                        break;
 //                    case Util::startsWith($text, ("/cleanDB")):
 //                        if (Util::isInEnum(ADMIN_IDS, $from_id)) {
 //                            Request::sendTyping($chat_id);
@@ -337,14 +359,14 @@ class Axenia
             [
                 'text' => Lang::message('store.button.buy_cats'),
                 'callback_data' => 'buy_cats' . '|' . $from['id'] . '|' . '10'
-            ],[
+            ], [
                 'text' => Lang::message('store.button.buy_gif'),
                 'callback_data' => 'buy_gif' . '|' . $from['id'] . '|' . '10'
             ]
         ];
         $inline_keyboard = $button_list;
         if (Lang::isUncensored()) {
-            $button_list_uncensored[] = array_merge([$button_list[0][0]],[$button_list[0][1]], [
+            $button_list_uncensored[] = array_merge([$button_list[0][0]], [$button_list[0][1]], [
                 ['text' => Lang::message('store.button.buy_tits'),
                     'callback_data' => 'buy_tits' . '|' . $from['id'] . '|' . '30'],
                 ['text' => Lang::message('store.button.buy_butts'),
@@ -362,7 +384,7 @@ class Axenia
             $command = explode("|", $callback);
             $newKarma = $karma - (int)$command[2];
             if ($newKarma >= 0) {
-                switch($command[0]){
+                switch ($command[0]) {
                     case 'buy_gif':
                         Request::sendDocument($chat_id, $text, ['reply_to_message_id' => $message_id]);
                         break;
