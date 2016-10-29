@@ -72,6 +72,7 @@ class Axenia
 
             if (isset($message['text']) || isset($message['sticker'])) {
                 $isPrivate = $chat['type'] == "private";
+                $postfix = $isPrivate ? "" : ("@" . BOT_NAME);
                 if (isset($message['sticker'])) {
                     $text = $message['sticker']['emoji'];
                 } else {
@@ -84,52 +85,51 @@ class Axenia
 
                             if (isset($message['reply_to_message'])) {
                                 $replyUser = $message['reply_to_message']['from'];
-                                $this->service->insertOrUpdateUser($replyUser);
-
                                 if ($replyUser['username'] != BOT_NAME) {
-                                    $user_id = $replyUser['id'];
                                     Request::sendTyping($chat_id);
-                                    $this->doKarmaAction($isRise, $from_id, $user_id, $chat_id);
+                                    $this->service->insertOrUpdateUser($replyUser);
+                                    $this->doKarmaAction($isRise, $from_id, $replyUser['id'], $chat_id);
                                 }
                             } else {
                                 if (!$isPrivate) {
                                     if (preg_match('/@([\w]+)/ui', $matches[2], $user)) {
+                                        Request::sendTyping($chat_id);
                                         $to = $this->service->getUserID($user[1]);
                                         if ($to) {
                                             $this->doKarmaAction($isRise, $from_id, $to, $chat_id);
                                         } else {
-                                            Request::sendHtmlMessage($chat_id, Lang::message('karma.unknownUser'), array('reply_to_message_id' => $message_id));
+                                            Request::sendHtmlMessage($chat_id, Lang::message('karma.unknownUser'), ['reply_to_message_id' => $message_id]);
                                         }
                                     }
                                 }
                             }
                         }
                         break;
-                    case (Util::startsWith($text, ("/lang@" . BOT_NAME)) || ($isPrivate && Util::startsWith($text, "/lang"))):
+                    case (Util::startsWith($text, "/lang" . $postfix)):
                         if ($this->service->isAdminInChat($from_id, $chat)) {
                             $this->sendLanguageKeyboard($chat_id);
                         } else {
                             Request::sendMessage($chat_id, Lang::message("chat.lang.foradmins"));
                         }
                         break;
-                    case (Util::startsWith($text, ("/buy@" . BOT_NAME)) || ($isPrivate && Util::startsWith($text, "/buy"))):
+                    case (Util::startsWith($text, "/buy" . $postfix)):
                         Request::sendTyping($chat_id);
                         $this->sendStore($chat_id, $from);
                         break;
-                    case (Util::startsWith($text, ("/top@" . BOT_NAME)) || ($isPrivate && Util::startsWith($text, "/top"))):
+                    case (Util::startsWith($text, "/top" . $postfix)):
                         Request::sendTyping($chat_id);
-                        if (@$isPrivate) {
+                        if ($isPrivate) {
                             Request::sendMessage($chat_id, Lang::message("karma.top.private"));
                         } else {
                             $out = $this->service->getTop($chat_id, 5);
                             Request::sendHtmlMessage($chat_id, $out);
                         }
                         break;
-                    case (Util::startsWith($text, ("/my_stats@" . BOT_NAME)) || ($isPrivate && Util::startsWith($text, "/my_stats"))):
+                    case (Util::startsWith($text, "/my_stats" . $postfix)):
                         Request::sendTyping($chat_id);
                         Request::sendHtmlMessage($chat_id, $this->service->getStats($from_id, $isPrivate ? NULL : $chat_id), ['reply_to_message_id' => $message_id]);
                         break;
-                    case (Util::startsWith($text, ("/start@" . BOT_NAME)) || ($isPrivate && Util::startsWith($text, "/start"))):
+                    case (Util::startsWith($text, "/start" . $postfix)):
                         if ($isPrivate) {
                             Request::sendTyping($chat_id);
                             Request::sendHtmlMessage($chat_id, Lang::message('chat.greetings'));
@@ -150,7 +150,7 @@ class Axenia
                             Request::sendTyping($chat_id);
                             $ok = false;
                             do {
-                                $message = Request::exec("forwardMessage", array('chat_id' => TRASH_CHAT_ID, "from_chat_id" => "@rgonewild", "disable_notification" => true, "message_id" => rand(1, 5960)));
+                                $message = Request::exec("forwardMessage", array('chat_id' => TRASH_CHAT_ID, "from_chat_id" => "@rgonewild", "disable_notification" => true, "message_id" => rand(1, 6219)));
                                 if ($message !== false && isset($message['photo'])) {
                                     $array = $message['photo'];
                                     $file_id = $array[0]['file_id'];
@@ -262,17 +262,17 @@ class Axenia
                         }
                         Request::sendMessage($chat_id, Lang::message('chat.greetings'), array("parse_mode" => "Markdown"));
                     }
-                } else {
-                    $this->service->insertOrUpdateUser($newMember);
                 }
+                // убрал пока
+                //else { $this->service->insertOrUpdateUser($newMember); }
             } elseif (isset($message['new_chat_title'])) {
                 $this->service->rememberChat($chat, $from_id);
             } elseif (isset($message['left_chat_member'])) {
                 $member = $message['left_chat_member'];
                 if (BOT_NAME == $member['username']) {
-                    $isDeleted = $this->service->deleteChat($chat_id);
+                    //$isDeleted = $this->service->deleteChat($chat_id);
                     if (defined('LOG_CHAT_ID')) {
-                        Request::sendHtmlMessage(LOG_CHAT_ID, BOT_NAME . " leaves " . Util::getChatLink($chat) . ". Data is deleted:" . $isDeleted);
+                        Request::sendHtmlMessage(LOG_CHAT_ID, BOT_NAME . " leaves " . Util::getChatLink($chat));
                     }
                 } else {
                     // пока не удаляем, вдруг по случайности удалили
