@@ -54,6 +54,7 @@ class Util
                         return true;
                     }
                 }
+
                 return false;
             } else {
                 return true;
@@ -61,7 +62,36 @@ class Util
         } else {
             return substr($haystack, 0, strlen($needle)) === $needle ? true : false;
         }
+    }
 
+    public static function endsWith($haystack, $needle)
+    {
+        if ($needle === "") {
+            return true;
+        }
+
+        if (is_array($needle)) {
+            if (count($needle) > 0) {
+                foreach ($needle as $key) {
+                    $length = strlen($key);
+                    if ($length == 0) {
+                        return true;
+                    }
+                    if (substr($haystack, -$length) === $key) {
+                        return true;
+                    }
+                }
+                return false;
+            } else {
+                return true;
+            }
+        } else {
+            $length = strlen($needle);
+            if ($length == 0) {
+                return true;
+            }
+            return substr($haystack, -$length) === $needle ? true : false;
+        }
     }
 
     public static function getFullNameUserId($user)
@@ -147,10 +177,10 @@ class Util
      *   (Overwrites before, after, breaks escape / clean)
      * - clean: A boolean or array with instructions for Text::cleanInsert
      *
-     * @param string $str A string containing variable placeholders
-     * @param array $data A key => val array where each key stands for a placeholder variable name
+     * @param string $str     A string containing variable placeholders
+     * @param array  $data    A key => val array where each key stands for a placeholder variable name
      *                        to be replaced with val
-     * @param array $options An array of options, see description above
+     * @param array  $options An array of options, see description above
      * @return string
      */
     public static function insert($str, $data, array $options = array())
@@ -207,8 +237,8 @@ class Util
      * is to replace all whitespace and unneeded markup around placeholders that did not get replaced
      * by Text::insert().
      *
-     * @param string $str String to clean.
-     * @param array $options Options list.
+     * @param string $str     String to clean.
+     * @param array  $options Options list.
      * @return string
      * @see \Cake\Utility\Text::insert()
      */

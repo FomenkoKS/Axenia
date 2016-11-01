@@ -114,6 +114,11 @@ class BotService
         return false;
     }
 
+    public function isBot($username)
+    {
+        return Util::endsWith(strtolower($username), 'bot');
+    }
+
 //endregion
 
 // region -------------------- Admins

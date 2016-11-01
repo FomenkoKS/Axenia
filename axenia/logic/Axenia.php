@@ -85,20 +85,20 @@ class Axenia
 
                             if (isset($message['reply_to_message'])) {
                                 $replyUser = $message['reply_to_message']['from'];
-                                if ($replyUser['username'] != BOT_NAME) {
-                                    Request::sendTyping($chat_id);
+                                if ($replyUser['username'] != BOT_NAME && !$this->service->isBot($replyUser['username'])) {
                                     $this->service->insertOrUpdateUser($replyUser);
                                     $this->doKarmaAction($isRise, $from_id, $replyUser['id'], $chat_id);
                                 }
                             } else {
                                 if (!$isPrivate) {
                                     if (preg_match('/@([\w]+)/ui', $matches[2], $user)) {
-                                        Request::sendTyping($chat_id);
-                                        $to = $this->service->getUserID($user[1]);
-                                        if ($to) {
-                                            $this->doKarmaAction($isRise, $from_id, $to, $chat_id);
-                                        } else {
-                                            Request::sendHtmlMessage($chat_id, Lang::message('karma.unknownUser'), ['reply_to_message_id' => $message_id]);
+                                        if (BOT_NAME != $user[1] && !$this->service->isBot($user[1])) {
+                                            $to = $this->service->getUserID($user[1]);
+                                            if ($to) {
+                                                $this->doKarmaAction($isRise, $from_id, $to, $chat_id);
+                                            } else {
+                                                Request::sendHtmlMessage($chat_id, Lang::message('karma.unknownUser'), ['reply_to_message_id' => $message_id]);
+                                            }
                                         }
                                     }
                                 }
@@ -137,6 +137,9 @@ class Axenia
                         } else {
                             $this->service->rememberChat($chat, $from_id);
                         }
+                        break;
+                    case (Util::startsWith($text, "/help" . $postfix)):
+                        Request::sendHtmlMessage($chat_id, Lang::message('chat.help'));
                         break;
                     case Util::startsWith($text, ("/set @")):
                         if (Util::isInEnum(ADMIN_IDS, $from_id)) {
