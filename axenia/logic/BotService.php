@@ -133,6 +133,18 @@ class BotService
         return false;
     }
 
+    public function isSilentMode($chat_id)
+    {
+        return $this->db->getSilentMode($chat_id);
+    }
+
+    public function toggleSilentMode($chat_id)
+    {
+        return $this->db->setSilentMode($chat_id,!$this->db->getSilentMode($chat_id));
+    }
+
+
+
 //endregion
 
 // region -------------------- Lang

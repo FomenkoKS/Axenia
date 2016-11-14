@@ -67,10 +67,23 @@ class BotDao extends AbstractDao
         return false;
     }
 
+
+    public function getSilentMode($chat_id)
+    {
+
+        $res = $this->select("SELECT silent_mode FROM Chats WHERE id = " . $chat_id, true);
+        if (isset($res[0])) {
+            return (empty($res[0]) || $res[0]==0) ? false : true;
+        }else return false;
+    }
+    public function setSilentMode($chat_id,$mode)
+    {
+        return $this->update("UPDATE Chats SET silent_mode = ".(($mode)?1:0)." WHERE id=".$chat_id);
+    }
+
     public function getUserLang($user_id)
     {
         $res = $this->select("SELECT lang FROM Users WHERE id = " . $user_id);
-
         return !($res[0]) ? false : $res[0];
     }
 

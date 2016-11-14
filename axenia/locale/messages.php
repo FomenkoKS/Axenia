@@ -68,6 +68,18 @@ Statistics are available on the website axeniabot.ru.",
             "ru" => "Смена языка доступна только админам группы.\r\n",
             "ruUN" => "Сменить язык бота может только админ.\r\n"
         ),
+    "chat.silentmode.true" =>
+        array(
+            "en" => "Silent-mode enabled",
+            "ru" => "Бесшумный режим активирован",
+            "ruUN" => "Ок, я буду вести себя тихо"
+        ),
+    "chat.silentmode.false" =>
+        array(
+            "en" => "Silent-mode disabled",
+            "ru" => "Бесшумный режим деактивирован",
+            "ruUN" => "Ура! Я буду комментировать ваши действия"
+        ),
     "user.pickChat" =>
         array(
             "en" => "So, you need <a href='telegram.me/:botName?startgroup=0'>choose а group</a> where I'll be counting karma. ✌😊",

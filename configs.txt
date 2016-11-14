@@ -3,6 +3,7 @@ top - Top of karma / Топ кармы
 lang - Switch language / Сменить язык
 my_stats - User statistics / Статистика пользователя
 buy - Call showcase / Вызвать витрину
+silent_mode - Toggle Silent-Mode / Переключить тихий режим
 settings - Settings / Настройки
 help - Help / Помощь
 

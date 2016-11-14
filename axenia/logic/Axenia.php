@@ -170,6 +170,12 @@ class Axenia
                             } while (!$ok);
                         }
                         break;
+                    case Util::startsWith($text, ("/silent_mode")):
+                        if ($this->service->isAdminInChat($from_id, $chat) && !$isPrivate) {
+                            $this->service->toggleSilentMode($chat_id);
+                            request::sendMessage($chat_id,lang::message("chat.silentmode.".($this->service->isSilentMode($chat_id)?'true':'false')));
+                        }
+                        break;
 //                    case Util::startsWith($text, ("/cleanDB")):
 //                        if (Util::isInEnum(ADMIN_IDS, $from_id)) {
 //                            Request::sendTyping($chat_id);
@@ -313,8 +319,8 @@ class Axenia
     public function doKarmaAction($isRise, $from_id, $user_id, $chat_id)
     {
         $out = $this->service->handleKarma($isRise, $from_id, $user_id, $chat_id);
+        if(!$this->service->isSilentMode($chat_id))Request::sendHtmlMessage($chat_id, $out['msg']);
         if ($out['good'] == true) {
-            Request::sendHtmlMessage($chat_id, $out['msg']);
             if ($out['newLevel'] != null) {
                 $rewardMessages = $this->service->handleRewards($out['newLevel'], $chat_id, $user_id);
                 if (count($rewardMessages) > 0) {
@@ -323,8 +329,6 @@ class Axenia
                     }
                 }
             }
-        } else {
-            Request::sendHtmlMessage($chat_id, $out['msg']);
         }
     }
 
