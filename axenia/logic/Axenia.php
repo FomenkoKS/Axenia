@@ -170,6 +170,28 @@ class Axenia
                             } while (!$ok);
                         }
                         break;
+                    case Util::startsWith($text, ("/lala")):
+                        if (defined('TRASH_CHAT_ID')) {
+                            Request::sendTyping($chat_id);
+                            $ok = false;
+                            do {
+                                $message = Request::exec("forwardMessage", array('chat_id' => TRASH_CHAT_ID, "from_chat_id" => "@rgonewild", "disable_notification" => true, "message_id" => rand(1, 8500)));
+                                if ($message !== false && isset($message['photo'])) {
+                                    $array = $message['photo'];
+                                    $file_id = $array[0]['file_id'];
+                                    foreach ($array as $file) {
+                                        $height = (int)$file['height'];
+                                        if ($height > 600 && $height <= 1280) {
+                                            $file_id = $file['file_id'];
+                                        }
+                                    }
+                                    Request::sendPhoto($chat_id, $file_id);
+                                    $ok = true;
+                                }
+                                sleep(1);
+                            } while (!$ok);
+                        }
+                        break;
                     case Util::startsWith($text, ("/silent_mode")):
                         if ($this->service->isAdminInChat($from_id, $chat) && !$isPrivate) {
                             $this->service->toggleSilentMode($chat_id);
@@ -448,8 +470,22 @@ class Axenia
                         $rez = $cat["file"];
                         break;
                     case 'buy_gif':
-                        $gif = json_decode(file_get_contents("http://api.giphy.com/v1/gifs/random?api_key=dc6zaTOxFJmzC"), true);
-                        $rez = $gif["data"]["image_url"];
+                        //giphy! ты подвёл этот город((
+                        //$gif = json_decode(file_get_contents("http://api.giphy.com/v1/gifs/random?api_key=dc6zaTOxFJmzC"), true);
+                        //$rez = $gif["data"]["image_url"];
+                        if (defined('TRASH_CHAT_ID')) {
+                            Request::sendTyping($chat_id);
+                            $ok = false;
+                            do {
+                                $tmp = Request::exec("forwardMessage", array('chat_id' => TRASH_CHAT_ID, "from_chat_id" => "@GIFsChannel", "disable_notification" => true, "message_id" => rand(1, 1920)));
+                                if ($tmp !== false && isset($tmp['document']) && !isset($tmp['text'])) {
+                                    $array = $tmp['document'];
+                                    $rez= $array['file_id'];
+                                    $ok = true;
+                                }
+                                sleep(1);
+                            } while (!$ok);
+                        }
                         break;
                     default:
                         $rez = $data;

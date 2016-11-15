@@ -20,5 +20,6 @@ You can use the message format "+ @username" to cheer up a friend.
 Also you can buy some pictures (cats, etc) for karma.
 Statistics are available on the website axeni.ru also it can be viewed using the command "/top".
 
+
 # SQL query
 SELECT DISTINCT c.* from Chats c LEFT JOIN Karma k ON k.chat_id=c.id WHERE k.last_updated IS NOT NULL
