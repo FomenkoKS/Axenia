@@ -21,31 +21,32 @@ return array(
         ),
     "chat.greetings" =>
         array(
-            "en" => "Hello! My name is Axenia and I'm can count the karma.\r\nUse \"/help\" to see more.",
+            "en" => "Hello! My name is Axenia and I can count the karma points.\r\nUse \"/help\" to see more about.",
             "ru" => "Приветствую. Меня зовут Аксения. Я умею считать карму.\r\nИспользуй \"/help\" для подробностей.",
             "ruUN" => "Приветствую. Меня зовут Аксения. И я считаю карму.\r\nИспользуй \"/help\" для подробностей."
         ),
     "chat.help" =>
         array(
-            "en" => "Type plus (+ or 👍) in reply to any message for raise karma or minus (- or 👎) for reduce karma.
-I support messages with format \"+ @username\".
-Use \"/top\" to see statistics of top in this chat.
+            "en" => "Type 'plus' (+ or 👍) for raising or 'minus' (- or 👎) for reducing karma points to the user on which message it will be replying.
+Also I support the message format like \"+/👍/-👎 @username\".
+Use \"/top\" to see top statistics in group.
 Use \"/mystats\" to see your global statistics.
-Use \"/lang\" to change language.
-Command \"/silent_mode\" toggle mode without messages about user's actions. Also you can buy some pictures (cats, etc) for your karma points , use \"/buy\"
-Statistics are available on the website axeniabot.ru.",
-            "ru" => "Поставь плюс(+ или 👍) в ответ на сообщение в группе для поднятия кармы или минус(- или 👎) для её опускания.
-Также понимаю сообщение формата \"+ @username\".
-Команда \"/top\" покажет топ держателей кармы в этом чате.
+Use \"/lang\" to change the language.
+Use \"/silent_mode\" to toggle mode which mute bot messages about decrease or increase karma points.
+Also you may buy some pictures (kitty, gif etc) on your karma points, use \"/buy\".
+Statistic is available on axeniabot.ru.",
+            "ru" => "Поставьте '+' (или 👍) в ответ на сообщение для поднятия кармы или '-'(или 👎) для её опускания.
+Также понимаю сообщение формата \"+/👍/-👎  @username\".
+Команда \"/top\" покажет топ держателей кармы в этом группе.
 Команада \"/mystats\" покажет твои глобальные статы кармы.
 Используй \"/lang\" для смены языка. Доступна только администраторам группы.
 Команда \"/silent_mode\" переключает тихий режим.
 Карму можно потратить на покупки забавных картинок, используйте \"/buy\"
 Статистику можно посмотреть на сайте axeniabot.ru
 ",
-            "ruUN" => "Пиши плюс(+ или 👍) в ответ на сообщение в группе для поднятия кармы или минус(- или 👎) для её опускания.
-Также понимаю сообщение формата \"+ @username\".
-По команде \"/top\" покажу топ кармописек в этом чате.
+            "ruUN" => "Поставьте '+' (или 👍) в ответ на сообщение для поднятия кармы или '-'(или 👎) для её опускания.
+Также понимаю сообщение формата \"+/👍/-👎  @username\".
+По команде \"/top\" покажу топ кармописек в этом группе.
 По команде \"/mystats\" покажу твои глобальные статы кармы.
 Можно сменить язык по команде \"/lang\", но она доступна только админам группы.
 Команда \"/silent_mode\" переключает тихий режим, но она вам, наверняка, нахер не сдалась))
@@ -60,7 +61,7 @@ Statistics are available on the website axeniabot.ru.",
         ),
     "chat.lang.end" =>
         array(
-            "en" => "Ok, now I'm speaking English!",
+            "en" => "Ok, I'll speak in English!",
             "ru" => "Проверка языка: борщ, балалайка. Теперь я могу говорить по-русски!",
             "ruUN" => "Проверка языка: борщ, балалайка. Теперь я могу говорить по-русски, блеать!"
         ),
@@ -72,37 +73,37 @@ Statistics are available on the website axeniabot.ru.",
         ),
     "chat.silentmode.true" =>
         array(
-            "en" => "Silent-mode enabled",
+            "en" => "Silent-mode is enabled",
             "ru" => "Бесшумный режим активирован",
             "ruUN" => "Ок, я буду вести себя тихо"
         ),
     "chat.silentmode.false" =>
         array(
-            "en" => "Silent-mode disabled",
+            "en" => "Silent-mode is disabled",
             "ru" => "Бесшумный режим деактивирован",
             "ruUN" => "Ура! Я буду комментировать ваши действия"
         ),
     "user.pickChat" =>
         array(
-            "en" => "So, you need <a href='telegram.me/:botName?startgroup=0'>choose а group</a> where I'll be counting karma. ✌😊",
-            "ru" => "Итак, надо <a href='telegram.me/:botName?startgroup=0'>выбрать чат</a>, где я буду считать карму. ✌😊",
-            "ruUN" => "Итак, надо <a href='telegram.me/:botName?startgroup=0'>выбрать чат</a>, где я буду считать карму. ✌😊"
+            "en" => "So, you need <a href='telegram.me/:botName?startgroup=0'>to choose а group</a> where I'll handle the karma points. ✌😊",
+            "ru" => "Итак, надо <a href='telegram.me/:botName?startgroup=0'>выбрать группу</a>, где я буду считать карму. ✌😊",
+            "ruUN" => "Итак, надо <a href='telegram.me/:botName?startgroup=0'>выбрать группу</a>, где я буду считать карму. ✌😊"
         ),
     "user.stat" =>
         array(
-            "en" => ":user statistics",
+            "en" => ":user's statistic",
             "ru" => "Статистика пользователя :user",
             "ruUN" => "Статистика пользователя :user"
         ),
     "user.stat.inchat" =>
         array(
-            "en" => "Karma in this group: ",
-            "ru" => "Карма в чате: ",
-            "ruUN" => "Карма в чате: "
+            "en" => "Karma's rate in this group: ",
+            "ru" => "Карма в группе: ",
+            "ruUN" => "Карма в группе: "
         ),
     "user.stat.sum" =>
         array(
-            "en" => "Karma: ",
+            "en" => "Global karma's rate: ",
             "ru" => "Всего кармы: ",
             "ruUN" => "Наебашил кармы: "
         ),
@@ -127,8 +128,8 @@ Statistics are available on the website axeniabot.ru.",
     "karma.top.title" =>
         array(
             "en" => "<b>Top list of Karma owners in the «:chatName»:</b>\r\n",
-            "ru" => "<b>Самые почётные люди чата «:chatName»:</b>\r\n",
-            "ruUN" => "<b>Самые длинные кармописюны чата «:chatName»:</b>\r\n"
+            "ru" => "<b>Самые почётные люди групы «:chatName»:</b>\r\n",
+            "ruUN" => "<b>Самые длинные кармописюны группы «:chatName»:</b>\r\n"
         ),
     "karma.top.row" =>
         array(
@@ -144,45 +145,45 @@ Statistics are available on the website axeniabot.ru.",
         ),
     "karma.top.private" =>
         array(
-            "en" => "Top karma is only available in group chats.",
+            "en" => "Karma's top is available only in groups",
             "ru" => "Топ кармы доступен только в групповых чатах.",
             "ruUN" => '😐' . " Ты это действительно? \r\nТоп кармы доступен только в групповых чатах. В приватных чатах в топе только я 😊"
         ),
     "karma.plus" =>
         array(
-            "en" => "<b>:from (:k1)</b> give some karma to <b>:to (:k2)</b>",
+            "en" => "<b>:from (:k1)</b> gave some karma points to <b>:to (:k2)</b>",
             "ru" => "<b>:from (:k1)</b> плюсанул в карму <b>:to (:k2)</b>",
             "ruUN" => "<b>:from (:k1)</b> подкинул в карму <b>:to (:k2)</b>"
         ),
     "karma.minus" =>
         array(
-            "en" => "<b>:from (:k1)</b> get some karma from <b>:to (:k2)</b>",
+            "en" => "<b>:from (:k1)</b> took some karma points from <b>:to (:k2)</b>",
             "ru" => "<b>:from (:k1)</b> минусанул в карму <b>:to (:k2)</b>",
             "ruUN" => "<b>:from (:k1)</b> насрал в карму <b>:to (:k2)</b>"
         ),
     "karma.yourself" =>
         array(
-            "en" => "Don't do it again!",
+            "en" => "Do not do it again, please!",
             "ru" => "Больше так не делай",
             "ruUN" => "Давай <b>без</b> кармадрочерства"
         ),
     "karma.tooSmallKarma" =>
         array(
-            "en" => "You <b>cannot</b> to vote with negative karma",
+            "en" => "You <b>cannot</b> vote with negative count of karma points",
             "ru" => "Ты <b>не можешь</b> голосовать с отрицательной кармой",
             "ruUN" => "Ты <b>не можешь</b> голосовать с отрицательной кармой"
         ),
     "karma.unknownUser" =>
         array(
-            "en" => "I don't know him ¯\\_(ツ)_/¯ (try to write 👍 via Reply)",
+            "en" => "I don't know this user ¯\\_(ツ)_/¯ (please, try to write '👍' via Reply)",
             "ru" => "Знать его не знаю ¯\\_(ツ)_/¯ (попробуй написать Reply)",
             "ruUN" => "Такого не знаю ¯\\_(ツ)_/¯ (попробуй написать Reply)"
         ),
     "karma.manualSet" =>
         array(
-            "en" => "User ':0' (id=:1) in group with id=:2 got new karma level :3",
-            "ru" => "У пользователя :0 (id=:1) в чате c id=:2 карма равна :3",
-            "ruUN" => "У пользователя :0 (id=:1) в чате c id=:2 карма равна :3"
+            "en" => "User ':0' (id=:1) in group with id=:2 got new karma points :3",
+            "ru" => "У пользователя :0 (id=:1) в группе c id=:2 карма равна :3",
+            "ruUN" => "У пользователя :0 (id=:1) в группе c id=:2 карма равна :3"
         ),
     "reward.list" =>
         array(
@@ -193,26 +194,26 @@ Statistics are available on the website axeniabot.ru.",
     "reward.listInGroup" =>
         array(
             "en" => "Rewards list of <b>:user</b> in group «:chatName»:\r\n:list\r\n",
-            "ru" => "Список наград <b>:user</b> в чате «:chatName»:\r\n:list\r\n",
-            "ruUN" => "Список наград <b>:user</b> в чате «:chatName»:\r\n:list\r\n"
+            "ru" => "Список наград <b>:user</b> в группе «:chatName»:\r\n:list\r\n",
+            "ruUN" => "Список наград <b>:user</b> в группе «:chatName»:\r\n:list\r\n"
         ),
     "reward.noRewards" =>
         array(
-            "en" => "You don't nave rewards yet.",
+            "en" => "You don't have rewards yet.",
             "ru" => "Ни одной награды вы еще не получили.",
             "ruUN" => "Ты еще не заслужил ни одной награды."
         ),
     "reward.new" =>
         array(
-            "en" => '👏' . " User <b>:user</b> is awarded the achievement called «<a href=':path?user_id=:user_id'>:title</a>»",
+            "en" => '👏' . " User named <b>:user</b> has been awarded the achievement called «<a href=':path?user_id=:user_id'>:title</a>»",
             "ru" => '👏' . " Товарищ <b>:user</b> награждается отличительным знаком «<a href=':path?user_id=:user_id'>:title</a>»",
             "ruUN" => '👏' . " Товарищ <b>:user</b> заполучил ачивку «<a href=':path?user_id=:user_id'>:title</a>»"
         ),
     "reward.type.karma.desc" =>
         array(
-            "en" => "Karma in the group :0 exceeded :1",
-            "ru" => "Карма в чате :0 превысило отметку в :1",
-            "ruUN" => "Карма в чате :0 превысило отметку в :1"
+            "en" => "The karma points in the group :0 exceeded :1",
+            "ru" => "Карма в группе :0 превысило отметку в :1",
+            "ruUN" => "Карма в группе :0 превысило отметку в :1"
         ),
     "reward.type.karma1" =>
         array(
@@ -240,7 +241,7 @@ Statistics are available on the website axeniabot.ru.",
         ),
     "store.title" =>
         array(
-            "en" => "<b>:user(:k)</b>, what you want to buy for karma?",
+            "en" => "<b>:user(:k)</b>, what do you want to buy on your karma points?",
             "ru" => "<b>:user(:k)</b>, на что желаете потратить карму?",
             "ruUN" => "<b>:user(:k)</b>, на что ты хочешь посмотреть?"
         ),
@@ -258,7 +259,7 @@ Statistics are available on the website axeniabot.ru.",
         ),
     "store.button.buy_cats" =>
         array(
-            "en" => "Cats 10",
+            "en" => "Kitty 10",
             "ru" => "Котики 10",
             "ruUN" => "Котэ 10"
         ),
@@ -270,8 +271,8 @@ Statistics are available on the website axeniabot.ru.",
         ),
     "store.button.buy_gif" =>
         array(
-            "en" => "GIF 10",
-            "ru" => "GIF 10",
+            "en" => "GIFs 10",
+            "ru" => "Гифка 10",
             "ruUN" => "Гифка 10"
         ),
     "store.event.buy_tits" =>
@@ -288,7 +289,7 @@ Statistics are available on the website axeniabot.ru.",
         ),
     "store.event.buy_cats" =>
         array(
-            "en" => "<b>:user(:k)</b> have bought cats",
+            "en" => "<b>:user(:k)</b> have bought kitty",
             "ru" => "<b>:user(:k)</b> купил котиков",
             "ruUN" => "<b>:user(:k)</b> купил котэ"
         ),
@@ -300,31 +301,31 @@ Statistics are available on the website axeniabot.ru.",
         ),
     "store.event.buy_gif" =>
         array(
-            "en" => "<b>:user(:k)</b> have bought GIF",
+            "en" => "<b>:user(:k)</b> have bought a GIF",
             "ru" => "<b>:user(:k)</b> купил gif-анимацию",
             "ruUN" => "<b>:user(:k)</b> купил гифку"
         ),
     "store.callback" =>
         array(
-            "en" => "You buy ':buy'. You has :k karma.",
+            "en" => "You bought ':buy'. You have :k karma points.",
             "ru" => "Куплено ':buy'. Осталось кармы: :k.",
             "ruUN" => "Куплено ':buy'. Осталось кармы: :k."
         ),
     "store.event.cant_buy" =>
         array(
-            "en" => "<b>:user(:k)</b> has enough karma for buying <i>':buy'</i>",
+            "en" => "<b>:user(:k)</b> has enough karma points to buy <i>':buy'</i>",
             "ru" => "<b>:user(:k)</b> имеет недостаточно кармы для <i>':buy'</i>",
             "ruUN" => "<b>:user(:k)</b>, у тебя слишком мало кармы для <i>':buy'</i>"
         ),
     "store.callback.cant_buy" =>
         array(
-            "en" => "You don't have enough karma for buying ':buy'",
+            "en" => "You have not enough karma points to buy ':buy'",
             "ru" => "У вас недостаточно кармы для ':buy'",
             "ruUN" => "У тебя слишком мало кармы для ':buy'"
         ),
     "store.wrongPick" =>
         array(
-            "en" => "You can't pick that. This is for :user",
+            "en" => "You can't pick this. This is for user ':user'",
             "ru" => "Это предназначено для :user",
             "ruUN" => "Это не для тебя. :user должен сделать выбор."
         )
