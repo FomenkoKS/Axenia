@@ -153,28 +153,6 @@ class Axenia
                             Request::sendTyping($chat_id);
                             $ok = false;
                             do {
-                                $message = Request::exec("forwardMessage", array('chat_id' => TRASH_CHAT_ID, "from_chat_id" => "@rgonewild", "disable_notification" => true, "message_id" => rand(1, 6219)));
-                                if ($message !== false && isset($message['photo'])) {
-                                    $array = $message['photo'];
-                                    $file_id = $array[0]['file_id'];
-                                    foreach ($array as $file) {
-                                        $height = (int)$file['height'];
-                                        if ($height > 600 && $height <= 1280) {
-                                            $file_id = $file['file_id'];
-                                        }
-                                    }
-                                    Request::sendPhoto($chat_id, $file_id);
-                                    $ok = true;
-                                }
-                                sleep(1);
-                            } while (!$ok);
-                        }
-                        break;
-                    case Util::startsWith($text, ("/lala")):
-                        if (defined('TRASH_CHAT_ID')) {
-                            Request::sendTyping($chat_id);
-                            $ok = false;
-                            do {
                                 $message = Request::exec("forwardMessage", array('chat_id' => TRASH_CHAT_ID, "from_chat_id" => "@rgonewild", "disable_notification" => true, "message_id" => rand(1, 8500)));
                                 if ($message !== false && isset($message['photo'])) {
                                     $array = $message['photo'];
@@ -192,10 +170,10 @@ class Axenia
                             } while (!$ok);
                         }
                         break;
-                    case Util::startsWith($text, ("/silent_mode")):
+                    case Util::startsWith($text, ("/silent_mode" . $postfix)):
                         if ($this->service->isAdminInChat($from_id, $chat) && !$isPrivate) {
                             $this->service->toggleSilentMode($chat_id);
-                            request::sendMessage($chat_id,lang::message("chat.silentmode.".($this->service->isSilentMode($chat_id)?'true':'false')));
+                            Request::sendMessage($chat_id, Lang::message("chat.silentmode." . ($this->service->isSilentMode($chat_id) ? 'true' : 'false')));
                         }
                         break;
 //                    case Util::startsWith($text, ("/cleanDB")):
@@ -289,7 +267,7 @@ class Axenia
                     $isRemembered = $this->service->rememberChat($chat, $from_id);
                     if ($isRemembered !== false) {
                         if (defined('LOG_CHAT_ID')) {
-                            Request::sendHtmlMessage(LOG_CHAT_ID, BOT_NAME . " enters " . Util::getChatLink($chat));
+                            Request::sendHtmlMessage(LOG_CHAT_ID, BOT_NAME . " enters " . Util::getChatLink($chat)." (".Request::getChatMembersCount($chat_id).")");
                         }
                         Request::sendMessage($chat_id, Lang::message('chat.greetings'), array("parse_mode" => "Markdown"));
                     }
@@ -303,7 +281,7 @@ class Axenia
                 if (BOT_NAME == $member['username']) {
                     //$isDeleted = $this->service->deleteChat($chat_id);
                     if (defined('LOG_CHAT_ID')) {
-                        Request::sendHtmlMessage(LOG_CHAT_ID, BOT_NAME . " leaves " . Util::getChatLink($chat));
+                        Request::sendHtmlMessage(LOG_CHAT_ID, BOT_NAME . " leaves " . Util::getChatLink($chat)." (".$this->service->getChatMembersCount($chat_id).")");
                     }
                 } else {
                     // пока не удаляем, вдруг по случайности удалили
@@ -341,7 +319,9 @@ class Axenia
     public function doKarmaAction($isRise, $from_id, $user_id, $chat_id)
     {
         $out = $this->service->handleKarma($isRise, $from_id, $user_id, $chat_id);
-        if(!$this->service->isSilentMode($chat_id))Request::sendHtmlMessage($chat_id, $out['msg']);
+        if (!$this->service->isSilentMode($chat_id)) {
+            Request::sendHtmlMessage($chat_id, $out['msg']);
+        }
         if ($out['good'] == true) {
             if ($out['newLevel'] != null) {
                 $rewardMessages = $this->service->handleRewards($out['newLevel'], $chat_id, $user_id);
@@ -480,7 +460,7 @@ class Axenia
                                 $tmp = Request::exec("forwardMessage", array('chat_id' => TRASH_CHAT_ID, "from_chat_id" => "@GIFsChannel", "disable_notification" => true, "message_id" => rand(1, 1920)));
                                 if ($tmp !== false && isset($tmp['document']) && !isset($tmp['text'])) {
                                     $array = $tmp['document'];
-                                    $rez= $array['file_id'];
+                                    $rez = $array['file_id'];
                                     $ok = true;
                                 }
                                 sleep(1);

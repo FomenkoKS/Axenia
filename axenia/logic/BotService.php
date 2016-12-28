@@ -140,9 +140,8 @@ class BotService
 
     public function toggleSilentMode($chat_id)
     {
-        return $this->db->setSilentMode($chat_id,!$this->db->getSilentMode($chat_id));
+        return $this->db->setSilentMode($chat_id, !$this->db->getSilentMode($chat_id));
     }
-
 
 
 //endregion
@@ -221,6 +220,11 @@ class BotService
         }
 
         return false;
+    }
+
+    public function getChatMembersCount($chat_id)
+    {
+        return $this->db->getMembersCount($chat_id)[0];
     }
 
     public function deleteChat($chat_id)

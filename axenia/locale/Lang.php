@@ -2,8 +2,7 @@
 
 class Lang
 {
-
-    private static $availableLangs;  
+    private static $availableLangs;
     private static $messageArray;   //массив сообщений из messages.php
     private static $currentLang;
 

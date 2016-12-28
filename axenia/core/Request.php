@@ -251,7 +251,6 @@ class Request
     public static function getChat($chat_id)
     {
         $data = array('chat_id' => $chat_id);
-
         return self::execJson("getChat", $data);
     }
 
@@ -260,6 +259,13 @@ class Request
         $data = array('user_id' => $user_id, 'chat_id' => $chat_id);
 
         return self::execJson("getChatMember", $data);
+    }
+
+    public static function getChatMembersCount($chat_id)
+    {
+        $data = array('chat_id' => $chat_id);
+
+        return self::execJson("getChatMembersCount", $data);
     }
 
 
