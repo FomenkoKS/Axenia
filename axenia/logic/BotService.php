@@ -224,7 +224,7 @@ class BotService
 
     public function getChatMembersCount($chat_id)
     {
-        return $this->db->getMembersCount($chat_id)[0];
+        return $this->db->getMembersCount($chat_id);
     }
 
     public function deleteChat($chat_id)
