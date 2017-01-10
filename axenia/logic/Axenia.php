@@ -266,7 +266,7 @@ class Axenia
                     $isRemembered = $this->service->rememberChat($chat, $from_id);
                     if ($isRemembered !== false) {
                         if (defined('LOG_CHAT_ID')) {
-                            Request::sendHtmlMessage(LOG_CHAT_ID, BOT_NAME . " enters " . Util::getChatLink($chat)." (".Request::getChatMembersCount($chat_id).")");
+                            Request::sendHtmlMessage(LOG_CHAT_ID, " ❗ ".Request::getChatMembersCount($chat_id)."|".$this->service->getChatMembersCount($chat_id)." (".Util::getChatLink($chat).")");
                         }
                         Request::sendMessage($chat_id, Lang::message('chat.greetings'), array("parse_mode" => "Markdown"));
                     }
@@ -280,7 +280,7 @@ class Axenia
                 if (BOT_NAME == $member['username']) {
                     //$isDeleted = $this->service->deleteChat($chat_id);
                     if (defined('LOG_CHAT_ID')) {
-                        Request::sendHtmlMessage(LOG_CHAT_ID, BOT_NAME . " leaves " . Util::getChatLink($chat)." (".$this->service->getChatMembersCount($chat_id).")");
+                        Request::sendHtmlMessage(LOG_CHAT_ID, " ❕ -1|".$this->service->getChatMembersCount($chat_id)." (".Util::getChatLink($chat).")");
                     }
                 } else {
                     // пока не удаляем, вдруг по случайности удалили

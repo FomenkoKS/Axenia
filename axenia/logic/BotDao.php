@@ -149,7 +149,7 @@ class BotDao extends AbstractDao
             WHERE k.chat_id=" . $chat_id
         );
 
-        return (!$res[0]) ? false : $res;
+        return (!$res[0]) ? 0 : $res[0];
     }
 
     public function getGroupName($chat_id)
