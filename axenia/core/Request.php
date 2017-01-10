@@ -264,8 +264,13 @@ class Request
     public static function getChatMembersCount($chat_id)
     {
         $data = array('chat_id' => $chat_id);
-
-        return self::execJson("getChatMembersCount", $data);
+        $response = 0;
+        try{
+            $response = self::execJson("getChatMembersCount", $data);
+        } catch (Exception $error){
+            $response = -1;
+        }
+        return $response ? $response : -1;
     }
 
 

@@ -148,7 +148,7 @@ class Util
         if (isset($chat["username"])) {
             $out = "<a href='telegram.me/" . $chat["username"] . "'>" . $chat["title"] . "</a>";
         } else {
-            $out = $chat["title"];
+            $out = "<b>".$chat["title"]."</b>";
         }
 
         return $out;

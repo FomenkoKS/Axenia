@@ -82,7 +82,6 @@ class Axenia
                     case Util::startsWith($text, ["+", "-", '👍', '👎']):
                         if (preg_match('/^(\+|\-|👍|👎) ?([\s\S]+)?/ui', $text, $matches)) {
                             $isRise = Util::isInEnum("+,👍", $matches[1]);
-
                             if (isset($message['reply_to_message'])) {
                                 $replyUser = $message['reply_to_message']['from'];
                                 if ($replyUser['username'] != BOT_NAME && !$this->service->isBot($replyUser['username'])) {
@@ -322,6 +321,7 @@ class Axenia
         if (!$this->service->isSilentMode($chat_id)) {
             Request::sendHtmlMessage($chat_id, $out['msg']);
         }
+
         if ($out['good'] == true) {
             if ($out['newLevel'] != null) {
                 $rewardMessages = $this->service->handleRewards($out['newLevel'], $chat_id, $user_id);

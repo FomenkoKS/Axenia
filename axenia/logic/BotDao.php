@@ -239,6 +239,19 @@ class BotDao extends AbstractDao
         return $this->insert($query);
     }
 
+    public function setLastTimeVote($from_id,$chat_id){
+        $query = "
+            UPDATE Karma set last_time_voted=now()
+            WHERE user_id=" . $from_id . " and chat_id=".$chat_id;
+        return $this->insert($query);
+    }
+
+    public function checkCooldown($from_id,$chat_id){
+        $query = "select now()-last_time_voted from Karma
+            WHERE user_id=" . $from_id . " and chat_id=".$chat_id;
+        return $this->select($query);
+    }
+
     public function SumKarma($user_id)
     {
         $res = $this->select("SELECT sum(level) FROM Karma WHERE user_id=" . $user_id);

@@ -330,6 +330,7 @@ class BotService
         $newLevel = null;
         if ($from == $to) return $this->createHandleKarmaResult(true, Lang::message('karma.yourself'), $newLevel);
 
+        if ($this->db->checkCooldown($from, $chat_id)[0]<60) return $this->createHandleKarmaResult(false, Lang::message('karma.tooFast'), $newLevel);
         $fromLevel = $this->getUserLevel($from, $chat_id);
 
         if ($fromLevel < 0) return $this->createHandleKarmaResult(true, Lang::message('karma.tooSmallKarma'), $newLevel);
@@ -346,7 +347,7 @@ class BotService
         if ($res) {
             $mod = $isRise ? 'karma.plus' : 'karma.minus';
             $msg = Lang::message($mod, array('from' => $userFrom, 'k1' => $fromLevel, 'to' => $userTo, 'k2' => $newLevel));
-
+            $this->db->setLastTimeVote($from,$chat_id);
             return $this->createHandleKarmaResult(true, $msg, $newLevel);
         }
 
@@ -376,6 +377,7 @@ class BotService
             return $this->createHandleKarmaResult(false, Lang::message('karma.unknownUser'), null);
         }
     }
+
 
 //    public function deleteUserDataForChat($userId, $chatId)
 //    {
