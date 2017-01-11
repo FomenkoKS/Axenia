@@ -427,9 +427,6 @@ class Axenia
                     ], [
                         'text' => "2".Lang::message('settings.minute'),
                         'callback_data' => 'set_2'
-                    ], [
-                        'text' => "5".Lang::message('settings.minute'),
-                        'callback_data' => 'set_5'
                     ]
                 ];
                 $text = Lang::message('settings.choose.cooldown');
@@ -531,9 +528,6 @@ class Axenia
                         break;
                     case 'set_2':
                         $this->service->setCooldown($chat_id,2);
-                        break;
-                    case 'set_5':
-                        $this->service->setCooldown($chat_id,5);
                         break;
                 }
                 $this->sendSettings($chat_id, $message, $data);

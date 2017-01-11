@@ -163,9 +163,9 @@ Statistic is available on axeniabot.ru.",
         ),
     "karma.tooFast" =>
         array(
-            "en" => "Not so fast. I get vote one per minute.",
-            "ru" => "Не так быстро. Голос засчитывается раз в минуту.",
-            "ruUN" => "Эй, скорострел, <b>помедленее</b>"
+            "en" => "Not so fast. Group has a limit for user's messages.",
+            "ru" => "Не так быстро. В группе установлено ограничение.",
+            "ruUN" => "Эй, скорострел, <b>помедленее</b>. В группе установлено ограничение."
         ),
     "karma.unknownUser" =>
         array(
