@@ -115,6 +115,12 @@ class Axenia
                         Request::sendTyping($chat_id);
                         $this->sendStore($chat_id, $from);
                         break;
+                    case (Util::startsWith($text, "/settings" . $postfix)):
+                        if ($this->service->isAdminInChat($from_id, $chat)) {
+                            Request::sendTyping($chat_id);
+                            $this->sendSettings($chat_id);
+                        }
+                        break;
                     case (Util::startsWith($text, "/top" . $postfix)):
                         Request::sendTyping($chat_id);
                         if ($isPrivate) {
@@ -152,7 +158,7 @@ class Axenia
                             Request::sendTyping($chat_id);
                             $ok = false;
                             do {
-                                $message = Request::exec("forwardMessage", array('chat_id' => TRASH_CHAT_ID, "from_chat_id" => "@rgonewild", "disable_notification" => true, "message_id" => rand(1, 8500)));
+                                $message = Request::exec("forwardMessage", array('chat_id' => TRASH_CHAT_ID, "from_chat_id" => "@rgonewild", "disable_notification" => true, "message_id" => rand(1, 15096)));
                                 if ($message !== false && isset($message['photo'])) {
                                     $array = $message['photo'];
                                     $file_id = $array[0]['file_id'];
@@ -167,12 +173,6 @@ class Axenia
                                 }
                                 sleep(1);
                             } while (!$ok);
-                        }
-                        break;
-                    case Util::startsWith($text, ("/silent_mode" . $postfix)):
-                        if ($this->service->isAdminInChat($from_id, $chat) && !$isPrivate) {
-                            $this->service->toggleSilentMode($chat_id);
-                            Request::sendMessage($chat_id, Lang::message("chat.silentmode." . ($this->service->isSilentMode($chat_id) ? 'true' : 'false')));
                         }
                         break;
 //                    case Util::startsWith($text, ("/cleanDB")):
@@ -322,7 +322,7 @@ class Axenia
             Request::sendHtmlMessage($chat_id, $out['msg']);
         }
 
-        if ($out['good'] == true) {
+        if ($out['good'] == true){
             if ($out['newLevel'] != null) {
                 $rewardMessages = $this->service->handleRewards($out['newLevel'], $chat_id, $user_id);
                 if (count($rewardMessages) > 0) {
@@ -412,7 +412,50 @@ class Axenia
             Request::answerCallbackQuery($callback_id, $callbackMessage);
         }
     }
-
+    public function sendSettings($chat_id, $message=NULL, $type=NULL){
+        $silent_mode_text="settings.button.silent_mode";
+        $silent_mode_text.=$this->service->isSilentMode($chat_id)?"_off":"_on";
+        switch($type){
+            case "set_cooldown":
+                $button_list[] = [
+                    [
+                        'text' => Lang::message("settings.switchoff"),
+                        'callback_data' => 'set_0'
+                    ], [
+                        'text' => "1".Lang::message('settings.minute'),
+                        'callback_data' => 'set_1'
+                    ], [
+                        'text' => "2".Lang::message('settings.minute'),
+                        'callback_data' => 'set_2'
+                    ], [
+                        'text' => "5".Lang::message('settings.minute'),
+                        'callback_data' => 'set_5'
+                    ]
+                ];
+                $text = Lang::message('settings.choose.cooldown');
+                break;
+            default:
+                $button_list[] = [
+                    [
+                        'text' => Lang::message($silent_mode_text),
+                        'callback_data' => 'toggle_silent_mode'
+                    ], [
+                        'text' => Lang::message('settings.button.set_cooldown'),
+                        'callback_data' => 'set_cooldown'
+                    ]
+                ];
+                $text = Lang::message('settings.title')."\r\n";
+                $text.=($this->service->isSilentMode($chat_id))?Lang::message('settings.title.silent_mode_on')."\r\n":Lang::message('settings.title.silent_mode_off')."\r\n";
+                $text.=Lang::message('settings.title.cooldown', ["cooldown" => $this->service->getCooldown($chat_id)]);
+                break;
+        }
+        $inline_keyboard = $button_list;
+        if($message==NULL) {
+            Request::sendHtmlMessage($chat_id, $text, ["reply_markup" => ['inline_keyboard' => $inline_keyboard]]);
+        }else{
+            Request::editMessageText($chat_id, $message['message_id'], $text, ["reply_markup" => ['inline_keyboard' => $inline_keyboard],"parse_mode" => "HTML"]);
+        }
+    }
     public function processCallback($callback)
     {
         $from = $callback['from'];
@@ -473,6 +516,29 @@ class Axenia
                 $this->sendStore($chat_id, $from, $message, $rez, $data, $callback['id']);
             } else {
                 Request::answerCallbackQuery($callback['id'], Lang::message('store.wrongPick', array('user' => $data_array[1])));
+            }
+        }else{
+            if ($this->service->isAdminInChat($from['id'], $message['chat'])) {
+                switch ($data) {
+                    case 'toggle_silent_mode':
+                        $this->service->toggleSilentMode($chat_id);
+                        break;
+                    case 'set_0':
+                        $this->service->setCooldown($chat_id,0);
+                        break;
+                    case 'set_1':
+                        $this->service->setCooldown($chat_id,1);
+                        break;
+                    case 'set_2':
+                        $this->service->setCooldown($chat_id,2);
+                        break;
+                    case 'set_5':
+                        $this->service->setCooldown($chat_id,5);
+                        break;
+                }
+                $this->sendSettings($chat_id, $message, $data);
+            }else{
+                Request::answerCallbackQuery($callback['id'], Lang::message('settings.title'));
             }
         }
     }

@@ -190,6 +190,15 @@ class BotService
 //endregion
 
 // region -------------------- Chats
+    public function getCooldown($chat_id)
+    {
+        return $this->db->getCooldown($chat_id);
+    }
+
+    public function setCooldown($chat_id, $cooldown)
+    {
+        return $this->db->setCooldown($chat_id, $cooldown);
+    }
 
     public function getChatsIds()
     {
@@ -329,8 +338,8 @@ class BotService
     {
         $newLevel = null;
         if ($from == $to) return $this->createHandleKarmaResult(true, Lang::message('karma.yourself'), $newLevel);
-
-        if ($this->db->checkCooldown($from, $chat_id)[0]<60) return $this->createHandleKarmaResult(false, Lang::message('karma.tooFast'), $newLevel);
+        $cooldown=$this->db->checkCooldown($from, $chat_id);
+        if ($cooldown<60*$this->db->getCooldown($chat_id) and $cooldown) return $this->createHandleKarmaResult(false, Lang::message('karma.tooFast'), $newLevel);
         $fromLevel = $this->getUserLevel($from, $chat_id);
 
         if ($fromLevel < 0) return $this->createHandleKarmaResult(true, Lang::message('karma.tooSmallKarma'), $newLevel);

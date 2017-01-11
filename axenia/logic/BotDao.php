@@ -72,7 +72,7 @@ class BotDao extends AbstractDao
     {
         $res = $this->select("SELECT silent_mode FROM Chats WHERE id = " . $chat_id, true);
         if (isset($res[0])) {
-            return (empty($res[0]) || $res[0] == 0) ? false : true;
+            return ($res[0] == 1) ? true : false;
         } else return false;
     }
 
@@ -107,6 +107,22 @@ class BotDao extends AbstractDao
         $res = $this->select("SELECT id FROM Chats");
         return (!$res) ? false : $res;
     }
+
+    public function getCooldown($chat_id)
+    {
+        $res = $this->select(
+            "SELECT cooldown
+            FROM Chats 
+            WHERE id=" . $chat_id
+        );
+        return ($res[0]===NULL) ? DEFAULT_COOLDOWN : $res[0];
+    }
+
+    public function setCooldown($chat_id,$cooldown)
+    {
+        return $this->update("UPDATE Chats SET cooldown = " . $cooldown . " WHERE id = " . $chat_id);
+    }
+
 
     public function insertOrUpdateChat($chat_id, $title, $username)
     {
@@ -243,13 +259,13 @@ class BotDao extends AbstractDao
         $query = "
             UPDATE Karma set last_time_voted=now()
             WHERE user_id=" . $from_id . " and chat_id=".$chat_id;
-        return $this->insert($query);
+        return $this->update($query);
     }
 
     public function checkCooldown($from_id,$chat_id){
-        $query = "select now()-last_time_voted from Karma
-            WHERE user_id=" . $from_id . " and chat_id=".$chat_id;
-        return $this->select($query);
+        $res = $this->select("select now()-last_time_voted from Karma
+            WHERE user_id=" . $from_id . " and chat_id=".$chat_id);
+        return (!$res[0]) ? false : $res[0];
     }
 
     public function SumKarma($user_id)
