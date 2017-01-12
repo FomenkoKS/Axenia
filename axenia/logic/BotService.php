@@ -105,7 +105,7 @@ class BotService
             $a = array_chunk($a, 2);
             $stack = array();
             foreach ($a as $value) {
-                array_push($stack, (empty($value[1])) ? $value[0] : "<a href='telegram.me/" . $value[1] . "'>" . $value[0] . "</a>");
+                array_push($stack, (empty($value[1])) ? $value[0] : "<a href='t.me/" . $value[1] . "'>" . $value[0] . "</a>");
             }
 
             return $stack;
@@ -271,6 +271,11 @@ class BotService
         return $this->db->getGroupsMistakes();
     }
 
+    public function setBotPresentedInChat($chat_id, $isPresented)
+    {
+        return $this->db->setPresented($chat_id, $isPresented);
+    }
+
 
 //endregion
 
@@ -348,7 +353,7 @@ class BotService
         $fromLevelSqrt = $fromLevel == 0 ? 1 : sqrt($fromLevel);
         $toLevel = $this->getUserLevel($to, $chat_id);
 
-        $newLevel = round($toLevel + ($isRise ? $fromLevelSqrt : -$fromLevelSqrt), 1);
+        $newLevel = number_format($toLevel + ($isRise ? $fromLevelSqrt : -$fromLevelSqrt),1, '.', '');
 
         $userTo = $this->getUserName($to);
 

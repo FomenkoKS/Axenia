@@ -192,6 +192,10 @@ class BotDao extends AbstractDao
         return (!$res) ? false : $res;
     }
 
+    public function setPresented($chat_id, $isPresented)
+    {
+        return $this->update("UPDATE Chats SET isPresented = " . (($isPresented) ? 1 : 0) . " WHERE id=" . $chat_id);
+    }
 
 //endregion
 

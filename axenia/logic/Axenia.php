@@ -230,6 +230,35 @@ class Axenia
 //                        }
 //                        break;
 
+//                    case Util::startsWith($text, ("/setPresent")):
+//                        if (Util::isInEnum(ADMIN_IDS, $from_id)) {
+//                            Request::sendTyping($chat_id);
+//                            $count = 0;
+//                            $isOut = 0;
+//                            $isIn = 0;
+//                            if ($groups_id = $this->service->getChatsIds()) {
+//                                foreach ($groups_id as $id) {
+//                                    $count++;
+//                                    $chat = Request::getChat($id);
+//                                    $isStealInChat = Request::sendTyping($id);
+//                                    if ($chat !== false && $isStealInChat !== false) {
+//                                        $this->service->setBotPresentedInChat($id, true);
+//                                        $isIn++;
+//                                    } else {
+//                                        $this->service->setBotPresentedInChat($id, false);
+//                                        $isOut++;
+//                                    }
+//                                }
+//                            }
+//
+//                            $out = Util::insert("The presenting in chats was setted.\nChats count-:c. In-:u, Out-:d.", ["c" => $count, "u" => $isIn, "d" => $isOut]);
+//                            Request::sendMessage($chat_id, $out);
+//                            if (defined('LOG_CHAT_ID') && LOG_CHAT_ID != $chat_id) {
+//                                Request::sendMessage(LOG_CHAT_ID, $out);
+//                            }
+//                        }
+//                        break;
+
                     /*case preg_match('/^\/getAdmins/ui', $text, $matches):
                         Request::sendMessage($chat_id, $this->service->isAdminInChat($from_id, $chat));
                         $admins = Request::getChatAdministrators($chat_id);
@@ -264,6 +293,7 @@ class Axenia
                 $newMember = $message['new_chat_member'];
                 if (BOT_NAME == $newMember['username']) {
                     $isRemembered = $this->service->rememberChat($chat, $from_id);
+                    $this->service->setBotPresentedInChat($chat_id, true);
                     if ($isRemembered !== false) {
                         if (defined('LOG_CHAT_ID')) {
                             Request::sendHtmlMessage(LOG_CHAT_ID, " ❗ ".Request::getChatMembersCount($chat_id)."|".$this->service->getChatMembersCount($chat_id)." (".Util::getChatLink($chat).")");
@@ -279,15 +309,10 @@ class Axenia
                 $member = $message['left_chat_member'];
                 if (BOT_NAME == $member['username']) {
                     //$isDeleted = $this->service->deleteChat($chat_id);
+                    $this->service->setBotPresentedInChat($chat_id, false);
                     if (defined('LOG_CHAT_ID')) {
                         Request::sendHtmlMessage(LOG_CHAT_ID, " ❕ -1|".$this->service->getChatMembersCount($chat_id)." (".Util::getChatLink($chat).")");
                     }
-                } else {
-                    // пока не удаляем, вдруг по случайности удалили
-//                    $isDeleted = $this->service->deleteUserDataForChat($member['id'], $chat_id);
-//                    if ($isDeleted) {
-//                        Request::sendHtmlMessage(LOG_CHAT_ID, Util::getFullNameUserId($member) . " leaves " . Util::getChatLink($chat));
-//                    }
                 }
             }
         }
