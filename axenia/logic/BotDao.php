@@ -261,15 +261,42 @@ class BotDao extends AbstractDao
 
     public function setLastTimeVote($from_id,$chat_id){
         $query = "
-            UPDATE Karma set last_time_voted=now()
+            UPDATE Karma set last_time_voted=now(), toofast_showed=0
             WHERE user_id=" . $from_id . " and chat_id=".$chat_id;
         return $this->update($query);
+    }
+
+    public function setTooFastShowed($from_id,$chat_id){
+        $query = "
+            UPDATE Karma set toofast_showed=1
+            WHERE user_id=" . $from_id . " and chat_id=".$chat_id;
+        return $this->update($query);
+    }
+
+    public function getTooFastShowed($from_id,$chat_id){
+        $res = $this->select("
+            SELECT toofast_showed
+            FROM Karma
+            WHERE user_id=" . $from_id . " AND chat_id=" . $chat_id
+        );
+        return ($res[0] == null) ? false : $res[0];
     }
 
     public function checkCooldown($from_id,$chat_id){
         $res = $this->select("select now()-last_time_voted from Karma
             WHERE user_id=" . $from_id . " and chat_id=".$chat_id);
         return (!$res[0]) ? false : $res[0];
+    }
+
+    public function isCooldown($from_id, $chat_id)    {
+        $res = $this->select("
+            SELECT if(last_time_voted IS NOT NULL, ((now()- last_time_voted) < (cooldown*60)), 0) isCoolDown 
+            FROM Karma
+            LEFT JOIN Chats ON Karma.chat_id = Chats.id
+            WHERE user_id=" . $from_id . " AND chat_id=" . $chat_id
+        );
+
+        return ($res[0] == null) ? false : $res[0];
     }
 
     public function SumKarma($user_id)

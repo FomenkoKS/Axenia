@@ -339,15 +339,27 @@ class BotService
         return array('good' => $good, 'msg' => $msg, 'newLevel' => $level);
     }
 
+    public function checkCoolDown($from_id, $chat_id, $chatType){
+        if ($this->db->isCooldown($from_id, $chat_id)) {
+            if(!$this->db->getTooFastShowed($from_id, $chat_id)) {
+                $this->initLang($chat_id, $chatType);
+                Request::sendHtmlMessage($chat_id, Lang::message('karma.tooFast'));
+                $this->db->setTooFastShowed($from_id, $chat_id);
+            }
+            return false;
+        }
+        return true;
+    }
+
     public function handleKarma($isRise, $from, $to, $chat_id)
     {
         $newLevel = null;
         if ($from == $to) return $this->createHandleKarmaResult(true, Lang::message('karma.yourself'), $newLevel);
 
-        $cooldown=$this->db->checkCooldown($from, $chat_id);
-        if ($cooldown and $cooldown<60*$this->db->getCooldown($chat_id)) {
-            return $this->createHandleKarmaResult(false, Lang::message('karma.tooFast'), $newLevel);
-        }
+        //$cooldown=$this->db->isCooldown($from, $chat_id);
+//        if ($this->db->isCooldown($from, $chat_id)) {
+//            return $this->createHandleKarmaResult(false, Lang::message('karma.tooFast'), $newLevel);
+//        }
         $fromLevel = $this->getUserLevel($from, $chat_id);
 
         if ($fromLevel < 0) return $this->createHandleKarmaResult(true, Lang::message('karma.tooSmallKarma'), $newLevel);
