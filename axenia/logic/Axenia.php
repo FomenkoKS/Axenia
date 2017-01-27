@@ -444,7 +444,7 @@ class Axenia
             case "set_cooldown":
                 $button_list[] = [
                     [
-                        'text' => Lang::message("settings.switchoff"),
+                        'text' => "0.1".Lang::message('settings.minute'),
                         'callback_data' => 'set_0'
                     ], [
                         'text' => "1".Lang::message('settings.minute'),
@@ -546,7 +546,7 @@ class Axenia
                         $this->service->toggleSilentMode($chat_id);
                         break;
                     case 'set_0':
-                        $this->service->setCooldown($chat_id,0);
+                        $this->service->setCooldown($chat_id,0.1);
                         break;
                     case 'set_1':
                         $this->service->setCooldown($chat_id,1);
