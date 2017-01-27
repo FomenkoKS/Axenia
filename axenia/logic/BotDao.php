@@ -150,7 +150,7 @@ class BotDao extends AbstractDao
         $res = $this->select(
             "SELECT c.title, c.username 
             FROM Chats c, Karma k 
-            WHERE k.chat_id=c.id AND k.user_id=" . $user_id . " 
+            WHERE k.chat_id=c.id AND k.user_id=" . $user_id . " and c.isPresented=1
             ORDER BY c.title"
         );
 
@@ -326,11 +326,7 @@ class BotDao extends AbstractDao
     public function getUserRewardIds($user_id, $chat_id)
     {
         $res = $this->select("SELECT type_id FROM Rewards WHERE user_id = " . $user_id . " AND group_id = " . $chat_id);
-        if ($res !== false) {
-            return $res;
-        }
-
-        return array();
+        return (!$res[0]) ? false : $res;
     }
 
     public function getUserRewardsInChat($user_id, $chat_id)

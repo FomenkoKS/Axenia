@@ -325,9 +325,9 @@ Statistic is available on axeniabot.ru.",
         ),
     "settings.title" =>
         array(
-            "en" => "Settings for admins only.",
-            "ru" => "Настройки доступны только для администраторов группы",
-            "ruUN" => "Настройки доступны только для администраторов группы"
+            "en" => "<b>Settings for admins only.</b>",
+            "ru" => "<b>Настройки</b> \r\nДоступ только для администраторов группы",
+            "ruUN" => "<b>Настройки</b> \r\nДоступ только для администраторов группы"
         ),
     "settings.title.cooldown" =>
         array(

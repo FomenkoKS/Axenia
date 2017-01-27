@@ -343,8 +343,11 @@ class BotService
     {
         $newLevel = null;
         if ($from == $to) return $this->createHandleKarmaResult(true, Lang::message('karma.yourself'), $newLevel);
+
         $cooldown=$this->db->checkCooldown($from, $chat_id);
-        if ($cooldown<60*$this->db->getCooldown($chat_id) and $cooldown) return $this->createHandleKarmaResult(false, Lang::message('karma.tooFast'), $newLevel);
+        if ($cooldown and $cooldown<60*$this->db->getCooldown($chat_id)) {
+            return $this->createHandleKarmaResult(false, Lang::message('karma.tooFast'), $newLevel);
+        }
         $fromLevel = $this->getUserLevel($from, $chat_id);
 
         if ($fromLevel < 0) return $this->createHandleKarmaResult(true, Lang::message('karma.tooSmallKarma'), $newLevel);
@@ -411,31 +414,33 @@ class BotService
     {
         $out = array();
         $oldRewards = $this->db->getUserRewardIds($user_id, $chat_id);
+        if($oldRewards!== false) {
 
-        $newRewards = array();
-        if ($currentCarma >= 200) {
-            array_push($newRewards, 2);
-        }
-        if ($currentCarma >= 500) {
-            array_push($newRewards, 3);
-        }
-        if ($currentCarma >= 1000) {
-            array_push($newRewards, 4);
-        }
+            $newRewards = array();
+            if ($currentCarma >= 200) {
+                array_push($newRewards, 2);
+            }
+            if ($currentCarma >= 500) {
+                array_push($newRewards, 3);
+            }
+            if ($currentCarma >= 1000) {
+                array_push($newRewards, 4);
+            }
 
-        $newRewards = array_diff($newRewards, $oldRewards);
+            $newRewards = array_diff($newRewards, $oldRewards);
 
-        if (count($newRewards) > 0) {
-            $groupName = $this->getGroupName($chat_id);
-            $rewardTypes = $this->db->getRewardTypes($newRewards);
-            $username = $this->getUserName($user_id);
-            foreach ($rewardTypes as $type) {
-                $desc = Lang::messageRu('reward.type.karma.desc', array($groupName, $type['karma_min']));
+            if (count($newRewards) > 0) {
+                $groupName = $this->getGroupName($chat_id);
+                $rewardTypes = $this->db->getRewardTypes($newRewards);
+                $username = $this->getUserName($user_id);
+                foreach ($rewardTypes as $type) {
+                    $desc = Lang::messageRu('reward.type.karma.desc', array($groupName, $type['karma_min']));
 
-                $insertRes = $this->db->insertReward($type['id'], $desc, $user_id, $chat_id);
-                if ($insertRes !== false) {
-                    $msg = Lang::message('reward.new', array('user' => $username, 'path' => PATH_TO_SITE, 'user_id' => $user_id, 'title' => Lang::message('reward.type.' . $type['code'])));
-                    array_push($out, $msg);
+                    $insertRes = $this->db->insertReward($type['id'], $desc, $user_id, $chat_id);
+                    if ($insertRes !== false) {
+                        $msg = Lang::message('reward.new', array('user' => $username, 'path' => PATH_TO_SITE, 'user_id' => $user_id, 'title' => Lang::message('reward.type.' . $type['code'])));
+                        array_push($out, $msg);
+                    }
                 }
             }
         }
