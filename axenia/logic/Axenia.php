@@ -426,7 +426,11 @@ class Axenia
                         Request::sendDocument($chat_id, $text, ['reply_to_message_id' => $message_id]);
                         break;
                     default:
-                        Request::sendPhoto($chat_id, $text, ['reply_to_message_id' => $message_id]);
+                        if (Util::endsWith($text, "gif") == 1){
+                            Request::sendDocument($chat_id, $text, ['reply_to_message_id' => $message_id]);
+                        } else {
+                            Request::sendPhoto($chat_id, $text, ['reply_to_message_id' => $message_id]);
+                        }
                 }
 
                 $newMessage = Util::insert(Lang::message('store.event.' . $command[0]), ["user" => $username, "k" => $newKarma]);
