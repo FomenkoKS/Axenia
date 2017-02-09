@@ -20,6 +20,11 @@ class Lang
         return "en";
     }
 
+    public static function getCurrentLangDesc()
+    {
+        return self::$availableLangs[isset(self::$currentLang) ? self::$currentLang : self::defaultLangKey()];
+    }
+
     /**
      * Обязательно должен вызваться
      * @param string $lang 'ru' or 'en' or etc.

@@ -1,25 +1,18 @@
 # Commands
 top - Top of karma / Топ кармы
-lang - Switch language / Сменить язык
 my_stats - User statistics / Статистика пользователя
-buy - Call showcase / Вызвать витрину
-silent_mode - Toggle Silent-Mode / Переключить тихий режим
+buy - Show content store / Вызвать магазин контента
 settings - Settings / Настройки
 help - Help / Помощь
 
-# Greetings
-Приветствую. Я умею считать карму.
-Просто поставь плюс(+ или 👍) в ответ на сообщение в группе для поднятия кармы или минус(- или 👎) для опускания её.
-Если хочешь поднять настроение товарищу, то воспользуйся сообщением формата "+ @username".
-За карму можно купить всякие ништяки. Попробуйте нецензурную версию ;)
-Статистику можно посмотреть на сайте axeni.ru или с помощью команды /top.
+🇬🇧 Hello. I'm Axenia. I can count the karma points in groups.
+Type '+' (👍) for raising or '-' (👎) for reducing points to the user which you reply.
+Also I understand messages like '+ @someusername' and etc.
 
-Welcome. I can count karma in group chats.
-Just write plus (+ or 👍) replying to any message for raising karma or minus (- or 👎) to lower the karma.
-You can use the message format "+ @username" to cheer up a friend.
-Also you can buy some pictures (cats, etc) for karma.
-Statistics are available on the website axeni.ru also it can be viewed using the command "/top".
-
+🇷🇺 Приветствую. Я считаю карму в группах.
+Cтавьте '+' (или 👍) в ответ на чье-то сообщение для поднятия кармы или '-'(или 👎) для её опускания.
+Также понимаю сообщение формата '+ @someusername' и т.п.
+@AxeniaChannel
 
 # SQL query
 SELECT DISTINCT c.* from Chats c LEFT JOIN Karma k ON k.chat_id=c.id WHERE k.last_updated IS NOT NULL

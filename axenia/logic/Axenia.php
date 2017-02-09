@@ -106,13 +106,6 @@ class Axenia
                                 }
                             }
                             break;
-                        case (Util::startsWith($text, "/lang" . $postfix)):
-                            if ($this->service->isAdminInChat($from_id, $chat)) {
-                                $this->sendLanguageKeyboard($chat_id);
-                            } else {
-                                Request::sendMessage($chat_id, Lang::message("chat.lang.foradmins"));
-                            }
-                            break;
                         case (Util::startsWith($text, "/buy" . $postfix)):
                             Request::sendTyping($chat_id);
                             $this->sendStore($chat_id, $from);
@@ -138,7 +131,7 @@ class Axenia
                             if ($isPrivate) {
                                 Request::sendTyping($chat_id);
                                 Request::sendHtmlMessage($chat_id, Lang::message('chat.greetings'));
-                                $this->sendLanguageKeyboard($chat_id);
+                                //$this->sendLanguageKeyboard($chat_id);
                             } else {
                                 $this->service->rememberChat($chat, $from_id);
                             }
@@ -319,28 +312,6 @@ class Axenia
         }
     }
 
-    public function sendLanguageKeyboard($chat_id, $message_id = NULL, $text = NULL)
-    {
-        if ($message_id == NULL && $text == NULL) {
-            $ln = Lang::availableLangs();
-            $keys = array_keys($ln);
-            $values = array_values($ln);
-            $inline_keyboard = [];
-            $temp = [];
-            for ($i = 0; $i < count($ln); $i++) {
-                $temp['text'] = $values[$i];
-                $temp['callback_data'] = $keys[$i];
-                $inline_keyboard[$i] = [];
-                array_push($inline_keyboard[$i], $temp);
-            }
-            if ($chat_id < 0) $text = Lang::message('chat.lang.foradmins');
-            Request::sendMessage($chat_id, $text . Lang::message('chat.lang.start'), ["reply_markup" => ['inline_keyboard' => $inline_keyboard]]);
-        } else {
-            Request::editMessageText($chat_id, $message_id, $text);
-        }
-
-    }
-
     public function doKarmaAction($isRise, $from_id, $user_id, $chat_id)
     {
         $out = $this->service->handleKarma($isRise, $from_id, $user_id, $chat_id);
@@ -390,7 +361,7 @@ class Axenia
     {
         $message_id = $message['message_id'];
         $message_text = $message['text'];
-        $button_list[] = [
+        $button_list = [[
             [
                 'text' => Lang::message('store.button.buy_cats'),
                 'callback_data' => 'buy_cats' . '|' . $from['id'] . '|' . '10'
@@ -398,16 +369,16 @@ class Axenia
                 'text' => Lang::message('store.button.buy_gif'),
                 'callback_data' => 'buy_gif' . '|' . $from['id'] . '|' . '10'
             ]
-        ];
+        ]];
         $inline_keyboard = $button_list;
         if (Lang::isUncensored()) {
-            $button_list_uncensored[] = array_merge([$button_list[0][0]], [$button_list[0][1]], [
+            array_push($button_list, [
                 ['text' => Lang::message('store.button.buy_tits'),
                     'callback_data' => 'buy_tits' . '|' . $from['id'] . '|' . '30'],
                 ['text' => Lang::message('store.button.buy_butts'),
                     'callback_data' => 'buy_butts' . '|' . $from['id'] . '|' . '20'
                 ]]);
-            $inline_keyboard = $button_list_uncensored;
+            $inline_keyboard = $button_list;
         }
         $username = $this->service->getUserName($from['id']);
         $karma = $this->service->getUserLevel($from['id'], $chat_id);
@@ -443,44 +414,61 @@ class Axenia
         }
     }
 
-    public function sendSettings($chat_id, $message = NULL, $type = NULL, $isAdmin = true)
+    public function sendSettings($chat_id, $message = NULL, $type = NULL, $showButtons = true)
     {
         $postfixSilentMode = "silent_mode" . ($this->service->isSilentMode($chat_id) ? "_off" : "_on");
         switch ($type) {
             case "set_cooldown":
                 $minuteText = Lang::message('settings.minute');
-                $button_list[] = [
+                $button_list = [
                     [
-                        'text' => "0.1" . $minuteText,
-                        'callback_data' => 'set_0'
-                    ], [
-                        'text' => "1" . $minuteText,
-                        'callback_data' => 'set_1'
-                    ], [
-                        'text' => "2" . $minuteText,
-                        'callback_data' => 'set_2'
-                    ]
+                        ['text' => "0.1" . $minuteText, 'callback_data' => 'set_0'],
+                        ['text' => "1" . $minuteText, 'callback_data' => 'set_1'],
+                        ['text' => "2" . $minuteText, 'callback_data' => 'set_2']
+                    ],
+                    [['text' => Lang::message("settings.button.back"), 'callback_data' => "set_back"]]
                 ];
-                $text = Lang::message('settings.choose.cooldown');
+                $text = Lang::message('settings.select.cooldown');
+                break;
+            case "set_lang":
+                $ln = Lang::availableLangs();
+                $keys = array_keys($ln);
+                $values = array_values($ln);
+                $button_list = [
+                    [
+                        ['text' => $values[0], 'callback_data' => $keys[0]],
+                        ['text' => $values[1], 'callback_data' => $keys[1]]
+                    ],
+                    [['text' => $values[2], 'callback_data' => $keys[2]]],
+                    [['text' => Lang::message("settings.button.back"), 'callback_data' => "set_back"]]
+                ];
+                $text = Lang::message('settings.select.lang');
                 break;
             default:
-                $button_list[] = [
+                $button_list = [
                     [
-                        'text' => Lang::message("settings.button.".$postfixSilentMode),
-                        'callback_data' => 'toggle_silent_mode'
-                    ], [
-                        'text' => Lang::message('settings.button.set_cooldown'),
+                        ['text' => Lang::message("settings.button.toggle_silent_mode"),
+                            'callback_data' => 'set_toggle_silent_mode'
+                        ],
+                        ['text' => Lang::message('settings.button.lang'),
+                            'callback_data' => 'set_lang'
+                        ]
+                    ],
+                    [['text' => Lang::message('settings.button.set_cooldown'),
                         'callback_data' => 'set_cooldown'
-                    ]
+                    ]]
                 ];
+
                 $text = Lang::message('settings.title') . "\r\n";
                 $text .= Lang::message("settings.title.".$postfixSilentMode) . "\r\n";
+                $text .= Lang::message("settings.title.lang", ["lang" => Lang::getCurrentLangDesc()]) . "\r\n";
                 $text .= Lang::message('settings.title.cooldown', ["cooldown" => $this->service->getCooldown($chat_id)]);
                 break;
         }
         $inline_keyboard = $button_list;
+
         if ($message == NULL) {
-            if ($isAdmin) {
+            if ($showButtons) {
                 Request::sendHtmlMessage($chat_id, $text, ["reply_markup" => ['inline_keyboard' => $inline_keyboard]]);
             } else {
                 Request::sendHtmlMessage($chat_id, $text);
@@ -498,17 +486,16 @@ class Axenia
         $chat_id = $message['chat']['id'];
         $chat_type = $message['chat']['type'];
         $this->service->initLang($chat_id, $chat_type);
-        if (in_array($data, array_keys(Lang::availableLangs())) && ($this->service->isAdminInChat($from['id'], $message['chat']))) {
-            $qrez = $this->service->setLang($chat_id, $chat_type, $data);
-            $text = Lang::message('bot.error');
-            if ($qrez) {
-                Lang::init($data);
-                $text = Lang::message('chat.lang.end');
-            }
-            $this->sendLanguageKeyboard($chat_id, $message['message_id'], $text);
-            sleep(1);
-            if ($chat_type == "private") {
-                Request::sendHtmlMessage($chat_id, Lang::message('user.pickChat', array('botName' => BOT_NAME)));
+        $isAdminInChat = $this->service->isAdminInChat($from['id'], $message['chat']);
+        if (in_array($data, array_keys(Lang::availableLangs()))) {
+            if ($isAdminInChat) {
+                $qrez = $this->service->setLang($chat_id, $chat_type, $data);
+                if ($qrez) {
+                    Lang::init($data);
+                }
+                $this->sendSettings($chat_id, $message, NULL);
+            } else {
+                Request::answerCallbackQuery($callback['id'], Lang::message('settings.title'));
             }
         } elseif (strpos($data, "buy_") !== false) {
             $data_array = explode('|', $data);
@@ -551,10 +538,10 @@ class Axenia
             } else {
                 Request::answerCallbackQuery($callback['id'], Lang::message('store.wrongPick', array('user' => $data_array[1])));
             }
-        } else {
-            if ($this->service->isAdminInChat($from['id'], $message['chat'])) {
+        } elseif(strpos($data, "set_") !== false) {
+            if ($isAdminInChat) {
                 switch ($data) {
-                    case 'toggle_silent_mode':
+                    case 'set_toggle_silent_mode':
                         $this->service->toggleSilentMode($chat_id);
                         break;
                     case 'set_0':
@@ -565,6 +552,9 @@ class Axenia
                         break;
                     case 'set_2':
                         $this->service->setCooldown($chat_id, 2);
+                        break;
+                    case 'set_back':
+                        $data = NULL;
                         break;
                 }
                 $this->sendSettings($chat_id, $message, $data);

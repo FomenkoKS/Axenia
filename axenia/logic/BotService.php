@@ -281,14 +281,16 @@ class BotService
 
 //region -------------------- Karma
 
-    public function getTop($chat_id, $limit = 5)
+    public function getTop($chat_id, $limit = 10)
     {
         $out = Lang::message('karma.top.title', array("chatName" => $this->db->getGroupName($chat_id)));
         $top = $this->db->getTop($chat_id, $limit);
         $a = array_chunk($top, 4);
+        $i = 0;
         foreach ($a as $value) {
             $username = ($value[0] == "") ? $value[1] . " " . $value[2] : $value[0];
-            $out .= Lang::message('karma.top.row', array("username" => $username, "karma" => $value[3]));
+            $out .= ($i ==0 ? "⭐️": "") . Lang::message('karma.top.row', array("username" => $username, "karma" => $value[3]));
+            $i++;
         }
         $out .= Lang::message('karma.top.footer', array("pathToSite" => PATH_TO_SITE, "chatId" => $chat_id));
 
