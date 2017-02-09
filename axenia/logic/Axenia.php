@@ -118,10 +118,8 @@ class Axenia
                             $this->sendStore($chat_id, $from);
                             break;
                         case (Util::startsWith($text, "/settings" . $postfix)):
-                            if ($this->service->isAdminInChat($from_id, $chat)) {
-                                Request::sendTyping($chat_id);
-                                $this->sendSettings($chat_id);
-                            }
+                            Request::sendTyping($chat_id);
+                            $this->sendSettings($chat_id, NULL, NULL, $this->service->isAdminInChat($from_id, $chat));
                             break;
                         case (Util::startsWith($text, "/top" . $postfix)):
                             Request::sendTyping($chat_id);
@@ -445,21 +443,21 @@ class Axenia
         }
     }
 
-    public function sendSettings($chat_id, $message = NULL, $type = NULL)
+    public function sendSettings($chat_id, $message = NULL, $type = NULL, $isAdmin = true)
     {
-        $silent_mode_text = "settings.button.silent_mode";
-        $silent_mode_text .= $this->service->isSilentMode($chat_id) ? "_off" : "_on";
+        $postfixSilentMode = "silent_mode" . ($this->service->isSilentMode($chat_id) ? "_off" : "_on");
         switch ($type) {
             case "set_cooldown":
+                $minuteText = Lang::message('settings.minute');
                 $button_list[] = [
                     [
-                        'text' => "0.1" . Lang::message('settings.minute'),
+                        'text' => "0.1" . $minuteText,
                         'callback_data' => 'set_0'
                     ], [
-                        'text' => "1" . Lang::message('settings.minute'),
+                        'text' => "1" . $minuteText,
                         'callback_data' => 'set_1'
                     ], [
-                        'text' => "2" . Lang::message('settings.minute'),
+                        'text' => "2" . $minuteText,
                         'callback_data' => 'set_2'
                     ]
                 ];
@@ -468,7 +466,7 @@ class Axenia
             default:
                 $button_list[] = [
                     [
-                        'text' => Lang::message($silent_mode_text),
+                        'text' => Lang::message("settings.button.".$postfixSilentMode),
                         'callback_data' => 'toggle_silent_mode'
                     ], [
                         'text' => Lang::message('settings.button.set_cooldown'),
@@ -476,13 +474,17 @@ class Axenia
                     ]
                 ];
                 $text = Lang::message('settings.title') . "\r\n";
-                $text .= ($this->service->isSilentMode($chat_id)) ? Lang::message('settings.title.silent_mode_on') . "\r\n" : Lang::message('settings.title.silent_mode_off') . "\r\n";
+                $text .= Lang::message("settings.title.".$postfixSilentMode) . "\r\n";
                 $text .= Lang::message('settings.title.cooldown', ["cooldown" => $this->service->getCooldown($chat_id)]);
                 break;
         }
         $inline_keyboard = $button_list;
         if ($message == NULL) {
-            Request::sendHtmlMessage($chat_id, $text, ["reply_markup" => ['inline_keyboard' => $inline_keyboard]]);
+            if ($isAdmin) {
+                Request::sendHtmlMessage($chat_id, $text, ["reply_markup" => ['inline_keyboard' => $inline_keyboard]]);
+            } else {
+                Request::sendHtmlMessage($chat_id, $text);
+            }
         } else {
             Request::editMessageText($chat_id, $message['message_id'], $text, ["reply_markup" => ['inline_keyboard' => $inline_keyboard], "parse_mode" => "HTML"]);
         }
