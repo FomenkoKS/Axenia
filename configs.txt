@@ -7,11 +7,11 @@ help - Help / Помощь
 
 🇬🇧 Hello. I'm Axenia. I can count the karma points in groups.
 Type '+' (👍) for raising or '-' (👎) for reducing points to the user which you reply.
-Also I understand messages like '+ @someusername' and etc.
+Also I understand messages like '+ @username' and etc.
 
 🇷🇺 Приветствую. Я считаю карму в группах.
 Cтавьте '+' (или 👍) в ответ на чье-то сообщение для поднятия кармы или '-'(или 👎) для её опускания.
-Также понимаю сообщение формата '+ @someusername' и т.п.
+Также понимаю сообщение формата '+ @username' и т.п.
 @AxeniaChannel
 
 # SQL query
