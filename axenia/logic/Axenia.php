@@ -119,7 +119,7 @@ class Axenia
                             if ($isPrivate) {
                                 Request::sendMessage($chat_id, Lang::message("karma.top.private"));
                             } else {
-                                $out = $this->service->getTop($chat_id, 5);
+                                $out = $this->service->getTop($chat_id, 10);
                                 Request::sendHtmlMessage($chat_id, $out);
                             }
                             break;
