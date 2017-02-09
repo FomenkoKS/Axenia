@@ -101,7 +101,7 @@ Also I understand messages in format like \"+ @username\" and etc.\r\n
         array(
             "en" => "<b>🏆Top list of Karma owners in the «:chatName»:</b>\r\n\r\n",
             "ru" => "<b>🏆Самые почётные люди групы «:chatName»:</b>\r\n\r\n",
-            "ruUN" => "<b>🏆Самые длинные кармописюны группы «:chatName»:</b>\r\n\r\n"
+            "ruUN" => "<b>🍌Самые длинные кармописюны группы «:chatName»:</b>\r\n\r\n"
         ),
     "karma.top.row" =>
         array(
