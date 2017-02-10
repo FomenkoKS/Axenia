@@ -416,7 +416,7 @@ class Axenia
 
     public function sendSettings($chat_id, $message = NULL, $type = NULL, $showButtons = true)
     {
-        $postfixSilentMode = "silent_mode" . ($this->service->isSilentMode($chat_id) ? "_off" : "_on");
+        $postfixSilentMode = "silent_mode" . ($this->service->isSilentMode($chat_id) ? "_on" : "_off");
         switch ($type) {
             case "set_cooldown":
                 $minuteText = Lang::message('settings.minute');
