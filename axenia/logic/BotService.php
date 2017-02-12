@@ -289,7 +289,7 @@ class BotService
         $i = 0;
         foreach ($a as $value) {
             $username = ($value[0] == "") ? $value[1] . " " . $value[2] : $value[0];
-            $out .= ($i ==0 ? "⭐️": "") . Lang::message('karma.top.row', array("username" => $username, "karma" => $value[3]));
+            $out .= Lang::message('karma.top.'.($i ==0 ? "firstrow": "row"), array("username" => $username, "karma" => $value[3]));
             $i++;
         }
         $out .= Lang::message('karma.top.footer', array("pathToSite" => PATH_TO_SITE, "chatId" => $chat_id));

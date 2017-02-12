@@ -109,6 +109,12 @@ Also I understand messages in format like \"+ @username\" and etc.\r\n
             "ru" => ":username (:karma)\r\n",
             "ruUN" => ":username (:karma см)\r\n"
         ),
+    "karma.top.firstrow" =>
+        array(
+            "en" => " ⭐ :username (:karma)\r\n",
+            "ru" => " ⭐:username (:karma)\r\n",
+            "ruUN" => " 👮🏿:username (:karma см)\r\n"
+        ),
     "karma.top.footer" =>
         array(
             "en" => "<a href=':pathToSite?group_id=:chatId'>Read more..</a>",

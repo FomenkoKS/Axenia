@@ -17,7 +17,7 @@ class Lang
 
     public static function defaultLangKey()
     {
-        return "en";
+        return "ru";
     }
 
     public static function getCurrentLangDesc()
