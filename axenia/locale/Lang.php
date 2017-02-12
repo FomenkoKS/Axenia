@@ -29,7 +29,7 @@ class Lang
      * Обязательно должен вызваться
      * @param string $lang 'ru' or 'en' or etc.
      */
-    public static function init($lang = "en")
+    public static function init($lang = "ru")
     {
         self::availableLangs();
         if (!isset(self::$messageArray)) {
