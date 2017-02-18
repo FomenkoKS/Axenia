@@ -15,9 +15,9 @@ return array(
         ),
     "bot.error" =>
         array(
-            "en" => "Ops! Something broken..",
-            "ru" => "Опа, кажись что-то сломалось..",
-            "ruUN" => "Оп, сломалось чот.."
+            "en" => "Ops! Something broken.. 🤷‍♀️",
+            "ru" => "Опа, кажись что-то сломалось.. 🤷‍♀️",
+            "ruUN" => "Оп, сломалось чот.. 🤷‍♀️"
         ),
     "chat.greetings" =>
         array(
@@ -159,9 +159,9 @@ Also I understand messages in format like \"+ @username\" and etc.\r\n
         ),
     "karma.unknownUser" =>
         array(
-            "en" => "I don't know this user ¯\\_(ツ)_/¯ (please, try to write '👍' via Reply)",
-            "ru" => "Знать его не знаю ¯\\_(ツ)_/¯ (попробуй написать Reply)",
-            "ruUN" => "Такого не знаю ¯\\_(ツ)_/¯ (попробуй написать Reply)"
+            "en" => "I don't know this user 🤷‍♀️ <i>(please, try to write '👍' via Reply)</i>",
+            "ru" => "Такого пользователя не знаю 🤷‍♀️ <i>(попробуй написать через Reply)</i>",
+            "ruUN" => "Знать его не знаю 🤷‍♀️ <i>(попробуй написать через Reply)</i>"
         ),
     "karma.manualSet" =>
         array(
