@@ -31,7 +31,7 @@ class BotService
                 array('uid' => $from['id'],
                     'uName' => Util::getFullNameUser($from),
                     'cid' => $chat['id'],
-                    'cName' => $chat['type'] == 'private' ? Util::getFullNameUser($chat) : $chat['title'])
+                    'cName' => $this->isPrivate($chat) ? Util::getFullNameUser($chat) : $chat['title'])
             );
             $errorMsg .= Util::insert("<b>Error message:</b> <code>:0</code>\n<i>Error description:</i>\n<pre>:1</pre>", array($e->getMessage(), $e));
             Request::sendHtmlMessage(LOG_CHAT_ID, $errorMsg);
@@ -70,9 +70,10 @@ class BotService
             $a = array_chunk($users, 4);
             $stack = array();
             foreach ($a as $user) {
-                $userTitle = Util::getFullName($user[1], $user[2], $user[3]);
-                $text = Lang::message("user.stat", array("user" => '👤' . $userTitle));
-                array_push($stack, array('type' => 'article', 'id' => uniqid(), 'title' => $text, 'message_text' => $text . ":\r\n" . $this->getStats($user[0]), 'parse_mode' => 'HTML'));
+                $userObj = ["id" => $user[0], "first_name" => $user[1],"last_name" => $user[2],"username" => $user[3]];
+                $userTitle = Util::getFullNameUser($userObj);
+                $text = Lang::message("user.stat.inline", array("user" => '👤' . $userTitle));
+                array_push($stack, array('type' => 'article', 'id' => uniqid(), 'title' => $text, 'message_text' => $this->getStats($userObj), 'parse_mode' => 'HTML', 'disable_web_page_preview' => true));
             }
 
             return $stack;
@@ -85,9 +86,12 @@ class BotService
     //📊Место в рейтинге: 30
     //👥Заседает в группах: Axenia.Development, Perm Friends (http://telegram.me/permchat), Брейкинг Ньюс, КОРТ, НАШ ЧАТ, Плио, Флудиляторная
     //🏅Медальки: Кармодрочер x3, Карманьяк x3, Кармонстр x2,
-    public function getStats($from_id, $chat_id = NULL)
+    public function getStats($from, $chat_id = NULL)
     {
+        $from_id = $from['id'];
         $res =
+            Lang::message("user.stat.title") . "\r\n\r\n" .
+            Lang::message("user.stat.name") . Util::getFullNameUser($from) . "\r\n" .
             ($chat_id == NULL ? "" : ('📍 ' . Lang::message("user.stat.inchat") . $this->getUserLevel($from_id, $chat_id) . "\r\n")) .
             '🔮 ' . Lang::message("user.stat.sum") . round($this->db->SumKarma($from_id), 0) . "\r\n" .
             '📊 ' . Lang::message("user.stat.place") . $this->db->UsersPlace($from_id) . "\r\n" .
@@ -124,7 +128,7 @@ class BotService
 // region -------------------- Admins
     public function isAdminInChat($user_id, $chat)
     {
-        if ($chat['type'] == 'private') return true;
+        if ($this->isPrivate($chat)) return true;
         $admins = Request::getChatAdministrators($chat['id']);
         foreach ($admins as $admin) {
             if ($admin['user']['id'] == $user_id) return true;
@@ -151,33 +155,35 @@ class BotService
     /*
      * Type of chat, can be either “private”, “group”, “supergroup” or “channel”
      */
-    public function getLang($id, $chatType)
+    public function getLang($chat)
     {
-        if ($chatType == "private") {
-            return $this->db->getUserLang($id);
-        } elseif (Util::isInEnum("group,supergroup", $chatType)) {
-            return $this->db->getChatLang($id);
+        $chat_id = $chat['id'];
+        if ($this->isPrivate($chat)) {
+            return $this->db->getUserLang($chat_id);
+        } elseif ($this->isGroup($chat)) {
+            return $this->db->getChatLang($chat_id);
         }
 
         return false;
     }
 
-    public function setLang($id, $chatType, $lang)
+    public function setLang($chat, $lang)
     {
-        if ($chatType == "private") {
-            return $this->db->setUserLang($id, $lang);
-        } elseif (Util::isInEnum("group,supergroup", $chatType)) {
-            return $this->db->setChatLang($id, $lang);
+        $chat_id = $chat['id'];
+        if ($this->isPrivate($chat)) {
+            return $this->db->setUserLang($chat_id, $lang);
+        } elseif ($this->isGroup($chat)) {
+            return $this->db->setChatLang($chat_id, $lang);
         }
 
         return false;
     }
 
 
-    public function initLang($chat_id, $chatType)
+    public function initLang($chat)
     {
         $isNewChat = false;
-        $lang = $this->getLang($chat_id, $chatType);
+        $lang = $this->getLang($chat);
         if ($lang === false) {
             $lang = Lang::defaultLangKey();
             $isNewChat = true;
@@ -190,6 +196,16 @@ class BotService
 //endregion
 
 // region -------------------- Chats
+    public function isGroup($chat)
+    {
+        return Util::isInEnum("group,supergroup", $chat['type']);
+    }
+
+    public function isPrivate($chat)
+    {
+        return $chat['type'] == "private";
+    }
+
     public function getCooldown($chat_id)
     {
         return $this->db->getCooldown($chat_id);
@@ -207,11 +223,10 @@ class BotService
 
     public function rememberChat($chat, $adder_id = null)
     {
-        $chat_id = $chat['id'];
-        $chatType = $chat['type'];
-        $title = $chat['title'];
-        $username = $chat['username'];
-        if (Util::isInEnum("group,supergroup", $chatType)) {
+        if ($this->isGroup($chat)) {
+            $chat_id = $chat['id'];
+            $title = $chat['title'];
+            $username = $chat['username'];
             $res = $this->db->insertOrUpdateChat($chat_id, $title, $username);
             if ($this->db->getChatLang($chat_id) === false) {
                 $lang = Lang::defaultLangKey();
@@ -283,16 +298,16 @@ class BotService
 
     public function getTop($chat_id, $limit = 10)
     {
-        $out = Lang::message('karma.top.title', array("chatName" => $this->db->getGroupName($chat_id)));
+        $out = Lang::message('karma.top.title', ["chatName" => $this->db->getGroupName($chat_id)]);
         $top = $this->db->getTop($chat_id, $limit);
         $a = array_chunk($top, 4);
         $i = 0;
         foreach ($a as $value) {
             $username = ($value[0] == "") ? $value[1] . " " . $value[2] : $value[0];
-            $out .= Lang::message('karma.top.'.($i ==0 ? "firstrow": "row"), array("username" => $username, "karma" => $value[3]));
+            $out .= Lang::message('karma.top.'.($i ==0 ? "firstrow": "row"), ["username" => $username, "karma" => $value[3]]);
             $i++;
         }
-        $out .= Lang::message('karma.top.footer', array("pathToSite" => PATH_TO_SITE, "chatId" => $chat_id));
+        $out .= Lang::message('karma.top.footer', ["pathToSite" => PATH_TO_SITE, "chatId" => $chat_id]);
 
         return $out;
     }
@@ -302,7 +317,7 @@ class BotService
         $user_id = $this->db->getUserID($username);
         if ($user_id !== false) {
             if ($this->db->setUserLevel($user_id, $chat_id, $newLevel)) {
-                return Lang::message('karma.manualSet', array($username, $user_id, $chat_id, $newLevel));
+                return Lang::message('karma.manualSet', [$username, $user_id, $chat_id, $newLevel]);
             }
         }
 
@@ -341,10 +356,11 @@ class BotService
         return array('good' => $good, 'msg' => $msg, 'newLevel' => $level);
     }
 
-    public function checkCoolDown($from_id, $chat_id, $chatType){
-        if ($this->db->isCooldown($from_id, $chat_id)) {
+    public function checkCoolDown($from_id, $chat){
+        $chat_id = $chat['id'];
+        if ($this->isGroup($chat) && $this->db->isCooldown($from_id, $chat_id)) {
             if(!$this->db->getTooFastShowed($from_id, $chat_id)) {
-                $this->initLang($chat_id, $chatType);
+                $this->initLang($chat);
                 Request::sendHtmlMessage($chat_id, Lang::message('karma.tooFast'));
                 $this->db->setTooFastShowed($from_id, $chat_id);
             }
@@ -358,10 +374,6 @@ class BotService
         $newLevel = null;
         if ($from == $to) return $this->createHandleKarmaResult(true, Lang::message('karma.yourself'), $newLevel);
 
-        //$cooldown=$this->db->isCooldown($from, $chat_id);
-//        if ($this->db->isCooldown($from, $chat_id)) {
-//            return $this->createHandleKarmaResult(false, Lang::message('karma.tooFast'), $newLevel);
-//        }
         $fromLevel = $this->getUserLevel($from, $chat_id);
 
         if ($fromLevel < 0) return $this->createHandleKarmaResult(true, Lang::message('karma.tooSmallKarma'), $newLevel);

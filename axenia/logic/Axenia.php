@@ -61,19 +61,17 @@ class Axenia
             $chat = $message['chat'];
             $from = $message['from'];
 
-            $chatType = $chat['type'];
-
             $chat_id = $chat['id'];
             $from_id = $from['id'];
-            if ($this->service->checkCoolDown($from_id, $chat_id, $chatType)) {
+            if ($this->service->checkCoolDown($from_id, $chat)) {
                 $this->service->insertOrUpdateUser($from);
-                $isNewChat = $this->service->initLang($chat_id, $chatType);
+                $isNewChat = $this->service->initLang($chat);
                 if ($isNewChat) {
                     $this->service->rememberChat($chat, $from_id);
                 }
 
                 if (isset($message['text']) || isset($message['sticker'])) {
-                    $isPrivate = $chatType == "private";
+                    $isPrivate = $this->service->isPrivate($chat);
                     $postfix = $isPrivate ? "" : ("@" . BOT_NAME);
                     if (isset($message['sticker'])) {
                         $text = $message['sticker']['emoji'];
@@ -82,16 +80,18 @@ class Axenia
                     }
                     switch (true) {
                         case Util::startsWith($text, ["+", "-", '👍', '👎']):
-                            if (preg_match('/^(\+|\-|👍|👎) ?([\s\S]+)?/ui', $text, $matches)) {
-                                $isRise = Util::isInEnum("+,👍", $matches[1]);
-                                if (isset($message['reply_to_message'])) {
-                                    $replyUser = $message['reply_to_message']['from'];
-                                    if ($replyUser['username'] != BOT_NAME && !$this->service->isBot($replyUser['username'])) {
-                                        $this->service->insertOrUpdateUser($replyUser);
-                                        $this->doKarmaAction($isRise, $from_id, $replyUser['id'], $chat_id);
-                                    }
-                                } else {
-                                    if (!$isPrivate) {
+                            if ($isPrivate) {
+                                Request::sendMessage($chat_id, Lang::message("bot.onlyPrivate"));
+                            } else {
+                                if (preg_match('/^(\+|\-|👍|👎) ?([\s\S]+)?/ui', $text, $matches)) {
+                                    $isRise = Util::isInEnum("+,👍", $matches[1]);
+                                    if (isset($message['reply_to_message'])) {
+                                        $replyUser = $message['reply_to_message']['from'];
+                                        if ($replyUser['username'] != BOT_NAME && !$this->service->isBot($replyUser['username'])) {
+                                            $this->service->insertOrUpdateUser($replyUser);
+                                            $this->doKarmaAction($isRise, $from_id, $replyUser['id'], $chat_id);
+                                        }
+                                    } else {
                                         if (preg_match('/@([\w]+)/ui', $matches[2], $user)) {
                                             if (BOT_NAME != $user[1] && !$this->service->isBot($user[1])) {
                                                 $to = $this->service->getUserID($user[1]);
@@ -108,16 +108,20 @@ class Axenia
                             break;
                         case (Util::startsWith($text, "/buy" . $postfix)):
                             Request::sendTyping($chat_id);
-                            $this->sendStore($chat_id, $from);
+                            if ($isPrivate) {
+                                Request::sendMessage($chat_id, Lang::message("bot.onlyPrivate"));
+                            } else {
+                                $this->sendStore($chat_id, $from);
+                            }
                             break;
                         case (Util::startsWith($text, "/settings" . $postfix)):
                             Request::sendTyping($chat_id);
-                            $this->sendSettings($chat_id, NULL, NULL, $this->service->isAdminInChat($from_id, $chat));
+                            $this->sendSettings($chat, NULL, NULL, $this->service->isAdminInChat($from_id, $chat));
                             break;
                         case (Util::startsWith($text, "/top" . $postfix)):
                             Request::sendTyping($chat_id);
                             if ($isPrivate) {
-                                Request::sendMessage($chat_id, Lang::message("karma.top.private"));
+                                Request::sendMessage($chat_id, Lang::message("bot.onlyPrivate"));
                             } else {
                                 $out = $this->service->getTop($chat_id, 10);
                                 Request::sendHtmlMessage($chat_id, $out);
@@ -125,15 +129,17 @@ class Axenia
                             break;
                         case (Util::startsWith($text, "/my_stats" . $postfix)):
                             Request::sendTyping($chat_id);
-                            Request::sendHtmlMessage($chat_id, $this->service->getStats($from_id, $isPrivate ? NULL : $chat_id), ['reply_to_message_id' => $message_id]);
+                            $statsMessage = $this->service->getStats($from, $isPrivate ? NULL : $chat_id);
+                            Request::sendHtmlMessage($chat_id, $statsMessage);
                             break;
                         case (Util::startsWith($text, "/start" . $postfix)):
                             if ($isPrivate) {
                                 Request::sendTyping($chat_id);
                                 Request::sendHtmlMessage($chat_id, Lang::message('chat.greetings'));
-                                //$this->sendLanguageKeyboard($chat_id);
+                                Request::sendHtmlMessage($chat_id, Lang::message('user.pickChat'));
                             } else {
                                 $this->service->rememberChat($chat, $from_id);
+                                Request::sendHtmlMessage($chat_id, Lang::message('bot.start'));
                             }
                             break;
                         case (Util::startsWith($text, "/help" . $postfix)):
@@ -168,119 +174,7 @@ class Axenia
                                 } while (!$ok);
                             }
                             break;
-//                    case Util::startsWith($text, ("/cleanDB")):
-//                        if (Util::isInEnum(ADMIN_IDS, $from_id)) {
-//                            Request::sendTyping($chat_id);
-//                            $count = 0;
-//                            $updated = 0;
-//                            $deleted = 0;
-//                            if ($groups_id = $this->service->getChatsIds()) {
-//                                foreach ($groups_id as $id) {
-//                                    $count++;
-//                                    $chat = Request::getChat($id);
-//                                    $isStealInChat = Request::sendTyping($id);
-//                                    if ($chat !== false && $isStealInChat !== false) {
-//                                        $this->service->rememberChat($chat);
-//                                        $updated++;
-//                                    } else {
-//                                        $this->service->deleteChat($id);
-//                                        $deleted++;
-//                                    }
-//                                }
-//                            }
-//
-//                            $out = Util::insert("The database was cleaned.\nChats count-:c. Updated-:u, deleted-:d.", ["c" => $count, "u" => $updated, "d" => $deleted]);
-//                            Request::sendMessage($chat_id, $out);
-//                            if (defined('LOG_CHAT_ID') && LOG_CHAT_ID != $chat_id) {
-//                                Request::sendMessage(LOG_CHAT_ID, $out);
-//                            }
-//                        }
-//                        break;
-//                    case Util::startsWith($text, ("/cleanKarma")):
-//                        if (Util::isInEnum(ADMIN_IDS, $from_id)) {
-//                            Request::sendTyping($chat_id);
-//                            $count = 0;
-//                            $deleted = 0;
-//                            if ($userChatPair = $this->service->getAllKarmaPair()) {
-//                                foreach ($userChatPair as $pair) {
-//                                    $count++;
-//                                    $isUserStealInChat = Request::getChatMember($pair[0], $pair[1]);
-//                                    if ($isUserStealInChat === false ||
-//                                        (isset($isUserStealInChat['status']) &&
-//                                            $isUserStealInChat['status'] == 'left' || $isUserStealInChat['status'] == 'kicked')
-//                                    ) {
-//                                        $this->service->deleteUserDataInChat($pair[0], $pair[1]);
-//                                        $deleted++;
-//                                    }
-//                                }
-//                            }
-//
-//                            $out = Util::insert("The karma was cleaned.\nChats count-:c. Deleted-:d.", ["c" => $count, "d" => $deleted]);
-//                            Request::sendMessage($chat_id, $out);
-//                            if (defined('LOG_CHAT_ID') && LOG_CHAT_ID != $chat_id) {
-//                                Request::sendMessage(LOG_CHAT_ID, $out);
-//                            }
-//                        }
-//                        break;
 
-//                    case Util::startsWith($text, ("/setPresent")):
-//                        if (Util::isInEnum(ADMIN_IDS, $from_id)) {
-//                            Request::sendTyping($chat_id);
-//                            $count = 0;
-//                            $isOut = 0;
-//                            $isIn = 0;
-//                            if ($groups_id = $this->service->getChatsIds()) {
-//                                foreach ($groups_id as $id) {
-//                                    $count++;
-//                                    $chat = Request::getChat($id);
-//                                    $isStealInChat = Request::sendTyping($id);
-//                                    if ($chat !== false && $isStealInChat !== false) {
-//                                        $this->service->setBotPresentedInChat($id, true);
-//                                        $isIn++;
-//                                    } else {
-//                                        $this->service->setBotPresentedInChat($id, false);
-//                                        $isOut++;
-//                                    }
-//                                }
-//                            }
-//
-//                            $out = Util::insert("The presenting in chats was setted.\nChats count-:c. In-:u, Out-:d.", ["c" => $count, "u" => $isIn, "d" => $isOut]);
-//                            Request::sendMessage($chat_id, $out);
-//                            if (defined('LOG_CHAT_ID') && LOG_CHAT_ID != $chat_id) {
-//                                Request::sendMessage(LOG_CHAT_ID, $out);
-//                            }
-//                        }
-//                        break;
-
-                        /*case preg_match('/^\/getAdmins/ui', $text, $matches):
-                            Request::sendMessage($chat_id, $this->service->isAdminInChat($from_id, $chat));
-                            $admins = Request::getChatAdministrators($chat_id);
-                            Request::sendMessage($chat_id, $admins);
-                            //if(in_array($from_id,$admins['user']['id'])) Request::sendMessage($chat_id, "success");
-                            break;*/
-
-//                    case Util::startsWith($text, ("/nash")):
-//                        if (Util::isInEnum(ADMIN_IDS, $from_id)) {
-//                            if (preg_match('/^(\/nash) ([\s\S]+)/ui', $text, $matches)) {
-//                                Request::sendTyping(NASH_CHAT_ID);
-//                                sleep(1);
-//                                Request::sendMessage(NASH_CHAT_ID, $matches[2]);
-//                            }
-//                        }
-//                        break;
-//                case preg_match('/tits|(сис(ек|ьки|ечки|и|яндры))/ui', $text, $matches):
-//                    if (Lang::isUncensored()) {
-//                        $tits = json_decode(file_get_contents("http://api.oboobs.ru/boobs/1/1/random"), true);
-//                        $karma = $this->service->getUserLevel($from_id, $chat_id);
-//                        $username = $this->service->getUserName($from_id);
-//                        $newKarma = $karma - 30;
-//                        if ($newKarma > 0) {
-//                            Request::sendTyping($chat_id);
-//                            Request::sendPhoto($chat_id, "http://media.oboobs.ru/boobs/" . sprintf("%05d", $tits[0]['id']) . ".jpg", ["caption" => $username . " подогнал эти сиськи за свои 30 кармы"]);
-//                            $this->service->setLevel($from_id, $chat_id, $newKarma);
-//                        }
-//                    }
-//                    break;
                     }
                 } elseif (isset($message['new_chat_member'])) {
                     $newMember = $message['new_chat_member'];
@@ -414,8 +308,9 @@ class Axenia
         }
     }
 
-    public function sendSettings($chat_id, $message = NULL, $type = NULL, $showButtons = true)
+    public function sendSettings($chat, $message = NULL, $type = NULL, $showButtons = true)
     {
+        $chat_id = $chat['id'];
         $postfixSilentMode = "silent_mode" . ($this->service->isSilentMode($chat_id) ? "_on" : "_off");
         switch ($type) {
             case "set_cooldown":
@@ -445,24 +340,36 @@ class Axenia
                 $text = Lang::message('settings.select.lang');
                 break;
             default:
-                $button_list = [
-                    [
-                        ['text' => Lang::message("settings.button.toggle_silent_mode"),
-                            'callback_data' => 'set_toggle_silent_mode'
-                        ],
-                        ['text' => Lang::message('settings.button.lang'),
-                            'callback_data' => 'set_lang'
-                        ]
-                    ],
-                    [['text' => Lang::message('settings.button.set_cooldown'),
-                        'callback_data' => 'set_cooldown'
-                    ]]
-                ];
-
                 $text = Lang::message('settings.title') . "\r\n";
-                $text .= Lang::message("settings.title.".$postfixSilentMode) . "\r\n";
-                $text .= Lang::message("settings.title.lang", ["lang" => Lang::getCurrentLangDesc()]) . "\r\n";
-                $text .= Lang::message('settings.title.cooldown', ["cooldown" => $this->service->getCooldown($chat_id)]);
+                if ($this->service->isPrivate($chat)) {
+                    $button_list = [
+                        [
+                            ['text' => Lang::message('settings.button.lang'),
+                                'callback_data' => 'set_lang'
+                            ]
+                        ]
+                    ];
+                    $text .= Lang::message("settings.title.lang", ["lang" => Lang::getCurrentLangDesc()]) . "\r\n";
+                } else {
+                    $button_list = [
+                        [
+                            ['text' => Lang::message("settings.button.toggle_silent_mode"),
+                                'callback_data' => 'set_toggle_silent_mode'
+                            ],
+                            ['text' => Lang::message('settings.button.lang'),
+                                'callback_data' => 'set_lang'
+                            ]
+                        ],
+                        [['text' => Lang::message('settings.button.set_cooldown'),
+                            'callback_data' => 'set_cooldown'
+                        ]]
+                    ];
+
+                    $text .= Lang::message("settings.title." . $postfixSilentMode) . "\r\n";
+                    $text .= Lang::message("settings.title.lang", ["lang" => Lang::getCurrentLangDesc()]) . "\r\n";
+                    $text .= Lang::message('settings.title.cooldown', ["cooldown" => $this->service->getCooldown($chat_id)]);
+                }
+
                 break;
         }
         $inline_keyboard = $button_list;
@@ -483,17 +390,17 @@ class Axenia
         $from = $callback['from'];
         $message = $callback['message'];
         $data = $callback['data'];
-        $chat_id = $message['chat']['id'];
-        $chat_type = $message['chat']['type'];
-        $this->service->initLang($chat_id, $chat_type);
-        $isAdminInChat = $this->service->isAdminInChat($from['id'], $message['chat']);
+        $chat = $message['chat'];
+        $chat_id = $chat['id'];
+        $this->service->initLang($chat);
+        $isAdminInChat = $this->service->isAdminInChat($from['id'], $chat);
         if (in_array($data, array_keys(Lang::availableLangs()))) {
             if ($isAdminInChat) {
-                $qrez = $this->service->setLang($chat_id, $chat_type, $data);
+                $qrez = $this->service->setLang($chat, $data);
                 if ($qrez) {
                     Lang::init($data);
                 }
-                $this->sendSettings($chat_id, $message, NULL);
+                $this->sendSettings($chat, $message, NULL);
             } else {
                 Request::answerCallbackQuery($callback['id'], Lang::message('settings.title'));
             }
@@ -514,9 +421,6 @@ class Axenia
                         $rez = $cat["file"];
                         break;
                     case 'buy_gif':
-                        //giphy! ты подвёл этот город((
-                        //$gif = json_decode(file_get_contents("http://api.giphy.com/v1/gifs/random?api_key=dc6zaTOxFJmzC"), true);
-                        //$rez = $gif["data"]["image_url"];
                         if (defined('TRASH_CHAT_ID')) {
                             Request::sendTyping($chat_id);
                             $ok = false;
@@ -557,7 +461,7 @@ class Axenia
                         $data = NULL;
                         break;
                 }
-                $this->sendSettings($chat_id, $message, $data);
+                $this->sendSettings($chat, $message, $data);
             } else {
                 Request::answerCallbackQuery($callback['id'], Lang::message('settings.title'));
             }

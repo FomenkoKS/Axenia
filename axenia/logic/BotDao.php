@@ -42,7 +42,7 @@ class BotDao extends AbstractDao
         if ($query != '') {
             $query = "'" . strtolower("%" . $query . "%") . "'";
             $res = $this->select(
-                "SELECT id,username,firstname,lastname 
+                "SELECT id,firstname,lastname,username
                   FROM Users 
                   WHERE concat(username,firstname,lastname) LIKE $query;"
             );
@@ -310,14 +310,13 @@ class BotDao extends AbstractDao
     {
         $res = $this->select(
             "SELECT count(a.Sumlevel) 
-              FROM (
-                  SELECT sum(level) AS SumLevel 
+              FROM 
+              (   SELECT sum(level) AS SumLevel 
                   FROM Karma k 
                   GROUP BY k.user_id) a,
-                  (
-                  SELECT sum(level) AS SumLevel 
-                      FROM Karma 
-                      WHERE user_id=" . $user_id . ") u 
+              (   SELECT sum(level) AS SumLevel 
+                  FROM Karma 
+                  WHERE user_id=" . $user_id . ") u 
                 WHERE u.SumLevel<=a.SumLevel 
                 ORDER BY a.SumLevel ASC;"
         );

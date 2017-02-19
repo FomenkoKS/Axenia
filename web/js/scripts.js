@@ -54,16 +54,16 @@ $(document).ready(function () {
                     });
                 });
         } else {
-            s
             $("#suggestions").hide();
         }
-    })
+    });
 
     $(".dropdown-menu li").click(function (e) {
-        $("#search_btn").val($(this).index());
-        $("#search_btn").text($(this).text());
+        var searchBtn = $("#search_btn");
+        searchBtn.val($(this).index());
+        searchBtn.text($(this).text());
         return false;
-    })
+    });
 
     $('.reward').tooltip();
 });

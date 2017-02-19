@@ -13,11 +13,29 @@ return array(
             "ru" => "Понг",
             "ruUN" => "Понг"
         ),
+    "bot.start" =>
+        array(
+            "en" => "So it begins.",
+            "ru" => "Стартуем!",
+            "ruUN" => "Стартуем!"
+        ),
     "bot.error" =>
         array(
             "en" => "Ops! Something broken.. 🤷‍♀️",
             "ru" => "Опа, кажись что-то сломалось.. 🤷‍♀️",
             "ruUN" => "Оп, сломалось чот.. 🤷‍♀️"
+        ),
+    "bot.onlyPrivate" =>
+        array(
+            "en" => "Sorry, but this I can do only in groups.",
+            "ru" => "Это я могу сделать только в групповых чатах.",
+            "ruUN" => "Это я могу сделать только в групповых чатах."
+        ),
+    "user.pickChat" =>
+        array(
+            "en" => "Please, <a href='t.me/:botName?startgroup=0'>pick</a> а group where I'll handle the karma points and more. ✌😊",
+            "ru" => "<a href='t.me/:botName?startgroup=0'>Добавь</a> меня в группу, где я буду считать карму и не только. ✌😊",
+            "ruUN" => "<a href='t.me/:botName?startgroup=0'>Добавь</a> меня в группу, где я буду считать карму и не только. ✌😊"
         ),
     "chat.greetings" =>
         array(
@@ -55,21 +73,27 @@ Also I understand messages in format like \"+ @username\" and etc.\r\n
 /buy - магазинчик контента. Карму можно потратить на покупки забавных картинок и не только забавных.\r\n
 <i>Статистику можно посмотреть на сайте</i> axeniabot.ru<i>. Канал поддержки:</i> @AxeniaChannel"
         ),
-    "user.pickChat" =>
+    "user.stat.inline" =>
         array(
-            "en" => "So, you need <a href='t.me/:botName?startgroup=0'>to choose а group</a> where I'll handle the karma points. ✌😊",
-            "ru" => "Итак, надо <a href='t.me/:botName?startgroup=0'>выбрать группу</a>, где я буду считать карму. ✌😊",
-            "ruUN" => "Итак, надо <a href='t.me/:botName?startgroup=0'>выбрать группу</a>, где я буду считать карму. ✌😊"
-        ),
-    "user.stat" =>
-        array(
-            "en" => ":user's statistic",
+            "en" => "Statistic of the :user",
             "ru" => "Статистика пользователя :user",
             "ruUN" => "Статистика пользователя :user"
         ),
+    "user.stat.title" =>
+        array(
+            "en" => " ℹ️ <b>The user's statistic</b>",
+            "ru" => " ℹ️ <b>Статистика пользователя</b>",
+            "ruUN" => " ℹ️ <b>Статистика юзера</b>"
+        ),
+    "user.stat.name" =>
+        array(
+            "en" => "👤 Name: ",
+            "ru" => "👤 Имя: ",
+            "ruUN" => "👤 Имя: "
+        ),
     "user.stat.inchat" =>
         array(
-            "en" => "Karma's rate in this group: ",
+            "en" => "Karma's rate in current group: ",
             "ru" => "Карма в группе: ",
             "ruUN" => "Карма в группе: "
         ),
@@ -111,19 +135,19 @@ Also I understand messages in format like \"+ @username\" and etc.\r\n
         ),
     "karma.top.firstrow" =>
         array(
-            "en" => " ⭐ :username (:karma)\r\n",
+            "en" => " ⭐:username (:karma)\r\n",
             "ru" => " ⭐:username (:karma)\r\n",
             "ruUN" => " 👮🏿:username (:karma см)\r\n"
         ),
     "karma.top.footer" =>
         array(
-            "en" => "<a href=':pathToSite?group_id=:chatId'>Read more..</a>",
+            "en" => "<a href=':pathToSite?group_id=:chatId'>Read more.</a> <i>(on Russian)</i>",
             "ru" => "<a href=':pathToSite?group_id=:chatId'>Подробнее..</a>",
             "ruUN" => "<a href=':pathToSite?group_id=:chatId'>Подробнее..</a>"
         ),
     "karma.top.private" =>
         array(
-            "en" => "Karma's top is available only in groups",
+            "en" => "The Karma's top is available only in groups",
             "ru" => "Топ кармы доступен только в групповых чатах.",
             "ruUN" => '😐' . " Ты это действительно? \r\nТоп кармы доступен только в групповых чатах. В приватных чатах в топе только я 😊"
         ),
@@ -147,13 +171,13 @@ Also I understand messages in format like \"+ @username\" and etc.\r\n
         ),
     "karma.tooSmallKarma" =>
         array(
-            "en" => "You <b>cannot</b> vote with negative count of karma points",
+            "en" => "You <b>can't</b> vote with the negative count of karma points",
             "ru" => "Ты <b>не можешь</b> голосовать с отрицательной кармой",
             "ruUN" => "Ты <b>не можешь</b> голосовать с отрицательной кармой"
         ),
     "karma.tooFast" =>
         array(
-            "en" => "Not so fast. Group has a limit for user's messages.",
+            "en" => "Not so fast. The group has a limit for user's messages.",
             "ru" => "Не так быстро. В группе установлено ограничение.",
             "ruUN" => "Эй, скорострел, <b>помедленее</b>. В группе установлено ограничение."
         ),
@@ -217,15 +241,9 @@ Also I understand messages in format like \"+ @username\" and etc.\r\n
             "ru" => "Кармонстр",
             "ruUN" => "Кармонстр"
         ),
-    "possessive" =>
-        array(
-            "en" => "'s",
-            "ru" => "",
-            "ruUN" => ""
-        ),
     "store.title" =>
         array(
-            "en" => " 🛍<b>Content store</b>\r\n<i>Here you can buy a bit of content using your karma points</i>\r\n\r\n<b>:user(:k)</b>, what do you want to buy on your karma points?",
+            "en" => " 🛍<b>Content store</b>\r\n<i>Here you can buy a bit of content using your karma points</i>\r\n\r\n<b>:user(:k)</b>, what do you want to buy?",
             "ru" => " 🛍<b>Магазин контента</b>\r\n<i>Приобретайте рандомный контент за карму, порадуйте собеседников!</i>\r\n\r\n<b>:user(:k)</b>, на что желаете потратить карму?",
             "ruUN" => " 🛍<b>Магазинчик контента</b>\r\n<i>Приобретайте рандомный контент за карму, порадуйте собеседников!</i>\r\n\r\n<b>:user(:k)</b>, на что ты хочешь посмотреть?"
         ),
@@ -249,13 +267,13 @@ Also I understand messages in format like \"+ @username\" and etc.\r\n
         ),
     "store.button.buy_jokes" =>
         array(
-            "en" => "Jokes 10",
+            "en" => "Joke 10",
             "ru" => "Шутки 10",
             "ruUN" => "Лулзы 10"
         ),
     "store.button.buy_gif" =>
         array(
-            "en" => "GIFs 10",
+            "en" => "GIF 10",
             "ru" => "Гифка 10",
             "ruUN" => "Гифка 10"
         ),
@@ -310,7 +328,7 @@ Also I understand messages in format like \"+ @username\" and etc.\r\n
     "settings.title" =>
         array(
             "en" => "<b>🛠Settings</b> \r\n<i>Access to changing is only for admins.</i>\r\n",
-            "ru" => "<b>🛠Настройки</b> \r\n<i>Доступно только для администраторов группы.</i>\r\n",
+            "ru" => "<b>🛠Настройки</b> \r\n<i>Изменять могут только администраторы группы.</i>\r\n",
             "ruUN" => "<b>🛠Настройки</b> \r\n<i>Изменять настройки могут только админы.</i>\r\n"
         ),
     "settings.title.cooldown" =>
