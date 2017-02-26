@@ -368,7 +368,7 @@ class BotDao extends AbstractDao
     public function getUserRewardIds($user_id, $chat_id)
     {
         $res = $this->select("SELECT type_id FROM Rewards WHERE user_id = " . $user_id . " AND group_id = " . $chat_id);
-        return (!$res[0]) ? false : $res;
+        return (!$res[0]) ? [] : $res;
     }
 
     public function getUserRewardsInChat($user_id, $chat_id)
