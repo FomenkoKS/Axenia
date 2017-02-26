@@ -1,9 +1,8 @@
 <?php
-require_once("logic.php");
-require_once("functions.php");
-$logic = new FemaleLogic();
-$type = $logic->TypeOfView($_GET);
-$logic->CheckData();
+require_once("SiteService.php");
+$site = new SiteService();
+$type = $site->getViewType($_GET);
+//$site->CheckData();
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -11,14 +10,14 @@ $logic->CheckData();
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="description" content="Портал для анализа кармы тётушки Аксиньи">
+    <meta name="description" content="Портал для анализа кармы тётушки Аксиньи - карма-бота Telegram">
     <meta name="author" content="Fomenko C.S.">
     <link rel="image_src" href="<? echo PATH_TO_SITE; ?>img/logo.png"/>
-    <meta property="og:title" content="Аксинья">
+    <meta property="og:title" content="Аксинья. Карма-бот Telegram">
     <meta property="og:image" content="<? echo PATH_TO_SITE; ?>img/logo.png">
-    <meta property="og:site_name" content="Axenia Bot">
-    <meta property="og:description" content="Портал для анализа кармы тётушки Аксиньи">
-    <title><? echo strip_tags($logic->GetHeader($type, $_GET)); ?></title>
+    <meta property="og:site_name" content="Axenia Telegram Bot">
+    <meta property="og:description" content="Портал для анализа кармы тётушки Аксиньи - карма-бота Telegram">
+    <title><? echo strip_tags($site->createHeaderView($type, $_GET)); ?></title>
     <link rel="icon" type="image/png" href="img/favicon.png"/>
     <link href="css/bootstrap.min.css" rel="stylesheet">
     <link href="css/style.css" rel="stylesheet">
@@ -30,14 +29,13 @@ $logic->CheckData();
     <![endif]-->
 
 </head>
-
 <body>
 
 <header id="top" class="header">
     <div class="container">
         <div class="row">
             <h1 id="header"><?
-                echo $logic->GetHeader($type, $_GET);
+                echo $site->createHeaderView($type, $_GET);
                 ?>
             </h1>
         </div>
@@ -46,9 +44,27 @@ $logic->CheckData();
 <section id="srch">
     <div class="container">
         <div class="row">
-            <?
-            include("search_view.php");
-            ?>
+            <div class="col-lg-12 center">
+                <div class="row">
+                    <div class="col-lg-6 col-lg-offset-3">
+                        <h3>Найти:</h3>
+                        <div class="input-group">
+                            <div class="input-group-btn" id="search-button">
+                                <button type="button" class="btn btn-default" data-toggle="dropdown" id="search_btn"
+                                        value="0">
+                                    Пользователя
+                                </button>
+                                <ul class="dropdown-menu">
+                                    <li><a href="#">Пользователя</a></li>
+                                    <li><a href="#">Группу</a></li>
+                                </ul>
+                            </div>
+                            <input type="text" class="form-control" id="searchline" title="Search"/>
+                            <div id="suggestions"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 </section>

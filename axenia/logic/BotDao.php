@@ -37,14 +37,14 @@ class BotDao extends AbstractDao
         return (!$res[0]) ? $res[1] : $res[0];
     }
 
-    public function getUsersByName($query)
+    public function getUsersByName($query, $limit = 0)
     {
         if ($query != '') {
             $query = "'" . strtolower("%" . $query . "%") . "'";
             $res = $this->select(
                 "SELECT id,firstname,lastname,username
                   FROM Users 
-                  WHERE concat(username,firstname,lastname) LIKE $query;"
+                  WHERE concat(username,firstname,lastname) LIKE $query LIMIT ".$limit
             );
 
             return $res;
@@ -173,6 +173,22 @@ class BotDao extends AbstractDao
         $res = $this->select("SELECT title FROM Chats WHERE id = " . $chat_id);
 
         return (!$res[0]) ? false : $res[0];
+    }
+
+    public function getGroupsByName($query, $limit = 0)
+    {
+        if ($query != '') {
+            $query = "'" . strtolower("%" . $query . "%") . "'";
+            $res = $this->select(
+                "SELECT id,title
+                  FROM Chats 
+                  WHERE title LIKE $query LIMIT ".$limit
+            );
+
+            return $res;
+        }
+
+        return false;
     }
 
     public function getGroupsMistakes()

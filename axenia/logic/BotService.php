@@ -65,7 +65,7 @@ class BotService
 
     public function getUserList($query)
     {
-        $users = $this->db->getUsersByName($query);
+        $users = $this->db->getUsersByName($query, 10);
         if ($users != false) {
             $a = array_chunk($users, 4);
             $stack = array();

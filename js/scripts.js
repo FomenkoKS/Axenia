@@ -32,7 +32,7 @@ $(document).ready(function () {
             }
             $.ajax({
                     method: "POST",
-                    url: "logic.php",
+                    url: "jsonData.php",
                     data: {please: type + "list", query: $(this).val()}
                 })
                 .done(function (msg) {

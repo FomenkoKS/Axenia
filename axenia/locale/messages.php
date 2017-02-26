@@ -299,7 +299,7 @@ Also I understand messages in format like \"+ @username\" and etc.\r\n
         array(
             "en" => "<b>:user(:k)</b> has bought a GIF. Isn't it funny? :)",
             "ru" => "<b>:user(:k)</b> купил gif-анимацию. Как вам?",
-            "ruUN" => "<b>:user(:k)</b> купил гифку. Вроде не плохо ;)"
+            "ruUN" => "<b>:user(:k)</b> купил гифку. Вроде неплохо ;)"
         ),
     "store.callback" =>
         array(
