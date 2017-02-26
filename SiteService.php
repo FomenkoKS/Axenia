@@ -108,10 +108,10 @@ class SiteService
                 $header .= " в гостях у Аксиньи";
                 break;
             case 'group':
-                $header = "<img class=\"logo\" src=\"/img/logo.png\" alt=\"Axenia's logo\">Аксинья в группе «" . $this->db->getGroupName($get['group_id']) . "»";
+                $header = "<a href='".PATH_TO_SITE."'><img class=\"logo\" src=\"/img/logo.png\" alt=\"Axenia's logo\"></a>Аксинья в группе «" . $this->db->getGroupName($get['group_id']) . "»";
                 break;
             case 'stat':
-                $header = "<img class=\"logo\" src=\"/img/logo.png\" alt=\"Axenia's logo\">" . $get['username'] . " в гостях у Аксиньи";
+                $header = "<a href='".PATH_TO_SITE."'><img class=\"logo\" src=\"/img/logo.png\" alt=\"Axenia's logo\"></a>" . $get['username'] . " в гостях у Аксиньи";
                 break;
         }
         return $header;
