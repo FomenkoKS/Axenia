@@ -45,6 +45,8 @@ class SiteService
 
     public function createCharBarView($id, $type)
     {
+        $rez = [];
+        $title = "Данных нет";
         switch ($type) {
             case "group":
                 $rez = $this->db->getGroupKarmaList($id);
@@ -55,28 +57,32 @@ class SiteService
                 $title = "Карма пользователя в группах:";
                 break;
         }
-        $html = "<div class=\"row text-center\"><h2>" . $title . "</h2></div>";
 
-        $a = array_chunk($rez, 5);
-        $max = $a[0][3];
-        foreach ($a as $value) {
-            $html .= "<div class='row'>";
-            switch ($type) {
-                case "group":
-                    $html .= "<div class='user_photo img-circle col-md-1' style='background-image:url(users/" . $value[4] . ".jpg)'></div><a class='col-md-1 title load_user' onclick='load_user(" . $value[4] . ")'>";
-                    //$this->GetAvatar($value[4]);
-                    $html .= ($value[0] == "") ? $value[1] . " " . $value[2] : $value[0];
-                    $html .= "</a>";
-                    break;
-                case "user":
-                    $html .= "<a class=\"title col-md-2 load_group\" onclick='load_group(" . $value[1] . ")'>";
-                    $html .= $value[0] . "</a>";
-                    break;
+        if (count($rez) > 0) {
+            $html = "<div class=\"row text-center\"><h2>" . $title . "</h2></div>";
+            $a = array_chunk($rez, 5);
+            $max = $a[0][3];
+            foreach ($a as $value) {
+                $html .= "<div class='row'>";
+                switch ($type) {
+                    case "group":
+                        $html .= "<div class='user_photo img-circle col-md-1 col-xs-1' style='background-image:url(users/" . $value[4] . ".jpg)'></div><a class='col-md-1 col-xs-2 title load_user' onclick='load_user(" . $value[4] . ")'>";
+                        //$this->GetAvatar($value[4]);
+                        $html .= ($value[0] == "") ? $value[1] . " " . $value[2] : $value[0];
+                        $html .= "</a>";
+                        break;
+                    case "user":
+                        $html .= "<a class=\"title col-md-2 col-xs-3 load_group\" onclick='load_group(" . $value[1] . ")'>";
+                        $html .= $value[0] . "</a>";
+                        break;
+                }
+                $val = round(($value[3] / $max) * 100);
+                $html .= "<div class=\"col-md-10 col-xs-9\"><div class=\"progress \"><div class=\"progress-bar\" role=\"progressbar\" aria-valuenow=\"" . $val . "\" aria-valuemin=\"0\" aria-valuemax=\"100\" style=\"width: " . $val . "%;\">" . $value[3] . "</div></div></div></div>";
             }
-            $val = round(($value[3] / $max) * 100);
-            $html .= "<div class=\"col-md-10\"><div class=\"progress \"><div class=\"progress-bar\" role=\"progressbar\" aria-valuenow=\"" . $val . "\" aria-valuemin=\"0\" aria-valuemax=\"100\" style=\"width: " . $val . "%;\">" . $value[3] . "</div></div></div></div>";
+            return $html;
+        } else {
+            return "<div class=\"row text-center\"><h2>Данных нет</h2></div>";
         }
-        return $html;
     }
 
     public function getViewType($get)
@@ -108,10 +114,10 @@ class SiteService
                 $header .= " в гостях у Аксиньи";
                 break;
             case 'group':
-                $header = "<a href='".PATH_TO_SITE."'><img class=\"logo\" src=\"/img/logo.png\" alt=\"Axenia's logo\"></a>Аксинья в группе «" . $this->db->getGroupName($get['group_id']) . "»";
+                $header = "<a href='" . PATH_TO_SITE . "'><img class=\"logo\" src=\"/img/logo.png\" alt=\"Axenia's logo\"></a>Аксинья в группе «" . $this->db->getGroupName($get['group_id']) . "»";
                 break;
             case 'stat':
-                $header = "<a href='".PATH_TO_SITE."'><img class=\"logo\" src=\"/img/logo.png\" alt=\"Axenia's logo\"></a>" . $get['username'] . " в гостях у Аксиньи";
+                $header = "<a href='" . PATH_TO_SITE . "'><img class=\"logo\" src=\"/img/logo.png\" alt=\"Axenia's logo\"></a>" . $get['username'] . " в гостях у Аксиньи";
                 break;
         }
         return $header;

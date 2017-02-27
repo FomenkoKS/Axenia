@@ -172,13 +172,12 @@ hr.small {
     padding-bottom: 130px;
 }
 footer {
-    padding: 20px 0;
     color: #fff;
-    background-color: rgba(92, 80, 155, 0.4);
     bottom:0;
     position: fixed;
     height:115px;
     width: 100%;
+    background-image: url(../img/pattern.png);
 }
 footer a{
     color:white;
@@ -230,4 +229,8 @@ img.logo {
     width: 128px;
     background-size: 128px 128px;
     margin:10px;
+}
+
+.progress {
+    background-color: #d2d2d2;
 }

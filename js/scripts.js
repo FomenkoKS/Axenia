@@ -41,16 +41,21 @@ $(document).ready(function () {
                     numbers = JSON.parse(numbers);
                     numbers.forEach(function (item) {
                         var text;
+                        var div;
                         switch (type) {
                             case "user":
-                                text = item[2] + " " + item[3];
-                                if (item[1].length > 0)text += " <b>(@" + item[1] + ")</b>";
+                                text = item[1] + " " + item[2];
+                                if (item[1].length > 0) {
+                                    text += " <b>(@" + item[3] + ")</b>"
+                                }
+                                div = "<div class='suggest load_user' onclick='load_user(" + item[0] + ", \""+item[3]+"\")'>" + text + "</div>";
                                 break;
                             case "group":
                                 text = item[1];
+                                div = "<div class='suggest load_group' onclick='load_group(" + item[0] + ", \""+item[1]+"\")'>" + text + "</div>";
                                 break;
                         }
-                        $("#suggestions").append("<div class='suggest load_" + type + "' onclick='load_" + type + "(" + item[0] + ")'>" + text + "</div>");
+                        $("#suggestions").append(div);
                     });
                 });
         } else {
@@ -62,14 +67,17 @@ $(document).ready(function () {
         var searchBtn = $("#search_btn");
         searchBtn.val($(this).index());
         searchBtn.text($(this).text());
+        $('#searchline').focus();
+        $('#search-button').removeClass('open');
         return false;
     });
 
     $('.reward').tooltip();
 });
 
-function load_group(id) {
+function load_group(id, text) {
     $("#suggestions").hide();
+    $('#searchline').val(text);
     $.ajax({
         url: './group_view.php?group_id=' + id,
         complete: function (response) {
@@ -79,8 +87,9 @@ function load_group(id) {
     return false;
 }
 
-function load_user(id) {
+function load_user(id, text) {
     $("#suggestions").hide();
+    $('#searchline').val(text);
     $.ajax({
         url: './user_view.php?user_id=' + id,
         complete: function (response) {

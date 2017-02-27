@@ -54,7 +54,7 @@ $type = $site->getViewType($_GET);
                                         value="0">
                                     Пользователя
                                 </button>
-                                <ul class="dropdown-menu">
+                                <ul class="dropdown-menu" id="dropTypes">
                                     <li><a href="#">Пользователя</a></li>
                                     <li><a href="#">Группу</a></li>
                                 </ul>
@@ -78,16 +78,16 @@ $type = $site->getViewType($_GET);
     </div>
 </section>
 <footer>
-    <div class="container">
-        <div class="row">
-            <div class="col-md-3">
+    <div class="container" style="background-color: rgba(92, 80, 155, 0.4);">
+        <div class="row" style="padding: 20px 0;">
+            <div class="col-md-6 col-xs-6">
                 <button class="btn btn-sm btn-dark" data-toggle="modal" data-target="#myModal" id="for_food">
                     Пожертвовать на проект
                 </button>
                 <p>Написать автору <strong class="tg_user wrote">abrikos</strong><br><a
                         href="https://telegram.me/storebot?start=Axenia_bot">Оставить отзыв</a></p>
             </div>
-            <div class="col-md-2 col-md-offset-7 text-right">
+            <div class="col-md-6 col-xs-6 text-right">
                 <strong>Добавить к себе:</strong>
                 <ul class="list-unstyled">
                     <li class="tg_user add_to_group">Axenia_Bot</li>
