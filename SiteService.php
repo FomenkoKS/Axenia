@@ -111,13 +111,13 @@ class SiteService
                 $user_id = isset($get['user_id']) ? $get['user_id'] : $this->db->getUserID($get['username']);
                 $header = "<div class='user_photo img-circle' style='background-image:url(users/" . $user_id . ".jpg)'></div>";
                 $header .= isset($get['username']) ? $get['username'] : $this->db->getUserName($user_id);
-                $header .= " в гостях у Аксиньи";
+                $header .= " в гостях у Аксиньи, карма бота Telegram";
                 break;
             case 'group':
-                $header = "<a href='" . PATH_TO_SITE . "'><img class=\"logo\" src=\"/img/logo.png\" alt=\"Axenia's logo\"></a>Аксинья в группе «" . $this->db->getGroupName($get['group_id']) . "»";
+                $header = "<a href='" . PATH_TO_SITE . "'><img class=\"logo\" src=\"/img/logo.png\" alt=\"Axenia's logo\"></a>Карма бот Аксинья в группе «" . $this->db->getGroupName($get['group_id']) . "»";
                 break;
             case 'stat':
-                $header = "<a href='" . PATH_TO_SITE . "'><img class=\"logo\" src=\"/img/logo.png\" alt=\"Axenia's logo\"></a>" . $get['username'] . " в гостях у Аксиньи";
+                $header = "<a href='" . PATH_TO_SITE . "'><img class=\"logo\" src=\"/img/logo.png\" alt=\"Axenia's logo\"></a>" . $get['username'] . " в гостях у Аксиньи, карма бота Telegram";
                 break;
         }
         return $header;
@@ -173,10 +173,10 @@ class SiteService
         $html = "<ul class=\"list-unstyled\">";
 
         $num = $this->db->getCountAllKarma();
-        $html .= "<li>В кармохранилище содержится " . round($num, 1) . " кармы.</li>";
+        $html .= "<li>В кармохранилище Аксиньи содержится " . round($num, 1) . " кармы.</li>";
 
         $num = $this->db->getCountUsers();
-        $html .= "<li>Аксинья знает " . $num . " человек";
+        $html .= "<li>Она знает " . $num . " человек";
         if ($num % 10 == 1 && $num % 100 <> 11) $html .= "а";
         $html .= ",</li>";
 

@@ -10,13 +10,13 @@ $type = $site->getViewType($_GET);
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="description" content="Портал для анализа кармы тётушки Аксиньи - карма-бота Telegram">
+    <meta name="description" content="Портал для анализа кармы бота Аксиньи - карма-бота Telegram">
     <meta name="author" content="Fomenko C.S.">
     <link rel="image_src" href="<? echo PATH_TO_SITE; ?>img/logo.png"/>
-    <meta property="og:title" content="Аксинья. Карма-бот Telegram">
+    <meta property="og:title" content="Карма бот Аксинья">
     <meta property="og:image" content="<? echo PATH_TO_SITE; ?>img/logo.png">
-    <meta property="og:site_name" content="Axenia Telegram Bot">
-    <meta property="og:description" content="Портал для анализа кармы тётушки Аксиньи - карма-бота Telegram">
+    <meta property="og:site_name" content="Axenia Telegram Karma Bot">
+    <meta property="og:description" content="Портал для анализа кармы бота Аксиньи - карма-бота Telegram">
     <title><? echo strip_tags($site->createHeaderView($type, $_GET)); ?></title>
     <link rel="icon" type="image/png" href="img/favicon.png"/>
     <link href="css/bootstrap.min.css" rel="stylesheet">
