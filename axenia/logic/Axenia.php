@@ -159,7 +159,7 @@ class Axenia
                             Request::sendTyping($chat_id);
                             $ok = false;
                             do {
-                                $message = Request::exec("forwardMessage", array('chat_id' => TRASH_CHAT_ID, "from_chat_id" => "@rgonewild", "disable_notification" => true, "message_id" => rand(1, 15096)));
+                                $message = Request::exec("forwardMessage", array('chat_id' => TRASH_CHAT_ID, "from_chat_id" => "@rgonewild", "disable_notification" => true, "message_id" => rand(1, 20000)));
                                 if ($message !== false && isset($message['photo'])) {
                                     $array = $message['photo'];
                                     $file_id = $array[0]['file_id'];
