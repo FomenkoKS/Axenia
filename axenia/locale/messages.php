@@ -111,9 +111,9 @@ Also I understand messages in format like \"+ @username\" and etc.\r\n
         ),
     "user.stat.membership" =>
         array(
-            "en" => "Membership: ",
-            "ru" => "Состоит в группах: ",
-            "ruUN" => "Заседает в группах: "
+            "en" => "Has karma points in: ",
+            "ru" => "Имеет карму в: ",
+            "ruUN" => "Имеет карму в: "
         ),
     "user.stat.rewards" =>
         array(
