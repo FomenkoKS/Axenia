@@ -138,7 +138,7 @@ class Axenia
                         if ($isPrivate) {
                             Request::sendTyping($chat_id);
                             Request::sendHtmlMessage($chat_id, Lang::message('chat.greetings'));
-                            Request::sendHtmlMessage($chat_id, Lang::message('user.pickChat'));
+                            Request::sendHtmlMessage($chat_id, Lang::message('user.pickChat', ["botName"=> BOT_NAME]));
                         } else {
                             $this->service->rememberChat($chat, $from_id);
                             Request::sendHtmlMessage($chat_id, Lang::message('bot.start'));
