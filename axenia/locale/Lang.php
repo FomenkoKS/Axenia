@@ -9,7 +9,7 @@ class Lang
     public static function availableLangs()
     {
         if (!isset(self::$availableLangs)) {
-            self::$availableLangs = array("en" => '🇬🇧 English', "ru" => '🇷🇺 Русский', "ruUN" => '🔞 Русский (матерный)');
+            self::$availableLangs = ["en" => '🇬🇧 English', "ru" => '🇷🇺 Русский', "ruUN" => '🔞 Русский (матерный)'];
         }
 
         return self::$availableLangs;
@@ -32,9 +32,7 @@ class Lang
     public static function init($lang = "ru")
     {
         self::availableLangs();
-        if (!isset(self::$messageArray)) {
-            self::$messageArray = include 'messages.php';
-        }
+        self::loadMessages();
         self::$currentLang = $lang;
     }
 
@@ -45,9 +43,7 @@ class Lang
 
     public static function message($modificator, $param = NULL)
     {
-        if (!isset(self::$messageArray)) {
-            self::$messageArray = include 'messages.php';
-        }
+        self::loadMessages();
 
         $out = self::$messageArray[$modificator][isset(self::$currentLang) ? self::$currentLang : self::defaultLangKey()];
 
@@ -56,13 +52,19 @@ class Lang
 
     public static function messageRu($modificator, $param = NULL)
     {
-        if (!isset(self::$messageArray)) {
-            self::$messageArray = include 'messages.php';
-        }
+        self::loadMessages();
 
         $out = self::$messageArray[$modificator]["ru"];
 
         return $param != NULL ? Util::insert($out, $param) : $out;
+    }
+
+    public static function loadMessages()
+    {
+        if (!isset(self::$messageArray)) {
+            self::$messageArray = include 'messages.php';
+            //self::$messageArray = parse_ini_file("messages.ini", true);
+        }
     }
 
 }

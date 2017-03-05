@@ -99,29 +99,31 @@ class Util
         return self::getFullNameUser($user) . "[" . $user["id"] . "]";
     }
 
-    public static function getFullNameUser($user)
+    public static function getFullNameUser($user, $isFull = true)
     {
         $username = isset($user['username']) ? $user['username'] : '';
         $first = isset($user['first_name']) ? $user['first_name'] : '';
         $last = isset($user['last_name']) ? $user['last_name'] : '';
 
-        return self::getFullName($username, $first, $last);
+        return self::getFullName($username, $first, $last, $isFull);
     }
 
-    public static function getFullName($username, $first, $last)
+    public static function getFullName($username, $first, $last, $isFull = true)
     {
         $map = array($username, $first, $last);
 
         $out = '';
         if (self::isNotEmpty($username)) {
             $out .= ':0';
-            if (self::isNotEmpty($first) && self::isNotEmpty($last)) {
-                $out .= ' (:1 :2)';
-            } else {
-                if (self::isNotEmpty($first)) {
-                    $out .= ' (:1)';
-                } elseif (self::isNotEmpty($last)) {
-                    $out .= ' (:2)';
+            if ($isFull) {
+                if (self::isNotEmpty($first) && self::isNotEmpty($last)) {
+                    $out .= ' (:1 :2)';
+                } else {
+                    if (self::isNotEmpty($first)) {
+                        $out .= ' (:1)';
+                    } elseif (self::isNotEmpty($last)) {
+                        $out .= ' (:2)';
+                    }
                 }
             }
         } else {
@@ -148,7 +150,7 @@ class Util
         if (isset($chat["username"])) {
             $out = "<a href='telegram.me/" . $chat["username"] . "'>" . $chat["title"] . "</a>";
         } else {
-            $out = "<b>".$chat["title"]."</b>";
+            $out = "<b>" . $chat["title"] . "</b>";
         }
 
         return $out;

@@ -185,7 +185,7 @@ class Axenia
                     $this->service->setBotPresentedInChat($chat_id, true);
                     if ($isRemembered !== false) {
                         if (defined('LOG_CHAT_ID')) {
-                            Request::sendHtmlMessage(LOG_CHAT_ID, " ❗ " . Request::getChatMembersCount($chat_id) . "|" . $this->service->getChatMembersCount($chat_id) . " (" . Util::getChatLink($chat) . ")");
+                            Request::sendHtmlMessage(LOG_CHAT_ID, " 🌝 " . Request::getChatMembersCount($chat_id) . "|" . $this->service->getChatMembersCount($chat_id) . " (" . Util::getChatLink($chat) . ") by ". Util::getFullNameUser($from, false));
                         }
                         Request::sendMessage($chat_id, Lang::message('chat.greetings'), array("parse_mode" => "Markdown"));
                     }
@@ -200,7 +200,7 @@ class Axenia
                     //$isDeleted = $this->service->deleteChat($chat_id);
                     $this->service->setBotPresentedInChat($chat_id, false);
                     if (defined('LOG_CHAT_ID')) {
-                        Request::sendHtmlMessage(LOG_CHAT_ID, " ❕ -1|" . $this->service->getChatMembersCount($chat_id) . " (" . Util::getChatLink($chat) . ")");
+                        Request::sendHtmlMessage(LOG_CHAT_ID, " 🌚 -1|" . $this->service->getChatMembersCount($chat_id) . " (" . Util::getChatLink($chat) . ") by ". Util::getFullNameUser($from, false));
                     }
                 }
             }

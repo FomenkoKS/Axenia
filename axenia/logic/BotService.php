@@ -72,7 +72,7 @@ class BotService
             foreach ($a as $user) {
                 $userObj = ["id" => $user[0], "first_name" => $user[1],"last_name" => $user[2],"username" => $user[3]];
                 $userTitle = Util::getFullNameUser($userObj);
-                $text = Lang::message("user.stat.inline", array("user" => '👤' . $userTitle));
+                $text = Lang::message("user.stat.inline", array("user" => $userTitle));
                 array_push($stack, array('type' => 'article', 'id' => uniqid(), 'title' => $text, 'message_text' => $this->getStats($userObj), 'parse_mode' => 'HTML', 'disable_web_page_preview' => true));
             }
 
@@ -82,22 +82,18 @@ class BotService
         return false;
     }
 
-    //🔮Наебашил кармы: 3829
-    //📊Место в рейтинге: 30
-    //👥Заседает в группах: Axenia.Development, Perm Friends (http://telegram.me/permchat), Брейкинг Ньюс, КОРТ, НАШ ЧАТ, Плио, Флудиляторная
-    //🏅Медальки: Кармодрочер x3, Карманьяк x3, Кармонстр x2,
     public function getStats($from, $chat_id = NULL)
     {
         $from_id = $from['id'];
         $res =
             Lang::message("user.stat.title") . "\r\n\r\n" .
             Lang::message("user.stat.name") . Util::getFullNameUser($from) . "\r\n" .
-            ($chat_id == NULL ? "" : ('📍 ' . Lang::message("user.stat.inchat") . $this->getUserLevel($from_id, $chat_id) . "\r\n")) .
-            '🔮 ' . Lang::message("user.stat.sum") . round($this->db->SumKarma($from_id), 0) . "\r\n" .
-            '📊 ' . Lang::message("user.stat.place") . $this->db->UsersPlace($from_id) . "\r\n" .
-            '👥 ' . Lang::message("user.stat.membership") . implode(", ", $this->getUserGroup($from_id)) . "\r\n";
+            ($chat_id == NULL ? "" : (Lang::message("user.stat.inchat") . $this->getUserLevel($from_id, $chat_id) . "\r\n")) .
+            Lang::message("user.stat.sum") . round($this->db->SumKarma($from_id), 0) . "\r\n" .
+            Lang::message("user.stat.place") . $this->db->UsersPlace($from_id) . "\r\n" .
+            Lang::message("user.stat.membership") . implode(", ", $this->getUserGroup($from_id)) . "\r\n";
         if ($a = $this->getAllUserRewards($from_id)) {
-            $res .= '🏅 ' . Lang::message("user.stat.rewards") . implode(", ", $a);
+            $res .= Lang::message("user.stat.rewards") . implode(", ", $a);
         }
 
         return $res;
