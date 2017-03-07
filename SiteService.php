@@ -182,8 +182,8 @@ class SiteService
         $html = "<ul class=\"list-unstyled\">";
 
         $num = $count["karmas"];
-        $karmas = round($num, 1);
-        $html .= "<li>В кармохранилище Аксиньи содержится " . $karmas . $this->wrapCount($karmas, round($before["karmas"], 1)). " кармы.</li>";
+        $karmas = round($num, 0);
+        $html .= "<li>В кармохранилище Аксиньи содержится " . $karmas . $this->wrapCount($karmas, round($before["karmas"], 0)). " кармы.</li>";
 
         $num = $count["users"];
         $html .= "<li>Она знает " . $num . $this->wrapCount($num, $before["users"]). " человек";
@@ -215,13 +215,13 @@ class SiteService
             return "";
         }
         if ($raz > 0) {
-            return " <small title='Вчерашние данные'>(+" . $raz . ")</small>";
+            return " <sup title='Со вчера'><small>(+" . $raz . ")</small></sup>";
         }
         if ($raz < 0) {
-            return " <small title='Вчерашние данные'>(-" . $raz . ")</small>";
+            return " <sup title='Со вчера'><small>(-" . $raz . ")</small></sup>";
         }
         if ($raz == 0) {
-            return " <small title='Вчерашние данные'>(0)</small>";
+            return " <sup title='Со вчера'><small>(0)</small></sup>";
         }
 
         return "";
