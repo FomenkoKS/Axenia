@@ -91,11 +91,38 @@ class SiteDao extends BotDao
           (
             SELECT c.title,k.chat_id,sum(k.level) 
             FROM Karma k,Chats c 
-            WHERE c.id=k.chat_id 
+            WHERE c.id=k.chat_id and c.isPresented=1
             GROUP BY k.chat_id
           ) k2"
         );
         return !($res[0]) ? -1 : $res[0];
+    }
+
+    public function insertStats($counts)
+    {
+        $karmas = $counts["karmas"];
+        $users = $counts["users"];
+        $usernames = $counts["usernames"];
+        $negatives = $counts["negatives"];
+        $positives = $counts["positives"];
+        $groups = $counts["groups"];
+
+        $query = "
+            INSERT INTO Counts (date_getting, karmas, users, usernames, negatives, positives, groups) 
+            VALUES (DATE(now()),$karmas,$users,$usernames,$negatives,$positives,$groups)";
+
+        return $this->insert($query);
+    }
+
+    public function getStatsDayBefore()
+    {
+        $res = $this->select("
+            SELECT karmas, users, usernames, negatives, positives, groups
+            FROM Counts
+            WHERE date_getting = DATE(now()) - INTERVAL 1 DAY"
+        );
+
+        return $res;
     }
 
 }

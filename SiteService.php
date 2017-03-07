@@ -37,8 +37,10 @@ class SiteService
                 $html .= "<div class=\"reward col-xs-6 col-md-3 col-lg-2\" style=\"background-image: url('img/rewards/" . $item[0] . ".png')\" data-placement=\"bottom\" data-toggle=\"tooltip\" data-original-title=\"" . $item[1] . "(" . $item[2] . "). " . $item[3] . "\"></div>";
             }
             $html .= "<script>$('.reward').tooltip();</script>";
+
             return $html;
         }
+
         return "";
     }
 
@@ -79,6 +81,7 @@ class SiteService
                 $val = round(($value[3] / $max) * 100);
                 $html .= "<div class=\"col-md-10 col-xs-9\"><div class=\"progress \"><div class=\"progress-bar\" role=\"progressbar\" aria-valuenow=\"" . $val . "\" aria-valuemin=\"0\" aria-valuemax=\"100\" style=\"width: " . $val . "%;\">" . $value[3] . "</div></div></div></div>";
             }
+
             return $html;
         } else {
             return "<div class=\"row text-center\"><h2>Данных нет</h2></div>";
@@ -101,6 +104,7 @@ class SiteService
                 $type = "stat";
                 break;
         }
+
         return $type;
     }
 
@@ -120,6 +124,7 @@ class SiteService
                 $header = "<a href='" . PATH_TO_SITE . "'><img class=\"logo\" src=\"/img/logo.png\" alt=\"Axenia's logo\"></a>" . $get['username'] . " в гостях у Аксиньи, карма бота Telegram";
                 break;
         }
+
         return $header;
     }
 
@@ -149,6 +154,7 @@ class SiteService
                 $this->db->updateUserPhoto($user_id, $photo_id);
             }
         }
+
         return $user_id;
     }
 
@@ -170,38 +176,113 @@ class SiteService
 
     public function createStatsView()
     {
+        $count = $this->getStats();
+        $before = $this->getStatsBefore();
+
         $html = "<ul class=\"list-unstyled\">";
 
-        $num = $this->db->getCountAllKarma();
-        $html .= "<li>В кармохранилище Аксиньи содержится " . round($num, 1) . " кармы.</li>";
+        $num = $count["karmas"];
+        $karmas = round($num, 1);
+        $html .= "<li>В кармохранилище Аксиньи содержится " . $karmas . $this->wrapCount($karmas, round($before["karmas"], 1)). " кармы.</li>";
 
-        $num = $this->db->getCountUsers();
-        $html .= "<li>Она знает " . $num . " человек";
+        $num = $count["users"];
+        $html .= "<li>Она знает " . $num . $this->wrapCount($num, $before["users"]). " человек";
         if ($num % 10 == 1 && $num % 100 <> 11) $html .= "а";
         $html .= ",</li>";
 
-        $num = $this->db->getCountUsernames();
-        $html .= "<li>из них " . $num . " завели себе юзернейм.</li>";
+        $num = $count["usernames"];
+        $html .= "<li>из них " . $num . $this->wrapCount($num, $before["usernames"]). " завели себе юзернейм.</li>";
 
-        $num = $this->db->getCountKarmaNegative();
-        $html .= "<li>" . $num . " с отрицательной кармой,</li>";
+        $num = $count["negatives"];
+        $html .= "<li>" . $num . $this->wrapCount($num, $before["negatives"]). " с отрицательной кармой,</li>";
 
-        $num = $this->db->getCountKarmaPositive();
-        $html .= "<li>а " . $num . " — с положительной</li>";
+        $num = $count["positives"];
+        $html .= "<li>а " . $num . $this->wrapCount($num, $before["positives"]). " — с положительной</li>";
 
-        $num = $this->db->getCountGroups();
-        $html .= "<li>Аксинья сидит в " . $num . " ";
+        $num = $count["groups"];
+        $html .= "<li>Аксинья сидит в " . $num . $this->wrapCount($num, $before["groups"]). " ";
         $html .= ($num % 10 == 1 && $num % 100 <> 11) ? "группе" : "группах";
         $html .= ".</li>";
         $html .= "<li>И она рада тебе 😉</li></ul>";
+
         return $html;
     }
+
+    public function wrapCount($now, $before)
+    {
+        $raz = $now - $before;
+        if ($raz == $now) {
+            return "";
+        }
+        if ($raz > 0) {
+            return " <small title='Вчерашние данные'>(+" . $raz . ")</small>";
+        }
+        if ($raz < 0) {
+            return " <small title='Вчерашние данные'>(-" . $raz . ")</small>";
+        }
+        if ($raz == 0) {
+            return " <small title='Вчерашние данные'>(0)</small>";
+        }
+
+        return "";
+    }
+
+    public function getStats()
+    {
+        $count = [
+            "karmas" => $this->db->getCountAllKarma(),
+            "users" => $this->db->getCountUsers(),
+            "usernames" => $this->db->getCountUsernames(),
+            "negatives" => $this->db->getCountKarmaNegative(),
+            "positives" => $this->db->getCountKarmaPositive(),
+            "groups" => $this->db->getCountGroups(),
+        ];
+
+        return $count;
+    }
+
+    public function updateStats($count)
+    {
+        $res = $this->db->insertStats($count);
+        return $res;
+    }
+
+    public function getStatsBefore()
+    {
+        $res = $this->db->getStatsDayBefore();
+        if (count($res) > 0) {
+            $ar = array_chunk($res, 6);
+            //karmas, users, usernames, negatives, positives, groups
+            $count = [
+                "karmas" => $ar[0][0],
+                "users" => $ar[0][1],
+                "usernames" => $ar[0][2],
+                "negatives" => $ar[0][3],
+                "positives" => $ar[0][4],
+                "groups" => $ar[0][5],
+            ];
+        } else {
+            $count = [
+                "karmas" => 0,
+                "users" => 0,
+                "usernames" => 0,
+                "negatives" => 0,
+                "positives" => 0,
+                "groups" => 0,
+            ];
+        }
+
+        return $count;
+    }
+
+
 
     public function getUserListJson($postQuery)
     {
         $query = stripslashes($postQuery);
         $users = $this->db->getUsersByName($query, 5);
         $out = array_chunk($users, 4);
+
         return json_encode($out);
     }
 
@@ -210,6 +291,7 @@ class SiteService
         $query = stripslashes($postQuery);
         $groups = $this->db->getGroupsByName($query, 5);
         $out = array_chunk($groups, 2);
+
         return json_encode($out);
     }
 
