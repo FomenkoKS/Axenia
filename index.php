@@ -84,7 +84,7 @@ $type = $site->getViewType($_GET);
                 <button class="btn btn-sm btn-dark" data-toggle="modal" data-target="#myModal" id="for_food">
                     Пожертвовать на проект
                 </button>
-                <p>Написать автору <strong class="tg_user wrote">abrikos</strong><br><a
+                <p style="padding-top: 4px;" >Написать автору <strong class="tg_user wrote">abrikos</strong><br><a
                         href="https://telegram.me/storebot?start=Axenia_bot">Оставить отзыв</a></p>
             </div>
             <div class="col-md-6 col-xs-6 text-right">
