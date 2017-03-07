@@ -170,6 +170,7 @@ hr.small {
 #cnt{
     min-height: 50%;
     padding-bottom: 130px;
+    padding-top: 12px;
 }
 footer {
     color: #fff;
