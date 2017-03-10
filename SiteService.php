@@ -218,7 +218,7 @@ class SiteService
             return " <sup title='Со вчера'><small>(+" . $raz . ")</small></sup>";
         }
         if ($raz < 0) {
-            return " <sup title='Со вчера'><small>(-" . $raz . ")</small></sup>";
+            return " <sup title='Со вчера'><small>(" . $raz . ")</small></sup>";
         }
         if ($raz == 0) {
             return " <sup title='Со вчера'><small>(0)</small></sup>";
