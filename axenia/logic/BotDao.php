@@ -130,9 +130,9 @@ class BotDao extends AbstractDao
         $username = $this->clearForInsert($username);
 
         $query = "
-            INSERT INTO Chats(id, title,username) 
-            VALUES($chat_id, $title,$username) 
-            ON DUPLICATE KEY UPDATE title = $title,username=$username
+            INSERT INTO Chats(id, title,username, date_add, date_remove) 
+            VALUES($chat_id, $title,$username, now(), null) 
+            ON DUPLICATE KEY UPDATE title = $title,username=$username, date_remove=null
         ";
 
         return $this->insert($query);
@@ -210,7 +210,7 @@ class BotDao extends AbstractDao
 
     public function setPresented($chat_id, $isPresented)
     {
-        return $this->update("UPDATE Chats SET isPresented = " . (($isPresented) ? 1 : 0) . " WHERE id=" . $chat_id);
+        return $this->update("UPDATE Chats SET isPresented = " . (($isPresented) ? 1 : 0) . ", date_remove = ".(($isPresented) ? "null" : "now()")." WHERE id=" . $chat_id);
     }
 
 //endregion
