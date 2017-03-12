@@ -213,6 +213,13 @@ class BotDao extends AbstractDao
         return $this->update("UPDATE Chats SET isPresented = " . (($isPresented) ? 1 : 0) . ", date_remove = ".(($isPresented) ? "null" : "now()")." WHERE id=" . $chat_id);
     }
 
+    public function changeChatIdIn($newChatId, $oldChatId)
+    {
+        $query = "UPDATE Chats SET id=" . $newChatId . " WHERE id = " . $oldChatId;
+
+        return $this->update($query);
+    }
+
 //endregion
 
 // region -------------------- Admins
@@ -361,6 +368,14 @@ class BotDao extends AbstractDao
         return $this->delete($query);
     }
 
+    public function changeChatIdInKarma($newChatId, $oldChatId)
+    {
+        $query = "UPDATE Karma SET chat_id=" . $newChatId . " WHERE chat_id = " . $oldChatId;
+
+        return $this->update($query);
+    }
+
+
 //endregion
 
 //region -------------------- Rewards
@@ -434,6 +449,13 @@ class BotDao extends AbstractDao
         $query = "DELETE FROM Rewards WHERE group_id = " . $chatId;
 
         return $this->delete($query);
+    }
+
+    public function changeChatIdInRewards($newChatId, $oldChatId)
+    {
+        $query = "UPDATE Rewards SET group_id=" . $newChatId . " WHERE group_id = " . $oldChatId;
+
+        return $this->update($query);
     }
 
 //endregion

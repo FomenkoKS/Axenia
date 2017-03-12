@@ -287,6 +287,15 @@ class BotService
         return $this->db->setPresented($chat_id, $isPresented);
     }
 
+    public function migrateToNewChatId($newChatId, $oldChatId)
+    {
+        $rewards = $this->db->changeChatIdInRewards($newChatId, $oldChatId);
+        $karmas = $this->db->changeChatIdInKarma($newChatId, $oldChatId);
+        $chats = $this->db->changeChatIdIn($newChatId, $oldChatId);
+
+        return $chats && $karmas && $rewards;
+    }
+
 
 //endregion
 
@@ -353,6 +362,7 @@ class BotService
     }
 
     public function checkCoolDown($from_id, $chat){
+        // TODO Время учитывается только если будет удачное голосование, если не удачное то кулдуан не срабаывает. НАдо подумать
         $chat_id = $chat['id'];
         if ($this->isGroup($chat) && $this->db->isCooldown($from_id, $chat_id)) {
             if(!$this->db->getTooFastShowed($from_id, $chat_id)) {

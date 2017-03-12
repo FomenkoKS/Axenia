@@ -46,7 +46,7 @@ class Axenia
             if (isset($message['sticker'])) {
                 return Util::startsWith($message['sticker']['emoji'], ['👍', '👎']);
             }
-            if (isset($message['new_chat_member']) || isset($message['new_chat_title']) || isset($message['left_chat_member'])) {
+            if (isset($message['new_chat_member']) || isset($message['new_chat_title']) || isset($message['left_chat_member']) || isset($message['migrate_to_chat_id'])) {
                 return true;
             }
         }
@@ -97,7 +97,11 @@ class Axenia
                                             if (BOT_NAME != $user[1] && !$this->service->isBot($user[1])) {
                                                 $to = $this->service->getUserID($user[1]);
                                                 if ($to) {
-                                                    $this->doKarmaAction($isRise, $from_id, $to, $chat_id);
+                                                    if(Request::isChatMember($to, $chat_id)){
+                                                        $this->doKarmaAction($isRise, $from_id, $to, $chat_id);
+                                                    } else {
+                                                        Request::sendHtmlMessage($chat_id, Lang::message('karma.unknownUser.kicked'), ['reply_to_message_id' => $message_id]);
+                                                    }
                                                 } else {
                                                     Request::sendHtmlMessage($chat_id, Lang::message('karma.unknownUser'), ['reply_to_message_id' => $message_id]);
                                                 }
@@ -159,7 +163,7 @@ class Axenia
                             Request::sendTyping($chat_id);
                             $ok = false;
                             do {
-                                $message = Request::exec("forwardMessage", array('chat_id' => TRASH_CHAT_ID, "from_chat_id" => "@rgonewild", "disable_notification" => true, "message_id" => rand(1, 20000)));
+                                $message = Request::exec("forwardMessage", array('chat_id' => TRASH_CHAT_ID, "from_chat_id" => "@rgonewild", "disable_notification" => true, "message_id" => rand(1, 21363)));
                                 if ($message !== false && isset($message['photo'])) {
                                     $array = $message['photo'];
                                     $file_id = $array[0]['file_id'];
@@ -187,7 +191,7 @@ class Axenia
                         if (defined('LOG_CHAT_ID')) {
                             Request::sendHtmlMessage(LOG_CHAT_ID, " 🌝 " . Request::getChatMembersCount($chat_id) . "|" . $this->service->getChatMembersCount($chat_id) . " (" . Util::getChatLink($chat) . ") by ". Util::getFullNameUser($from, false));
                         }
-                        Request::sendMessage($chat_id, Lang::message('chat.greetings'), array("parse_mode" => "Markdown"));
+                        Request::sendMessage($chat_id, Lang::message('chat.greetings'), ["parse_mode" => "Markdown"]);
                     }
                 }
                 // убрал пока
@@ -202,6 +206,11 @@ class Axenia
                     if (defined('LOG_CHAT_ID')) {
                         Request::sendHtmlMessage(LOG_CHAT_ID, " 🌚 -1|" . $this->service->getChatMembersCount($chat_id) . " (" . Util::getChatLink($chat) . ") by ". Util::getFullNameUser($from, false));
                     }
+                }
+            } elseif (isset($message['migrate_to_chat_id'])) {
+                $rez = $this->service->migrateToNewChatId($message['migrate_to_chat_id'], $chat_id);
+                if (defined('LOG_CHAT_ID')) {
+                    Request::sendHtmlMessage(LOG_CHAT_ID, "Migration from " . $chat_id . " to " . $message['migrate_to_chat_id'] ." was " . ($rez? "successful" : "UNsuccessful") );
                 }
             }
         }

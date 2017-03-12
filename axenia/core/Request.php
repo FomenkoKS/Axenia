@@ -261,13 +261,23 @@ class Request
         return self::execJson("getChatMember", $data);
     }
 
+    public static function isChatMember($user_id, $chat_id)
+    {
+        //The member's status in the chat. Can be “creator”, “administrator”, “member”, “left” or “kicked”
+        $chatMember = self::getChatMember($user_id, $chat_id);
+        if (isset($chatMember['status'])) {
+            return !Util::isInEnum('left,kicked', $chatMember['status']);
+        }
+        return false;
+    }
+
     public static function getChatMembersCount($chat_id)
     {
         $data = array('chat_id' => $chat_id);
         $response = 0;
-        try{
+        try {
             $response = self::execJson("getChatMembersCount", $data);
-        } catch (Exception $error){
+        } catch (Exception $error) {
             $response = -1;
         }
         return $response ? $response : -1;
