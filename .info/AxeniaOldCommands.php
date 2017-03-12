@@ -82,6 +82,37 @@
 //                        }
 //                        break;
 
+//case Util::startsWith($text, ("/qqq")):
+//                        if (Util::isInEnum(ADMIN_IDS, $from_id) && QQQ == 1) {
+//                            Request::sendTyping($chat_id);
+//                            $arr = '';
+//                            $count = 0;
+//                            $groups_id = [];
+//                            foreach ($groups_id as $id) {
+//                                $isStealInChat = Request::sendTyping($id);
+//                                if ($isStealInChat['error_code'] == '400') {
+//                                    $arr = $arr . $id . ",";
+//                                }
+//                                $count++;
+//                                sleep(1);
+//                                if(($count%5)==0){
+//                                    Request::sendMessage($from_id, $count);
+//                                }
+//                            }
+//                            Request::sendMessage($from_id, "Itog\r\n\r\n".$arr);
+//                        }
+//                        break;
+
+//START TRANSACTION;
+//SET @chatid := '-1,-2,';
+//DELETE FROM Rewards
+//WHERE FIND_IN_SET(group_id,@chatid);
+//DELETE FROM Karma
+//WHERE FIND_IN_SET(chat_id,@chatid);
+//DELETE FROM Chats
+//WHERE FIND_IN_SET(id,@chatid);
+//COMMIT;
+
 /*case preg_match('/^\/getAdmins/ui', $text, $matches):
 Request::sendMessage($chat_id, $this->service->isAdminInChat($from_id, $chat));
 $admins = Request::getChatAdministrators($chat_id);
