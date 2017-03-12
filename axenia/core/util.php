@@ -102,8 +102,8 @@ class Util
     public static function getFullNameUser($user, $isFull = true)
     {
         $username = isset($user['username']) ? $user['username'] : '';
-        $first = isset($user['first_name']) ? $user['first_name'] : '';
-        $last = isset($user['last_name']) ? $user['last_name'] : '';
+        $first = isset($user['first_name']) ? $user['first_name'] : (isset($user['firstname']) ? $user['firstname'] : '');
+        $last = isset($user['last_name']) ? $user['last_name'] : (isset($user['lastname']) ? $user['lastname'] : '');
 
         return self::getFullName($username, $first, $last, $isFull);
     }

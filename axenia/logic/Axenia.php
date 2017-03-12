@@ -230,6 +230,11 @@ class Axenia
                     foreach ($rewardMessages as $msg) {
                         Request::sendHtmlMessage($chat_id, $msg);
                     }
+                    if ($user = $this->service->getUser($user_id)) {
+                        sleep(2);
+                        $username = Util::getFullNameUser($user, false);
+                        Request::sendHtmlMessage($chat_id, Lang::message('bot.rating', ['user' => $username, 'botName' => BOT_NAME]));
+                    }
                 }
             }
         }

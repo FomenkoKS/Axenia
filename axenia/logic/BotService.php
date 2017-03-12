@@ -63,6 +63,11 @@ class BotService
         return $this->db->getUserName($id);
     }
 
+    public function getUser($user_id)
+    {
+        return $this->db->getUser($user_id);
+    }
+
     public function getUserList($query)
     {
         $users = $this->db->getUsersByName($query, 10);
