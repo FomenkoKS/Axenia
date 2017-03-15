@@ -22,8 +22,8 @@ class BotDao extends AbstractDao
         $firstname = Util::wrapQuotes(isset($user['first_name']) ? $this->escape_mimic($user['first_name']) : '');
         $lastname = Util::wrapQuotes(isset($user['last_name']) ? $this->escape_mimic($user['last_name']) : '');
         $query = "
-            INSERT INTO Users (id, username, firstname, lastname) 
-            VALUES ($user_id,$username,$firstname,$lastname) 
+            INSERT INTO Users (id, username, firstname, lastname, date_added) 
+            VALUES ($user_id,$username,$firstname,$lastname, now()) 
             ON DUPLICATE KEY UPDATE username=$username, firstname=$firstname, lastname=$lastname, last_updated=now()
         ";
 

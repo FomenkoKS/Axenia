@@ -210,7 +210,7 @@ class Axenia
             } elseif (isset($message['migrate_to_chat_id'])) {
                 $rez = $this->service->migrateToNewChatId($message['migrate_to_chat_id'], $chat_id);
                 if (defined('LOG_CHAT_ID')) {
-                    Request::sendHtmlMessage(LOG_CHAT_ID, "Migration from " . $chat_id . " to " . $message['migrate_to_chat_id'] ." was " . ($rez? "successful" : "UNsuccessful") );
+                    Request::sendHtmlMessage(LOG_CHAT_ID, "Migration from " . $chat_id . " to " . $message['migrate_to_chat_id'] ." was " . ($rez? "successful" : "Unsuccessful") );
                 }
             }
         }
@@ -246,22 +246,20 @@ class Axenia
         $from = $inline['from'];
         $query = $inline['query'];
 
-        if (Util::isInEnum(ADMIN_IDS, $from['id'])) {
-            if (isset($query) && $query !== "") {
-                $users = $this->service->getUserList($query);
+        if (isset($query) && $query !== "") {
+            $users = $this->service->getUserList($query);
 
-                if ($users) {
-                    Request::answerInlineQuery($id, $users);
-                } else {
-                    Request::answerInlineQuery($id, [
-                        [
-                            "type" => "article",
-                            "id" => "0",
-                            "title" => Lang::message('chat.greetings'),
-                            "message_text" => Lang::message('chat.greetings')
-                        ]
-                    ]);
-                }
+            if ($users) {
+                Request::answerInlineQuery($id, $users);
+            } else {
+                Request::answerInlineQuery($id, [
+                    [
+                        "type" => "article",
+                        "id" => "0",
+                        "title" => Lang::message('chat.greetings'),
+                        "message_text" => Lang::message('chat.greetings')
+                    ]
+                ]);
             }
         }
     }
