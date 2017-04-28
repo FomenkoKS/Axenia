@@ -61,6 +61,11 @@ class BotDao extends AbstractDao
         return false;
     }
 
+    public function getRights($user_id){
+        $q="select * from Rights where user_id=".$user_id;
+        $res = $this->select($q);
+        return $res;
+    }
 //endregion
 
 // region -------------------- Lang
@@ -156,7 +161,7 @@ class BotDao extends AbstractDao
     public function getUserGroups($user_id)
     {
         $res = $this->select(
-            "SELECT c.title, c.username 
+            "SELECT c.title, c.username, c.id 
             FROM Chats c, Karma k 
             WHERE k.chat_id=c.id AND k.user_id=" . $user_id . " and c.isPresented=1
             ORDER BY c.title"
@@ -467,7 +472,23 @@ class BotDao extends AbstractDao
     }
 
 //endregion
+// region -------------------- Donate
+    public function getDonates()
+    {
+        $res = $this->select("SELECT id, nominal, price FROM Donates", false);
+        if ($res !== false) {
+            return $res;
+        }
+        return array();
+    }
 
+    public function insertBill($txn_id,$donate_id,$user_id)
+    {
+        $q="INSERT INTO Bills(txn_id,donate_id,user_id) 
+            VALUES('".$txn_id."',".$donate_id.",".$user_id.")";
+        return $this->insert($q);
+    }
+//endregion
 }
 
 

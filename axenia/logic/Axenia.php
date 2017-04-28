@@ -120,6 +120,19 @@ class Axenia
                             $this->sendStore($chat_id, $from);
                         }
                         break;
+                    case (Util::startsWith($text, "/donate" . $postfix)):
+                        if ($isPrivate) {
+                            //Прикроем пока Дуров донат не активирует, в рот я ебал этот забагованный киви.
+                            /*
+                            $button_list=[];
+                            foreach($this->service->getDonates() as $a){
+                                array_push($button_list, ['text' => Lang::message('donate.price', ['k' => $a['nominal'], 'r' => $a['price']]), 'callback_data' => 'donate_'.$a['id']]);
+                            }
+                            $text=Lang::message("donate.title");
+                            Request::sendHtmlMessage($from_id, $text, ["reply_markup" => ['inline_keyboard' => array_chunk($button_list,2)]]);
+                            */
+                        }
+                        break;
                     case (Util::startsWith($text, "/settings" . $postfix)):
                         Request::sendTyping($chat_id);
                         $this->sendSettings($chat, NULL, NULL, $this->service->isAdminInChat($from_id, $chat));
@@ -152,7 +165,7 @@ class Axenia
                         Request::sendHtmlMessage($chat_id, Lang::message('chat.help'));
                         break;
                     case Util::startsWith($text, ("/set @")):
-                        if (Util::isInEnum(ADMIN_IDS, $from_id)) {
+                        if ($this->service->CheckRights($from_id,5)) {
                             if (preg_match('/^(\/set) @([\w]+) (-?\d+)/ui ', $text, $matches)) {
                                 Request::sendMessage($from_id, $this->service->setLevelByUsername($matches[2], $chat_id, $matches[3]));
                             }
@@ -352,13 +365,28 @@ class Axenia
                 ];
                 $text = Lang::message('settings.select.lang');
                 break;
+            case "set_escapeFromGroup":
+                $a=$this->service->getUserGroup($chat_id,false);
+                $buttons=[];
+                foreach($a as $item){
+                    array_push($buttons,['text'=>explode(":",$item)[1],'callback_data'=>"escape_".explode(":",$item)[0]]);
+                }
+
+                $button_list=array_chunk($buttons,3);
+                $text = Lang::message('settings.unfollow.title');
+                break;
             default:
                 $text = Lang::message('settings.title') . "\r\n";
                 if ($this->service->isPrivate($chat)) {
                     $button_list = [
                         [
-                            ['text' => Lang::message('settings.button.lang'),
+                            [
+                                'text' => Lang::message('settings.button.lang'),
                                 'callback_data' => 'set_lang'
+                            ],
+                            [
+                                'text'  => Lang::message('settings.unfollow'),
+                                'callback_data' =>  'set_escapeFromGroup'
                             ]
                         ]
                     ];
@@ -415,7 +443,7 @@ class Axenia
                 }
                 $this->sendSettings($chat, $message, NULL);
             } else {
-                Request::answerCallbackQuery($callback['id'], Lang::message('settings.title'));
+                Request::answerCallbackQuery($callback['id'], Lang::message('settings.adminonly'));
             }
         } elseif (strpos($data, "buy_") !== false) {
             $data_array = explode('|', $data);
@@ -477,6 +505,46 @@ class Axenia
                 $this->sendSettings($chat, $message, $data);
             } else {
                 Request::answerCallbackQuery($callback['id'], Lang::message('settings.title'));
+            }
+        } elseif (strpos($data, "donate_") !== false) {
+
+            $donates = $this->service->getDonates();
+            foreach ($donates as $k => $a) if ($a['id'] == explode("_", $data)[1]) $key = $k;
+
+            $text = "https://bill.qiwi.com/order/external/create.action";
+            //$txn_id = substr(hash_hmac('sha256',  rand(1, 99999999), Date('d-m-Yhh-mm-ss')),1,16);
+
+            $txn_id = md5(Date('dmYhhmmss') . $chat_id);
+            $params = [
+                "from" => QIWI_API_ID,
+                "summ" => $donates[$key]['price'],
+                "currency" => "RUB",
+                "comm" => "Получение " . $donates[$key]['nominal'] . " печенек",
+                "txn_id" => $txn_id,
+                "iframe" => "true",
+                "successUrl" => 'http://' . $_SERVER['SERVER_NAME'] . '/success.php',
+                "lifetime" => date('Y-m-d', strtotime(date('Y-m-d') . " + 1 DAY")) . "T00:00:00",
+                "target" => "iframe"
+            ];
+            $url = $text . "?" . http_build_query($params);
+            $googer = new GoogleURLAPI(GOOGLE_API_KEY);
+            $shortDWName = $googer->shorten($url);
+            $text = Lang::message('donate.bill', ['nom' => $donates[$key]['nominal'], 'url' => $shortDWName]);
+            Request::editMessageText($chat_id, $message['message_id'], $text, ["parse_mode" => "HTML", "reply_markup" => ['inline_keyboard' => [[["text" => Lang::message("donate.pay"), "url" => $shortDWName]]]]]);
+            $this->service->insertBill($txn_id, $donates[$key]['id'], $chat_id);
+        } elseif (strpos($data, "escape_") !== false) {
+            $escape_chat_id=explode("_",$data)[1];
+            $escape_chat=$this->service->getGroupName($escape_chat_id);
+            if(strpos($data, "accept") !== false){
+                $this->service->deleteUserDataInChat($chat_id,$escape_chat_id);
+                $text = Lang::message('settings.unfollow.success',['chat_id' =>$escape_chat_id,'chat'=>$escape_chat]);
+                Request::editMessageText($chat_id, $message['message_id'], $text, ["parse_mode" => "HTML"]);
+            }elseif(strpos($data, "reject") !== false){
+                $text = Lang::message('settings.unfollow.cancel',['chat_id' =>$escape_chat_id,'chat'=>$escape_chat]);
+                Request::editMessageText($chat_id, $message['message_id'], $text, ["parse_mode" => "HTML"]);
+            }else{
+                $text = Lang::message('settings.unfollow.confirm',['chat_id' =>$escape_chat_id,'chat'=>$escape_chat]);
+                Request::editMessageText($chat_id, $message['message_id'], $text, ["parse_mode" => "HTML", "reply_markup" => ['inline_keyboard' => [[["text" => "✔️".Lang::message("confirm.yes"), "callback_data" => $data."_accept"],["text" => "❌".Lang::message("confirm.no"), "callback_data" => $data."_reject"]]]]]);
             }
         }
     }

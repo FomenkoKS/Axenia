@@ -104,13 +104,18 @@ class BotService
         return $res;
     }
 
-    public function getUserGroup($id)
+    public function getUserGroup($id,$links=true)
     {
         if ($a = $this->db->getUserGroups($id)) {
-            $a = array_chunk($a, 2);
+            $a = array_chunk($a, 3);
             $stack = array();
             foreach ($a as $value) {
-                array_push($stack, (empty($value[1])) ? $value[0] : "<a href='t.me/" . $value[1] . "'>" . $value[0] . "</a>");
+                if($links){
+                    array_push($stack, (empty($value[1])) ? $value[0] : "<a href='t.me/" . $value[1] . "'>" . $value[0] . "</a>");
+                }else{
+                    array_push($stack, $value[2].":".$value[0]);
+                }
+
             }
 
             return $stack;
@@ -122,6 +127,11 @@ class BotService
     public function isBot($username)
     {
         return Util::endsWith(strtolower($username), 'bot');
+    }
+
+    public function CheckRights($user_id,$type)
+    {
+        return $this->db->GetRights($user_id)[$type];
     }
 
 //endregion
@@ -522,7 +532,17 @@ class BotService
     }
 
 //endregion
+// region -------------------- Donate
+    public function getDonates()
+    {
+        return $this->db->getDonates();
+    }
 
+    public function insertBill($txn_id,$donate_id,$user_id)
+    {
+        return $this->db->insertBill($txn_id,$donate_id,$user_id);
+    }
+//endregion
 }
 
 ?>

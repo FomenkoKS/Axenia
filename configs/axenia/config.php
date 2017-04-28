@@ -12,3 +12,5 @@ define('PATH_TO_WEBHOOK', '');
 define('LOG_CHAT_ID', '');
 define('TRASH_CHAT_ID', '');
 define('DEFAULT_COOLDOWN', 1);
+define('QIWI_API_ID', '');
+define('GOOGLE_API_KEY', '');
