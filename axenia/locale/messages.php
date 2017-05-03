@@ -221,27 +221,27 @@ Please, give a rating for me ;) t.me/storebot?start=axenia_bot",
     "store.button.buy_tits" => [
         "en" => "*CENSORED*",
         "ru" => "*ЦЕНЗУРА*",
-        "ruUN" => "Сиськи 30"
+        "ruUN" => "Сиськи 50"
     ],
     "store.button.buy_butts" => [
         "en" => "*CENSORED*",
         "ru" => "*ЦЕНЗУРА*",
-        "ruUN" => "Булки 20"
+        "ruUN" => "Булки 40"
     ],
     "store.button.buy_cats" => [
-        "en" => "Kitty 10",
-        "ru" => "Котики 10",
-        "ruUN" => "Котэ 10"
+        "en" => "Kitty 30",
+        "ru" => "Котики 30",
+        "ruUN" => "Котэ 30"
     ],
-    "store.button.buy_jokes" => [
-        "en" => "Joke 10",
-        "ru" => "Шутки 10",
-        "ruUN" => "Лулзы 10"
+    "store.button.buy_bashorg" => [
+        "en" => "Bash.Im 10",
+        "ru" => "Bash.Im 10",
+        "ruUN" => "Bash.Im 10"
     ],
     "store.button.buy_gif" => [
-        "en" => "GIF 10",
-        "ru" => "Гифка 10",
-        "ruUN" => "Гифка 10"
+        "en" => "GIF 20",
+        "ru" => "Гифка 20",
+        "ruUN" => "Гифка 20"
     ],
     "store.event.buy_tits" => [
         "en" => "*CENSORED*",
@@ -262,6 +262,11 @@ Please, give a rating for me ;) t.me/storebot?start=axenia_bot",
         "en" => "<b>:user(:k)</b> has bought a GIF. Isn't it funny? :)",
         "ru" => "<b>:user(:k)</b> купил gif-анимацию. Как вам?",
         "ruUN" => "<b>:user(:k)</b> купил гифку. Вроде неплохо ;)"
+    ],
+    "store.event.buy_bashorg" => [
+        "en" => "<b>:user(:k)</b> has bought quote from Bash.im. Isn't it funny? :)",
+        "ru" => "<b>:user(:k)</b> купил случайную цитату из Баша. Как вам?",
+        "ruUN" => "<b>:user(:k)</b> купил случайную цитату из Баша. Забавно ;)"
     ],
     "store.callback" => [
         "en" => "You have bought ':buy'. You have :k karma points.",

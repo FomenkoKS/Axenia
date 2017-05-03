@@ -284,19 +284,22 @@ class Axenia
         $button_list = [[
             [
                 'text' => Lang::message('store.button.buy_cats'),
-                'callback_data' => 'buy_cats' . '|' . $from['id'] . '|' . '10'
+                'callback_data' => 'buy_cats' . '|' . $from['id'] . '|' . '30'
             ], [
                 'text' => Lang::message('store.button.buy_gif'),
-                'callback_data' => 'buy_gif' . '|' . $from['id'] . '|' . '10'
+                'callback_data' => 'buy_gif' . '|' . $from['id'] . '|' . '20'
+            ], [
+                'text' => Lang::message('store.button.buy_bashorg'),
+                'callback_data' => 'buy_bashorg' . '|' . $from['id'] . '|' . '10'
             ]
         ]];
         $inline_keyboard = $button_list;
         if (Lang::isUncensored()) {
             array_push($button_list, [
                 ['text' => Lang::message('store.button.buy_tits'),
-                    'callback_data' => 'buy_tits' . '|' . $from['id'] . '|' . '30'],
+                    'callback_data' => 'buy_tits' . '|' . $from['id'] . '|' . '50'],
                 ['text' => Lang::message('store.button.buy_butts'),
-                    'callback_data' => 'buy_butts' . '|' . $from['id'] . '|' . '20'
+                    'callback_data' => 'buy_butts' . '|' . $from['id'] . '|' . '40'
                 ]]);
             $inline_keyboard = $button_list;
         }
@@ -313,6 +316,9 @@ class Axenia
                 switch ($command[0]) {
                     case 'buy_gif':
                         Request::sendDocument($chat_id, $text, ['reply_to_message_id' => $message_id]);
+                        break;
+                    case 'buy_bashorg':
+                        Request::sendMessage($chat_id, $text, ['reply_to_message_id' => $message_id]);
                         break;
                     default:
                         if (Util::endsWith($text, "gif") == 1) {
@@ -456,6 +462,14 @@ class Axenia
                     case 'buy_butts':
                         $butts = json_decode(file_get_contents("http://api.obutts.ru/butts/1/1/random"), true);
                         $rez = "http://media.obutts.ru/butts/" . sprintf("%05d", $butts[0]['id']) . ".jpg";
+                        break;
+                    case 'buy_bashorg':
+                        $rez = str_ireplace("' + '","",file_get_contents("http://bash.im/forweb/"));
+                        $rez=substr($rez, strpos($rez,"<div id=\"b_q_t\""),-1);
+                        $rez=str_replace("<br>","\r\n",$rez);
+                        $rez=html_entity_decode($rez);
+                        $rez=strip_tags(substr($rez, 0,strpos($rez,"<small>")));
+
                         break;
                     case 'buy_cats':
                         $cat = json_decode(file_get_contents("http://random.cat/meow"), true);
