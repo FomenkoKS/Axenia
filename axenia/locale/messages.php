@@ -264,7 +264,7 @@ Please, give a rating for me ;) t.me/storebot?start=axenia_bot",
         "ruUN" => "<b>:user(:k)</b> купил гифку. Вроде неплохо ;)"
     ],
     "store.event.buy_bashorg" => [
-        "en" => "<b>:user(:k)</b> has bought quote from Bash.im. Isn't it funny? :)",
+        "en" => "<b>:user(:k)</b> has bought quote from `Bash.im`. Isn't it funny? :)",
         "ru" => "<b>:user(:k)</b> купил случайную цитату из Баша. Как вам?",
         "ruUN" => "<b>:user(:k)</b> купил случайную цитату из Баша. Забавно ;)"
     ],

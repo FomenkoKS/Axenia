@@ -464,7 +464,7 @@ class Axenia
                         $rez = "http://media.obutts.ru/butts/" . sprintf("%05d", $butts[0]['id']) . ".jpg";
                         break;
                     case 'buy_bashorg':
-                        $rez = str_ireplace("' + '","",file_get_contents("http://bash.im/forweb/"));
+                        $rez = str_ireplace("' + '","",file_get_contents("http://bash.im/forweb/?u"));
                         $rez=substr($rez, strpos($rez,"<div id=\"b_q_t\""),-1);
                         $rez=str_replace("<br>","\r\n",$rez);
                         $rez=html_entity_decode($rez);
