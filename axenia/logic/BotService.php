@@ -212,6 +212,11 @@ class BotService
         return Util::isInEnum("group,supergroup", $chat['type']);
     }
 
+    public function getShowcase()
+    {
+        return $this->db->getShowcase();
+    }
+
     public function isPrivate($chat)
     {
         return $chat['type'] == "private";

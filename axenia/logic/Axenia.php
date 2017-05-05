@@ -281,28 +281,19 @@ class Axenia
     {
         $message_id = $message['message_id'];
         $message_text = $message['text'];
-        $button_list = [[
-            [
-                'text' => Lang::message('store.button.buy_cats'),
-                'callback_data' => 'buy_cats' . '|' . $from['id'] . '|' . '30'
-            ], [
-                'text' => Lang::message('store.button.buy_gif'),
-                'callback_data' => 'buy_gif' . '|' . $from['id'] . '|' . '20'
-            ], [
-                'text' => Lang::message('store.button.buy_bashorg'),
-                'callback_data' => 'buy_bashorg' . '|' . $from['id'] . '|' . '10'
-            ]
-        ]];
-        $inline_keyboard = $button_list;
-        if (Lang::isUncensored()) {
-            array_push($button_list, [
-                ['text' => Lang::message('store.button.buy_tits'),
-                    'callback_data' => 'buy_tits' . '|' . $from['id'] . '|' . '50'],
-                ['text' => Lang::message('store.button.buy_butts'),
-                    'callback_data' => 'buy_butts' . '|' . $from['id'] . '|' . '40'
-                ]]);
-            $inline_keyboard = $button_list;
+        $store=$this->service->getShowcase();
+        $store=array_chunk($store,3);
+
+        $button_list =[];
+        foreach ($store as $value){
+            if($value[2]=="0" || (Lang::isUncensored() && $value[2]=="1") ) array_push($button_list,
+                    [
+                        'text' => Lang::message('store.button.buy_'.$value[0],['price'=>$value[1]]),
+                        'callback_data' => 'buy_'.$value[0] . '|' . $from['id'] . '|' .$value[1]
+                    ]
+                );
         }
+        $inline_keyboard = array_chunk($button_list,2);
         $username = $this->service->getUserName($from['id']);
         $karma = $this->service->getUserLevel($from['id'], $chat_id);
 
@@ -318,6 +309,8 @@ class Axenia
                         Request::sendDocument($chat_id, $text, ['reply_to_message_id' => $message_id]);
                         break;
                     case 'buy_bashorg':
+                    case 'buy_jokes':
+                    case 'buy_jokes18':
                         Request::sendMessage($chat_id, $text, ['reply_to_message_id' => $message_id]);
                         break;
                     default:
@@ -329,7 +322,7 @@ class Axenia
                 }
 
                 $newMessage = Util::insert(Lang::message('store.event.' . $command[0]), ["user" => $username, "k" => $newKarma]);
-                $callbackMessage = Util::insert(Lang::message('store.callback'), ["buy" => Lang::message('store.button.' . $command[0]), "k" => $newKarma]);
+                $callbackMessage = Util::insert(Lang::message('store.callback'), ["buy" => Lang::message('store.button.' . $command[0], ["price" => $command[2]]), "k" => $newKarma]);
                 $this->service->setLevel($from['id'], $chat_id, $newKarma);
             } else {
                 $newMessage = Util::insert(Lang::message('store.event.cant_buy'), ["user" => $username, "k" => $karma, "buy" => Lang::message('store.button.' . $command[0])]);
@@ -469,7 +462,14 @@ class Axenia
                         $rez=str_replace("<br>","\r\n",$rez);
                         $rez=html_entity_decode($rez);
                         $rez=strip_tags(substr($rez, 0,strpos($rez,"<small>")));
-
+                        break;
+                    case 'buy_jokes':
+                        $json=iconv("CP1251", "UTF-8",file_get_contents ("http://rzhunemogu.ru/RandJSON.aspx?CType=1"));
+                        $rez=substr($json,12,-2);
+                        break;
+                    case 'buy_jokes18':
+                        $json=iconv("CP1251", "UTF-8",file_get_contents ("http://rzhunemogu.ru/RandJSON.aspx?CType=11"));
+                        $rez=substr($json,12,-2);
                         break;
                     case 'buy_cats':
                         $cat = json_decode(file_get_contents("http://random.cat/meow"), true);

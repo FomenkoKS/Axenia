@@ -221,27 +221,37 @@ Please, give a rating for me ;) t.me/storebot?start=axenia_bot",
     "store.button.buy_tits" => [
         "en" => "*CENSORED*",
         "ru" => "*ЦЕНЗУРА*",
-        "ruUN" => "Сиськи 50"
+        "ruUN" => "Сиськи :price"
     ],
     "store.button.buy_butts" => [
         "en" => "*CENSORED*",
         "ru" => "*ЦЕНЗУРА*",
-        "ruUN" => "Булки 40"
+        "ruUN" => "Булки :price"
     ],
     "store.button.buy_cats" => [
-        "en" => "Kitty 30",
-        "ru" => "Котики 30",
-        "ruUN" => "Котэ 30"
+        "en" => "Kitty :price",
+        "ru" => "Котики :price",
+        "ruUN" => "Котэ :price"
     ],
     "store.button.buy_bashorg" => [
-        "en" => "Bash.Im 10",
-        "ru" => "Bash.Im 10",
-        "ruUN" => "Bash.Im 10"
+        "en" => "Bash.Im :price",
+        "ru" => "Bash.Im :price",
+        "ruUN" => "Bash.Im :price"
     ],
     "store.button.buy_gif" => [
-        "en" => "GIF 20",
-        "ru" => "Гифка 20",
-        "ruUN" => "Гифка 20"
+        "en" => "GIF :price",
+        "ru" => "Гифка :price",
+        "ruUN" => "Гифка :price"
+    ],
+    "store.button.buy_jokes" => [
+        "en" => "Joke :price",
+        "ru" => "Анекдот :price",
+        "ruUN" => "Анекдот :price"
+    ],
+    "store.button.buy_jokes18" => [
+        "en" => "Joke (18+) :price",
+        "ru" => "Неприличный анекдот :price",
+        "ruUN" => "Пошлый анекдот :price"
     ],
     "store.event.buy_tits" => [
         "en" => "*CENSORED*",
@@ -264,9 +274,19 @@ Please, give a rating for me ;) t.me/storebot?start=axenia_bot",
         "ruUN" => "<b>:user(:k)</b> купил гифку. Вроде неплохо ;)"
     ],
     "store.event.buy_bashorg" => [
-        "en" => "<b>:user(:k)</b> has bought quote from `Bash.im`. Isn't it funny? :)",
+        "en" => "<b>:user(:k)</b> has bought quote from Bash.Im. Isn't it funny? :)",
         "ru" => "<b>:user(:k)</b> купил случайную цитату из Баша. Как вам?",
         "ruUN" => "<b>:user(:k)</b> купил случайную цитату из Баша. Забавно ;)"
+    ],
+    "store.event.buy_jokes" => [
+        "en" => "<b>:user(:k)</b> has bought joke. Isn't it funny? :)",
+        "ru" => "<b>:user(:k)</b> купил анекдот. Как вам?",
+        "ruUN" => "<b>:user(:k)</b> купил анекдот. Забавно ;)"
+    ],
+    "store.event.buy_jokes18" => [
+        "en" => "<b>:user(:k)</b> has bought joke (18+). Isn't it funny? :)",
+        "ru" => "<b>:user(:k)</b> купил неприличный анекдот. Как вам?",
+        "ruUN" => "<b>:user(:k)</b> купил пошлый анекдот. Забавно ;)"
     ],
     "store.callback" => [
         "en" => "You have bought ':buy'. You have :k karma points.",

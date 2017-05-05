@@ -121,6 +121,12 @@ class BotDao extends AbstractDao
         return (!$res) ? false : $res;
     }
 
+    public function getShowcase()
+    {
+        $res = $this->select("SELECT title,price,censor FROM Showcase");
+        return (!$res) ? false : $res;
+    }
+
     public function getCooldown($chat_id)
     {
         $res = $this->select(
@@ -472,6 +478,7 @@ class BotDao extends AbstractDao
     }
 
 //endregion
+
 // region -------------------- Donate
     public function getDonates()
     {
