@@ -325,7 +325,7 @@ class Axenia
                 $callbackMessage = Util::insert(Lang::message('store.callback'), ["buy" => Lang::message('store.button.' . $command[0], ["price" => $command[2]]), "k" => $newKarma]);
                 $this->service->setLevel($from['id'], $chat_id, $newKarma);
             } else {
-                $newMessage = Util::insert(Lang::message('store.event.cant_buy'), ["user" => $username, "k" => $karma, "buy" => Lang::message('store.button.' . $command[0])]);
+                $newMessage = Util::insert(Lang::message('store.event.cant_buy'), ["user" => $username, "k" => $karma, "buy" => Lang::message('store.button.' . $command[0], ["price" => $command[2]])]);
                 $callbackMessage = Util::insert(Lang::message('store.callback.cant_buy'), ["buy" => Lang::message('store.button.' . $command[0])]);
             }
             Request::editMessageText($chat_id, $message_id, $newMessage, ["parse_mode" => "HTML"]);

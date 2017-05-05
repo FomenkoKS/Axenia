@@ -250,8 +250,8 @@ Please, give a rating for me ;) t.me/storebot?start=axenia_bot",
     ],
     "store.button.buy_jokes18" => [
         "en" => "Joke (18+) :price",
-        "ru" => "Неприличный анекдот :price",
-        "ruUN" => "Пошлый анекдот :price"
+        "ru" => "Анекдот(18+) :price",
+        "ruUN" => "Анекдот(18+) :price"
     ],
     "store.event.buy_tits" => [
         "en" => "*CENSORED*",
