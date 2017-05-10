@@ -26,10 +26,13 @@ if (!$update) {
     }
     $redis->connect('127.0.0.1', 6379);
     $key="from:".$update['message']['from']['id'];
-    if(!isset($update['message']['forward_from']))$redis->incr($key);
+
+    file_put_contents("1",print_r($update,true));
+
+    if(isset($update['message']['text']))$redis->incr($key);
     $count=$redis->get($key);
     if($count==1) $redis->expire($key,10);
-    if($count<10){
+    if($count<7 || isset($update['callback_query'])){
         Request::setUrl(API_URL);
         $bot = new Axenia(new BotService(new BotDao()));
         $bot->handleUpdate($update);
