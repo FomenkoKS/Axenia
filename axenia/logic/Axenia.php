@@ -71,6 +71,8 @@ class Axenia
             }
 
             if (isset($message['text']) || isset($message['sticker'])) {
+                $redis=new Redis();
+                $redis->connect('127.0.0.1', 6379, 2.5);
                 $isPrivate = $this->service->isPrivate($chat);
                 $postfix = $isPrivate ? "" : ("@" . BOT_NAME);
                 if (isset($message['sticker'])) {
@@ -171,6 +173,33 @@ class Axenia
                             }
                         }
                         break;
+                    case Util::startsWith($text, ("/test")):
+                        if ($this->service->CheckRights($from_id,5)) {
+                            $max=$redis->get("limit:zadolbali");
+                            $text=file_get_contents("http://zadolba.li/story/".rand(1,$max));
+                            $text=substr($text, strpos($text,"<div class='text'>"),-1);
+                            $text=str_replace("<br>","\r\n",$text);
+                            $text=html_entity_decode($text);
+                            $text=strip_tags(substr($text, 0,strpos($text,"</div>")));
+                            Request::sendMessage($chat_id,$text);
+                        }
+                        break;
+                    case Util::startsWith($text, ("/Redis")):
+                        if ($this->service->CheckRights($from_id,5)) {
+                            if (preg_match('/^(\/RedisSet) ([\S]+) ([\S]+)/ui ', $text, $matches)) {
+                                Request::sendMessage($chat_id, print_r($redis->set($matches[2],$matches[3]),true));
+                            }
+                            if (preg_match('/^(\/RedisGet) ([\S]+)/ui ', $text, $matches)) {
+                                Request::sendMessage($chat_id, print_r($redis->get($matches[2]),true));
+                            }
+                            if (preg_match('/^(\/RedisKeys) ([\S]*)/ui ', $text, $matches)) {
+                                Request::sendMessage($chat_id, print_r($redis->keys($matches[2]),true));
+                            }
+                            if (preg_match('/^(\/RedisDel) ([\S]*)/ui ', $text, $matches)) {
+                                Request::sendMessage($chat_id, print_r($redis->del($matches[2]),true));
+                            }
+                        }
+                        break;
                     case Util::startsWith($text, ("/lala")):
                         if (defined('TRASH_CHAT_ID')) {
                             Request::sendTyping($chat_id);
@@ -193,8 +222,8 @@ class Axenia
                             } while (!$ok);
                         }
                         break;
-
                 }
+                $redis->close();
             } elseif (isset($message['new_chat_member'])) {
                 $newMember = $message['new_chat_member'];
                 if (BOT_NAME == $newMember['username']) {
@@ -280,7 +309,6 @@ class Axenia
     public function sendStore($chat_id, $from = NULL, $message = NULL, $text = NULL, $callback = NULL, $callback_id = NULL)
     {
         $message_id = $message['message_id'];
-        $message_text = $message['text'];
         $store=$this->service->getShowcase();
         $store=array_chunk($store,3);
 
@@ -311,6 +339,7 @@ class Axenia
                     case 'buy_bashorg':
                     case 'buy_jokes':
                     case 'buy_jokes18':
+                    case 'buy_zadolbali':
                         Request::sendMessage($chat_id, $text, ['reply_to_message_id' => $message_id]);
                         break;
                     default:
@@ -489,6 +518,17 @@ class Axenia
                                 sleep(1);
                             } while (!$ok);
                         }
+                        break;
+                    case 'buy_zadolbali':
+                        $redis=new Redis();
+                        $redis->connect('127.0.0.1', 6379, 2.5);
+                        $max=$redis->get("limit:zadolbali");
+                        $text=file_get_contents("http://zadolba.li/story/".rand(1,$max));
+                        $text=substr($text, strpos($text,"<div class='text'>"),-1);
+                        $text=str_replace("<br>","\r\n",$text);
+                        $text=html_entity_decode($text);
+                        $rez=strip_tags(substr($text, 0,strpos($text,"</div>")));
+                        $redis->close();
                         break;
                     default:
                         $rez = $data;
