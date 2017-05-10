@@ -258,6 +258,11 @@ Please, give a rating for me ;) t.me/storebot?start=axenia_bot",
         "ru" => "задолба!ли :price",
         "ruUN" => "задолба!ли :price"
     ],
+    "store.button.buy_ideer" => [
+        "en" => "Podslushano :price",
+        "ru" => "Подслушано :price",
+        "ruUN" => "Подслушано :price"
+    ],
     "store.event.buy_tits" => [
         "en" => "*CENSORED*",
         "ru" => "*ЦЕНЗУРА*",
@@ -297,6 +302,11 @@ Please, give a rating for me ;) t.me/storebot?start=axenia_bot",
         "en" => "<b>:user(:k)</b> has bought story from Zadolbali. Isn't it funny? :)",
         "ru" => "<b>:user(:k)</b> купил историю с \"Задолбали\". Как вам?",
         "ruUN" => "<b>:user(:k)</b> купил историю с \"Задолбали\". Забавно ;)"
+    ],
+    "store.event.buy_ideer" => [
+        "en" => "<b>:user(:k)</b> has bought story from Podslushano. Isn't it funny? :)",
+        "ru" => "<b>:user(:k)</b> купил историю с \"Подслушано\". Как вам?",
+        "ruUN" => "<b>:user(:k)</b> купил историю с \"Подслушано\". Забавно ;)"
     ],
     "store.callback" => [
         "en" => "You have bought ':buy'. You have :k karma points.",

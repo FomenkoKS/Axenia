@@ -340,6 +340,7 @@ class Axenia
                     case 'buy_jokes':
                     case 'buy_jokes18':
                     case 'buy_zadolbali':
+                    case 'buy_ideer':
                         Request::sendMessage($chat_id, $text, ['reply_to_message_id' => $message_id]);
                         break;
                     default:
@@ -525,6 +526,17 @@ class Axenia
                         $max=$redis->get("limit:zadolbali");
                         $text=file_get_contents("http://zadolba.li/story/".rand(1,$max));
                         $text=substr($text, strpos($text,"<div class='text'>"),-1);
+                        $text=str_replace("<br>","\r\n",$text);
+                        $text=html_entity_decode($text);
+                        $rez=strip_tags(substr($text, 0,strpos($text,"</div>")));
+                        $redis->close();
+                        break;
+                    case 'buy_ideer':
+                        $redis=new Redis();
+                        $redis->connect('127.0.0.1', 6379, 2.5);
+                        $max=$redis->get("limit:ideer");
+                        $text=file_get_contents("https://ideer.ru/".rand(1,$max));
+                        $text=substr($text, strpos($text,"<div class=\"shortContent\">"),-1);
                         $text=str_replace("<br>","\r\n",$text);
                         $text=html_entity_decode($text);
                         $rez=strip_tags(substr($text, 0,strpos($text,"</div>")));
