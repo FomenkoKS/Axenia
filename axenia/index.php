@@ -20,11 +20,11 @@ if (!$update) {
     exit;
 } else {
     $redis=new Redis();
+    $redis->connect('127.0.0.1', 6379, 2.5);
     function redis_error($error) {
         Request::sendMessage(LOG_CHAT_ID,$error);
         throw new error($error);
     }
-    $redis->connect('127.0.0.1', 6379);
     $key="from:".$update['message']['from']['id'];
 
     file_put_contents("1",print_r($update,true));
