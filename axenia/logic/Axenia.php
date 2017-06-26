@@ -167,8 +167,8 @@ class Axenia
                         Request::sendHtmlMessage($chat_id, Lang::message('chat.help'));
                         break;
                     case Util::startsWith($text, ("/set @")):
-                        if ($this->service->CheckRights($from_id,5)) {
-                            if (preg_match('/^(\/set) @([\w]+) (-?\d+)/ui ', $text, $matches)) {
+                        if ($this->service->CheckRights($from_id,5) && $this->service->isAdminInChat($from_id,$chat)) {
+                            if (preg_match('/^(\/set) @([\s\S]+) (-?\d+)/ui ', $text, $matches)) {
                                 Request::sendMessage($from_id, $this->service->setLevelByUsername($matches[2], $chat_id, $matches[3]));
                             }
                         }
@@ -205,7 +205,7 @@ class Axenia
                             Request::sendTyping($chat_id);
                             $ok = false;
                             do {
-                                $message = Request::exec("forwardMessage", array('chat_id' => TRASH_CHAT_ID, "from_chat_id" => "@rgonewild", "disable_notification" => true, "message_id" => rand(1, 21363)));
+                                $message = Request::exec("forwardMessage", array('chat_id' => TRASH_CHAT_ID, "from_chat_id" => "@gone_wild", "disable_notification" => true, "message_id" => rand(1, 14575)));
                                 if ($message !== false && isset($message['photo'])) {
                                     $array = $message['photo'];
                                     $file_id = $array[0]['file_id'];
