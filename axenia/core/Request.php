@@ -69,6 +69,7 @@ class Request
         curl_setopt($handle, CURLOPT_RETURNTRANSFER, true);
         curl_setopt($handle, CURLOPT_CONNECTTIMEOUT, 5);
         curl_setopt($handle, CURLOPT_TIMEOUT, 60);
+
         return self::exec_curl_request($handle);
     }
 
