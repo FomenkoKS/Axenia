@@ -125,4 +125,12 @@ class SiteDao extends BotDao
         return $res;
     }
 
+    public function checkBill($txn_id)
+    {
+        $res = $this->select("
+            SELECT b.user_id,d.nominal FROM Bills b, Donates d WHERE b.txn_id='".$txn_id."' and b.donate_id=d.id"
+        );
+
+        return $res;
+    }
 }

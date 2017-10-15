@@ -100,6 +100,9 @@ class SiteService
             case isset($get['group_id']):
                 $type = $this->db->getGroupName($get['group_id']) ? "group" : "stat";
                 break;
+            case isset($get['donate']):
+                $type = ($get['donate']=="success") ? "thanks" : "stat";
+                break;
             default:
                 $type = "stat";
                 break;

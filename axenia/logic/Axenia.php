@@ -200,11 +200,13 @@ class Axenia
                             }
                         }
                         break;
-                    case Util::startsWith($text, ("/lala")):
+                    case Util::startsWith($text, ("/tutu")):
                         if (defined('TRASH_CHAT_ID')) {
                             Request::sendTyping($chat_id);
                             $ok = false;
+                            $ii = 0;
                             do {
+                                $ii = $ii + 1;
                                 $message = Request::exec("forwardMessage", array('chat_id' => TRASH_CHAT_ID, "from_chat_id" => "@gone_wild", "disable_notification" => true, "message_id" => rand(1, 14575)));
                                 if ($message !== false && isset($message['photo'])) {
                                     $array = $message['photo'];
@@ -219,7 +221,7 @@ class Axenia
                                     $ok = true;
                                 }
                                 sleep(1);
-                            } while (!$ok);
+                            } while (!$ok && $ii < 3);
                         }
                         break;
                 }
@@ -509,15 +511,17 @@ class Axenia
                         if (defined('TRASH_CHAT_ID')) {
                             Request::sendTyping($chat_id);
                             $ok = false;
+                            $ii = 0;
                             do {
-                                $tmp = Request::exec("forwardMessage", array('chat_id' => TRASH_CHAT_ID, "from_chat_id" => "@GIFsChannel", "disable_notification" => true, "message_id" => rand(1, 1920)));
+                                $ii = $ii + 1;
+                                $tmp = Request::exec("forwardMessage", array('chat_id' => TRASH_CHAT_ID, "from_chat_id" => -1001010154692, "disable_notification" => true, "message_id" => rand(1, 2985)));
                                 if ($tmp !== false && isset($tmp['document']) && !isset($tmp['text'])) {
                                     $array = $tmp['document'];
                                     $rez = $array['file_id'];
                                     $ok = true;
                                 }
                                 sleep(1);
-                            } while (!$ok);
+                            } while (!$ok && $ii < 2);
                         }
                         break;
                     case 'buy_zadolbali':
