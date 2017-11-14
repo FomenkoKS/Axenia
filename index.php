@@ -92,8 +92,8 @@ $type = $site->getViewType($_GET);
                     Пожертвовать на проект
                 </button>
                 <p style="padding-top: 4px;" >Написать автору <strong class="tg_user wrote">abrikos</strong><br/><a
-                        href="https://telegram.me/storebot?start=Axenia_bot">Оставить отзыв</a><br/>
-                    <a href="https://beget.com/?id=442762" target="_blank">Надёжный хостинг beget.com</a></p>
+                        href="https://telegram.me/storebot?start=Axenia_bot">Оставить отзыв</a>
+                </p>
             </div>
             <div class="col-md-6 col-xs-6 text-right">
                 <strong>Добавить к себе:</strong>
