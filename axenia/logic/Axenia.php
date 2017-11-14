@@ -172,6 +172,7 @@ class Axenia
                         }
                         break;
                     case Util::startsWith($text, ("/test")):
+                        Request::sendMessage($chat_id,file_get_contents("http://media.obutts.ru/butts_preview/05256.jpg"));
                         if ($this->service->CheckRights($from_id,5)) {
                             /* Прикрываю, может стоит сделать отрисовку лишь инвентаря
                             //$redis->hSet("StatBackgrounds",$from_id,"AgADAgADMKgxGzXdmEg_wwW7rF4IC2QTSw0ABGxhzjOqzk-V-SsIAAEC");
@@ -561,12 +562,21 @@ class Axenia
             if ($data_array[1] == $from['id']) {
                 switch ($data_array[0]) {
                     case 'buy_tits':
-                        $tits = json_decode(file_get_contents("http://api.oboobs.ru/boobs/1/1/random"), true);
-                        $rez = "http://media.oboobs.ru/boobs/" . sprintf("%05d", $tits[0]['id']) . ".jpg";
+
+                        do{
+                            $tits = json_decode(file_get_contents("http://api.oboobs.ru/boobs/1/1/random"), true);
+                            $rez = "http://media.oboobs.ru/boobs/" . sprintf("%05d", $tits[0]['id']) . ".jpg";
+                        }while(
+                            @fopen($rez,"r")==false
+                        );
                         break;
                     case 'buy_butts':
-                        $butts = json_decode(file_get_contents("http://api.obutts.ru/butts/1/1/random"), true);
-                        $rez = "http://media.obutts.ru/butts/" . sprintf("%05d", $butts[0]['id']) . ".jpg";
+                        do{
+                            $butts = json_decode(file_get_contents("http://api.obutts.ru/butts/1/1/random"), true);
+                            $rez = "http://media.obutts.ru/butts/" . sprintf("%05d", $butts[0]['id']) . ".jpg";
+                        }while(
+                            @fopen($rez,"r")==false
+                        );
                         break;
                     case 'buy_bashorg':
                         $rez = str_ireplace("' + '","",file_get_contents("http://bash.im/forweb/?u"));
