@@ -137,6 +137,36 @@ class BotDao extends AbstractDao
         return ($res[0]===NULL) ? DEFAULT_COOLDOWN : $res[0];
     }
 
+    public function getGrowth($chat_id)
+    {
+        $res = $this->select(
+            "SELECT ariphmeticGrowth
+            FROM Chats 
+            WHERE id=" . $chat_id
+        );
+        return ($res[0]===NULL) ? 0 : $res[0];
+    }
+
+    public function getAccess($chat_id)
+    {
+        $res = $this->select(
+            "SELECT forAdmin
+            FROM Chats 
+            WHERE id=" . $chat_id
+        );
+        return ($res[0]===NULL) ? 0 : $res[0];
+    }
+
+    public function setGrowth($chat_id, $value)
+    {
+        return $this->update("UPDATE Chats SET ariphmeticGrowth = " . $value . " WHERE id = " . $chat_id);
+    }
+
+    public function setAccess($chat_id, $value)
+    {
+        return $this->update("UPDATE Chats SET forAdmin = " . $value . " WHERE id = " . $chat_id);
+    }
+
     public function setCooldown($chat_id,$cooldown)
     {
         return $this->update("UPDATE Chats SET cooldown = " . $cooldown . " WHERE id = " . $chat_id);
@@ -480,7 +510,24 @@ class BotDao extends AbstractDao
 //endregion
 
 // region -------------------- Donate
-    public function getDonates()
+    public function getDonates($user_id)
+    {
+        $redis=new Redis();
+        $redis->connect('127.0.0.1', 6379);
+        $result=$redis->hGet('donates',$user_id);
+        $redis->close();
+        return $result;
+    }
+    public function setDonates($user_id, $donates)
+    {
+        $redis=new Redis();
+        $redis->connect('127.0.0.1', 6379);
+        $result=$redis->hSet('donates',$user_id, $donates);
+        $redis->close();
+        return $result;
+    }
+
+    public function getDonateButtons()
     {
         $res = $this->select("SELECT id, nominal, price FROM Donates", false);
         if ($res !== false) {

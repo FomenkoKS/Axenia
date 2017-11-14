@@ -16,7 +16,7 @@ class Axenia
 
     public function handleUpdate($update)
     {
-        if (isset($update["message"]) || isset($update["inline_query"]) || isset($update["callback_query"])) {
+        if (isset($update["message"]) || isset($update["inline_query"]) || isset($update["callback_query"]) || isset($update["pre_checkout_query"])) {
             try {
                 if (isset($update["message"])) {
                     $this->processMessage($update["message"]);
@@ -24,6 +24,8 @@ class Axenia
                     $this->processInline($update["inline_query"]);
                 } elseif (isset($update["callback_query"])) {
                     $this->processCallback($update["callback_query"]);
+                }elseif (isset($update["pre_checkout_query"])) {
+                    $this->processCheckout($update["pre_checkout_query"]);
                 }
             } catch (Exception $e) {
                 print_r("Boterror!");
@@ -86,7 +88,7 @@ class Axenia
                             Request::sendMessage($chat_id, Lang::message("bot.onlyPrivate"));
                         } else {
                             if (preg_match('/^(\+|\-|👍|👎) ?([\s\S]+)?/ui', $text, $matches)) {
-                                if ($this->service->checkCoolDown($from_id, $chat)) {
+                                if ($this->service->checkConditions($from_id, $chat)) {
                                     $isRise = Util::isInEnum("+,👍", $matches[1]);
                                     if (isset($message['reply_to_message'])) {
                                         $replyUser = $message['reply_to_message']['from'];
@@ -124,15 +126,7 @@ class Axenia
                         break;
                     case (Util::startsWith($text, "/donate" . $postfix)):
                         if ($isPrivate) {
-                            //Прикроем пока Дуров донат не активирует, в рот я ебал этот забагованный киви.
-                            /*
-                            $button_list=[];
-                            foreach($this->service->getDonates() as $a){
-                                array_push($button_list, ['text' => Lang::message('donate.price', ['k' => $a['nominal'], 'r' => $a['price']]), 'callback_data' => 'donate_'.$a['id']]);
-                            }
-                            $text=Lang::message("donate.title");
-                            Request::sendHtmlMessage($from_id, $text, ["reply_markup" => ['inline_keyboard' => array_chunk($button_list,2)]]);
-                            */
+                            //$this->service->showDonateMenu($from_id);
                         }
                         break;
                     case (Util::startsWith($text, "/settings" . $postfix)):
@@ -155,9 +149,13 @@ class Axenia
                         break;
                     case (Util::startsWith($text, "/start" . $postfix)):
                         if ($isPrivate) {
-                            Request::sendTyping($chat_id);
-                            Request::sendHtmlMessage($chat_id, Lang::message('chat.greetings'));
-                            Request::sendHtmlMessage($chat_id, Lang::message('user.pickChat', ["botName"=> BOT_NAME]));
+                            if (preg_match('/donate/ui ', $text)) {
+                                $this->service->showDonateMenu($from_id);
+                            }else{
+                                Request::sendTyping($chat_id);
+                                Request::sendHtmlMessage($chat_id, Lang::message('chat.greetings'));
+                                Request::sendHtmlMessage($chat_id, Lang::message('user.pickChat', ["botName"=> BOT_NAME]));
+                            }
                         } else {
                             $this->service->rememberChat($chat, $from_id);
                             Request::sendHtmlMessage($chat_id, Lang::message('bot.start'));
@@ -175,13 +173,50 @@ class Axenia
                         break;
                     case Util::startsWith($text, ("/test")):
                         if ($this->service->CheckRights($from_id,5)) {
-                            $max=$redis->get("limit:zadolbali");
-                            $text=file_get_contents("http://zadolba.li/story/".rand(1,$max));
-                            $text=substr($text, strpos($text,"<div class='text'>"),-1);
-                            $text=str_replace("<br>","\r\n",$text);
-                            $text=html_entity_decode($text);
-                            $text=strip_tags(substr($text, 0,strpos($text,"</div>")));
-                            Request::sendMessage($chat_id,$text);
+                            /* Прикрываю, может стоит сделать отрисовку лишь инвентаря
+                            //$redis->hSet("StatBackgrounds",$from_id,"AgADAgADMKgxGzXdmEg_wwW7rF4IC2QTSw0ABGxhzjOqzk-V-SsIAAEC");
+
+                            array_map("unlink", glob("./imgs/".$from_id."_*"));
+                            //$redis->hSet("StatBackgrounds",$from_id,"AgADAgADMKgxGzXdmEg_wwW7rF4IC2QTSw0ABGxhzjOqzk-V-SsIAAEC");
+                            $photo=Request::getFile($redis->hGet("StatBackgrounds",$from_id));
+                            $file_path="https://api.telegram.org/file/bot".BOT_TOKEN."/".$photo['file_path'];
+                            $pic = ImageCreateFromjpeg($file_path); //открываем рисунок в формате JPEG
+                            Header("Content-type: image/jpeg");
+                            $h = 40;
+                            $w = 20;
+                            $text="Статистика пользователя";
+                            $font_file = './imgs/krabuler.ttf';
+                            ImageTTFtext($pic, 26, 0, $w-2, $h, 0x000000, $font_file, $text);
+                            ImageTTFtext($pic, 26, 0, $w+2, $h, 0x000000, $font_file, $text);
+                            ImageTTFtext($pic, 26, 0, $w, $h-2, 0x000000, $font_file, $text);
+                            ImageTTFtext($pic, 26, 0, $w, $h+2, 0x000000, $font_file, $text);
+                            ImageTTFtext($pic, 26, 0, $w, $h, 0xffffff, $font_file, $text);
+
+                            $light = imagecolorallocatealpha($pic, 250, 250, 250, 100);
+                            imagefilledrectangle($pic,80,70,575,350,$light);
+
+                            $font_file = './imgs/aac.ttf';
+                            ImageTTFtext($pic, 18, 0, 95, 90, 0x000000, $font_file,
+                                Util::getFullNameUser($from).'\r\n'.
+                                Lang::message("user.stat.inchat") . $this->service->getUserLevel($from_id, $chat_id)
+                            );
+
+                            $avatar=Request::getUserProfilePhotos($from_id);
+                            $file_path=Request::getFile($avatar['photos'][0][0]['file_id'])['file_path'];
+                            $file_path="https://api.telegram.org/file/bot".BOT_TOKEN."/".$file_path;
+                            $ava_pic = ImageCreateFromjpeg($file_path);
+                            imagecopyresampled($ava_pic,$ava_pic,0,0,0,0,64,64,imagesx($ava_pic),imagesy($ava_pic));
+                            imagealphablending($pic, false);
+                            imagesavealpha($pic, true);
+                            imagecopymerge($pic, $ava_pic, 20, 60, 0, 0, 64, 64, 100);
+
+                            $imgName="imgs/".$from_id."_".time().".jpg";
+
+                            Imagejpeg($pic,$imgName); //сохраняем рисунок в формате JPEG
+                            ImageDestroy($pic); //освобождаем память и закрываем изображение
+                            ImageDestroy($ava_pic); //освобождаем память и закрываем изображение
+                            Request::sendPhoto($chat_id, "https://axeniabot.ru/format/".$imgName);
+                            */
                         }
                         break;
                     case Util::startsWith($text, ("/Redis")):
@@ -200,12 +235,24 @@ class Axenia
                             }
                         }
                         break;
-                    case Util::startsWith($text, ("/lala")):
+                    case Util::startsWith($text, ("/terms")):
+                        if ($isPrivate) {
+                            Request::sendHtmlMessage($chat_id,Lang::message('donate.terms'));
+                        }
+                        break;
+                    case Util::startsWith($text, ("/support")):
+                        if ($isPrivate) {
+                            Request::sendMessage($chat_id,Lang::message('donate.support'));
+                        }
+                        break;
+                    case Util::startsWith($text, ("/tutu")):
                         if (defined('TRASH_CHAT_ID')) {
                             Request::sendTyping($chat_id);
                             $ok = false;
+                            $ii = 0;
                             do {
-                                $message = Request::exec("forwardMessage", array('chat_id' => TRASH_CHAT_ID, "from_chat_id" => "@rgonewild", "disable_notification" => true, "message_id" => rand(1, 21363)));
+                                $ii = $ii + 1;
+                                $message = Request::exec("forwardMessage", array('chat_id' => TRASH_CHAT_ID, "from_chat_id" => "@gone_wild", "disable_notification" => true, "message_id" => rand(1, 14575)));
                                 if ($message !== false && isset($message['photo'])) {
                                     $array = $message['photo'];
                                     $file_id = $array[0]['file_id'];
@@ -219,7 +266,7 @@ class Axenia
                                     $ok = true;
                                 }
                                 sleep(1);
-                            } while (!$ok);
+                            } while (!$ok && $ii < 4);
                         }
                         break;
                 }
@@ -285,7 +332,6 @@ class Axenia
     public function processInline($inline)
     {
         $id = $inline['id'];
-        $from = $inline['from'];
         $query = $inline['query'];
 
         if (isset($query) && $query !== "") {
@@ -333,9 +379,6 @@ class Axenia
             $newKarma = $karma - (int)$command[2];
             if ($newKarma >= 0) {
                 switch ($command[0]) {
-                    case 'buy_gif':
-                        Request::sendDocument($chat_id, $text, ['reply_to_message_id' => $message_id]);
-                        break;
                     case 'buy_bashorg':
                     case 'buy_jokes':
                     case 'buy_jokes18':
@@ -350,7 +393,6 @@ class Axenia
                             Request::sendPhoto($chat_id, $text, ['reply_to_message_id' => $message_id]);
                         }
                 }
-
                 $newMessage = Util::insert(Lang::message('store.event.' . $command[0]), ["user" => $username, "k" => $newKarma]);
                 $callbackMessage = Util::insert(Lang::message('store.callback'), ["buy" => Lang::message('store.button.' . $command[0], ["price" => $command[2]]), "k" => $newKarma]);
                 $this->service->setLevel($from['id'], $chat_id, $newKarma);
@@ -404,6 +446,33 @@ class Axenia
                 $button_list=array_chunk($buttons,3);
                 $text = Lang::message('settings.unfollow.title');
                 break;
+            case "set_eraseGroup":
+                $cookies=$this->service->getDonates($chat_id);
+               /* $text=$cookies;*/
+               // Request::sendMessage($chat_id,);
+                if($cookies>=$this->service->getDonateButtons()[0]['nominal']){
+                    $a=$this->service->getUserGroup($chat_id,false);
+                    $buttons=[];
+                    foreach($a as $item){
+                        array_push($buttons,['text'=>explode(":",$item)[1],'callback_data'=>"erase_".explode(":",$item)[0]]);
+                    }
+                    $button_list=array_chunk($buttons,3);
+                    $text = Lang::message('settings.erase.title')."\r\n\r\n". Lang::message('settings.groups.adminonly');
+                }else{
+                    $text = Lang::message("donate.notEnough");
+                    $button_list = [
+                        [['text' => Lang::message("settings.button.back"), 'callback_data' => "set_back"]]
+                    ];
+                }
+                /*$a=$this->service->getUserGroup($chat_id,false);
+                $buttons=[];
+                foreach($a as $item){
+                    array_push($buttons,['text'=>explode(":",$item)[1],'callback_data'=>"escape_".explode(":",$item)[0]]);
+                }
+
+                $button_list=array_chunk($buttons,3);
+                $text = Lang::message('settings.unfollow.title');*/
+                break;
             default:
                 $text = Lang::message('settings.title') . "\r\n";
                 if ($this->service->isPrivate($chat)) {
@@ -416,6 +485,11 @@ class Axenia
                             [
                                 'text'  => Lang::message('settings.unfollow'),
                                 'callback_data' =>  'set_escapeFromGroup'
+                            ]
+                        ],[
+                            [
+                                'text'  => Lang::message('settings.erase'),
+                                'callback_data' =>  'set_eraseGroup'
                             ]
                         ]
                     ];
@@ -432,12 +506,20 @@ class Axenia
                         ],
                         [['text' => Lang::message('settings.button.set_cooldown'),
                             'callback_data' => 'set_cooldown'
+                        ]],
+                        [['text' => Lang::message('settings.button.set_another_growth', ["type" => ($this->service->getGrowth($chat_id)==0)?Lang::message('settings.growth.ariphmetic'):Lang::message('settings.growth.geometric')]),
+                            'callback_data' => 'set_another_growth'
+                        ]],
+                        [['text' => Lang::message('settings.button.set_another_access', ["type" => ($this->service->getAccess($chat_id)==0)?Lang::message('settings.access.for_admin'):Lang::message('settings.access.for_everyone')]),
+                            'callback_data' => 'set_another_access'
                         ]]
                     ];
 
                     $text .= Lang::message("settings.title." . $postfixSilentMode) . "\r\n";
                     $text .= Lang::message("settings.title.lang", ["lang" => Lang::getCurrentLangDesc()]) . "\r\n";
-                    $text .= Lang::message('settings.title.cooldown', ["cooldown" => $this->service->getCooldown($chat_id)]);
+                    $text .= Lang::message('settings.title.cooldown', ["cooldown" => $this->service->getCooldown($chat_id)]). "\r\n";
+                    $text .= Lang::message('settings.title.growth', ["type" => ($this->service->getGrowth($chat_id)==1)?Lang::message('settings.growth.ariphmetic'):Lang::message('settings.growth.geometric')]). "\r\n";
+                    $text .= Lang::message('settings.title.access', ["type" => ($this->service->getAccess($chat_id)==1)?Lang::message('settings.access.for_admin'):Lang::message('settings.access.for_everyone')]). "\r\n";
                 }
 
                 break;
@@ -503,22 +585,11 @@ class Axenia
                         break;
                     case 'buy_cats':
                         $cat = json_decode(file_get_contents("http://random.cat/meow"), true);
-                        $rez = $cat["file"];
+                        $rez = $cat;
                         break;
                     case 'buy_gif':
-                        if (defined('TRASH_CHAT_ID')) {
-                            Request::sendTyping($chat_id);
-                            $ok = false;
-                            do {
-                                $tmp = Request::exec("forwardMessage", array('chat_id' => TRASH_CHAT_ID, "from_chat_id" => "@GIFsChannel", "disable_notification" => true, "message_id" => rand(1, 1920)));
-                                if ($tmp !== false && isset($tmp['document']) && !isset($tmp['text'])) {
-                                    $array = $tmp['document'];
-                                    $rez = $array['file_id'];
-                                    $ok = true;
-                                }
-                                sleep(1);
-                            } while (!$ok);
-                        }
+                        $json = json_decode(file_get_contents("https://api.tenor.com/v1/gifs?key=LIVDSRZULELA&ids=".rand(1,10252835).",".rand(1,10252835).",".rand(1,10252835).",".rand(1,10252835).",".rand(1,10252835)), false);
+                        $rez = $json->results[0]->media[0]->gif->url;
                         break;
                     case 'buy_zadolbali':
                         $redis=new Redis();
@@ -564,6 +635,12 @@ class Axenia
                     case 'set_2':
                         $this->service->setCooldown($chat_id, 2);
                         break;
+                    case 'set_another_growth':
+                        $this->service->switchGrowth($chat_id);
+                        break;
+                    case 'set_another_access':
+                        $this->service->switchAccess($chat_id);
+                        break;
                     case 'set_back':
                         $data = NULL;
                         break;
@@ -573,23 +650,42 @@ class Axenia
                 Request::answerCallbackQuery($callback['id'], Lang::message('settings.title'));
             }
         } elseif (strpos($data, "donate_") !== false) {
-
-            $donates = $this->service->getDonates();
+            $donates = $this->service->getDonateButtons();
             foreach ($donates as $k => $a) if ($a['id'] == explode("_", $data)[1]) $key = $k;
+            /*
+
+            $txn_id = substr(hash_hmac('sha256',  rand(1, 99999999), Date('d-m-Yhh-mm-ss')),1,16);
+            Request::sendInvoice(
+                $chat_id,
+                $donates[$key]['nominal'] ." 🍪",
+                Lang::message('donate.bill', ['nom' => $donates[$key]['nominal']]),
+                $donates[$key]['nominal'].":".$txn_id, //в токене будет сумма храниться
+                STRIPE_TOKEN,
+                "PAYLOAD",
+                "RUB",
+                [["label"=>"Цена", "amount"=>$donates[$key]['price']*100]],
+                [
+                    ['need_name'   =>  false],
+                    ['need_phone_number'   =>  false],
+                    ['need_email'   =>  false],
+                    ['need_shipping_address'   =>  false],
+                ]
+            );
+            Request::deleteMessage($chat_id,$message['message_id']);
+            Request::sendMessage($chat_id,Lang::message('donate.attention'));}*/
 
             $text = "https://bill.qiwi.com/order/external/create.action";
             //$txn_id = substr(hash_hmac('sha256',  rand(1, 99999999), Date('d-m-Yhh-mm-ss')),1,16);
-
             $txn_id = md5(Date('dmYhhmmss') . $chat_id);
             $params = [
-                "from" => QIWI_API_ID,
+                "from" => qiwi_api_id,
                 "summ" => $donates[$key]['price'],
-                "currency" => "RUB",
-                "comm" => "Получение " . $donates[$key]['nominal'] . " печенек",
+                "currency" => "rub",
+                "comm" => "получение " . $donates[$key]['nominal'] . " печенек",
                 "txn_id" => $txn_id,
                 "iframe" => "true",
-                "successUrl" => 'http://' . $_SERVER['SERVER_NAME'] . '/success.php',
-                "lifetime" => date('Y-m-d', strtotime(date('Y-m-d') . " + 1 DAY")) . "T00:00:00",
+                "successurl" => 'http://axeniabot.ru/success.php',
+                "lifetime" => date('y-m-d', strtotime(date('y-m-d') . " + 1 day")) . "t00:00:00",
                 "target" => "iframe"
             ];
             $url = $text . "?" . http_build_query($params);
@@ -598,6 +694,7 @@ class Axenia
             $text = Lang::message('donate.bill', ['nom' => $donates[$key]['nominal'], 'url' => $shortDWName]);
             Request::editMessageText($chat_id, $message['message_id'], $text, ["parse_mode" => "HTML", "reply_markup" => ['inline_keyboard' => [[["text" => Lang::message("donate.pay"), "url" => $shortDWName]]]]]);
             $this->service->insertBill($txn_id, $donates[$key]['id'], $chat_id);
+
         } elseif (strpos($data, "escape_") !== false) {
             $escape_chat_id=explode("_",$data)[1];
             $escape_chat=$this->service->getGroupName($escape_chat_id);
@@ -615,6 +712,16 @@ class Axenia
         }
     }
 
+    public function processCheckout($pre_checkout_query){
+        Request::answerPreCheckoutQuery($pre_checkout_query['id']);
+        Request::sendMessage(LOG_CHAT_ID,"💰 ".Util::getFullNameUser($pre_checkout_query['from'])." donate ".$pre_checkout_query['total_amount']/100 ." rub");
+        $redis=new Redis();
+        $redis->connect('127.0.0.1', 6379);
+        $cookies=$this->service->getDonates($pre_checkout_query['from']['id']);
+        $cookies+=explode(":",$pre_checkout_query['invoice_payload'])[0];
+        $redis->hSet('donates',$pre_checkout_query['from']['id'],$cookies);
+        $redis->close();
+    }
 }
 
 ?>

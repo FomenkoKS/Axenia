@@ -69,14 +69,12 @@ class Request
         curl_setopt($handle, CURLOPT_RETURNTRANSFER, true);
         curl_setopt($handle, CURLOPT_CONNECTTIMEOUT, 5);
         curl_setopt($handle, CURLOPT_TIMEOUT, 60);
-
         return self::exec_curl_request($handle);
     }
 
     private static function exec_curl_request($handle)
     {
         $response = curl_exec($handle);
-
         if ($response === false) {
             $errno = curl_errno($handle);
             $error = curl_error($handle);
@@ -140,6 +138,24 @@ class Request
         self::exec("sendDocument", $data);
     }
 
+    public static function sendInvoice($chat_id, $title, $description, $payload,$provider_token,$start_parameter,$currency,$prices , $addition = NULL)
+    {
+        $data = [
+            'chat_id'           => $chat_id,
+            'title'             => $title,
+            'description'       => $description,
+            'payload'           => $payload,
+            'provider_token'    => $provider_token,
+            'start_parameter'   => $start_parameter,
+            'currency'          => $currency,
+            'prices'            => $prices
+        ];
+        if ($addition != null) {
+            $data = array_replace($data, $addition);
+        }
+        return self::exec("sendInvoice", $data);
+    }
+
     public static function sendHtmlMessage($chat_id, $message, $addition = NULL)
     {
         $data = ['chat_id' => $chat_id, "text" => $message, "parse_mode" => "HTML", "disable_web_page_preview" => true];
@@ -147,6 +163,13 @@ class Request
             $data = array_replace($data, $addition);
         }
         self::exec("sendMessage", $data);
+    }
+
+    public static function deleteMessage($chat_id, $message_id)
+    {
+        $data = ['chat_id' => $chat_id, "message_id" => $message_id];
+
+        self::exec("deleteMessage", $data);
     }
 
 
@@ -157,6 +180,15 @@ class Request
             $data = array_replace($data, $addition);
         }
         self::exec("answerCallbackQuery", $data);
+    }
+
+    public static function answerPreCheckoutQuery($pre_checkout_query_id)
+    {
+        $data = [
+            'pre_checkout_query_id' => $pre_checkout_query_id,
+            "ok" => true
+        ];
+        self::exec("answerPreCheckoutQuery", $data);
     }
 
 
@@ -226,7 +258,6 @@ class Request
             $stat = fstat($content['photo']);
             curl_setopt($ch, CURLOPT_INFILESIZE, 5555);
         }
-        file_put_contents("log1", print_r($stat, true));
         $result = curl_exec($ch);
         curl_close($ch);
         return $result;
@@ -248,10 +279,23 @@ class Request
         return self::execJson("getChatAdministrators", $data);
     }
 
+    public static function getFile($file_id)
+    {
+        $data = array('file_id' => $file_id);
+
+        return self::execJson("getFile", $data);
+    }
+
     public static function getChat($chat_id)
     {
         $data = array('chat_id' => $chat_id);
         return self::execJson("getChat", $data);
+    }
+
+    public static function getUserProfilePhotos($user_id)
+    {
+        $data = array('user_id' => $user_id);
+        return self::execJson("getUserProfilePhotos", $data);
     }
 
     public static function getChatMember($user_id, $chat_id)
@@ -265,10 +309,11 @@ class Request
     {
         //The member's status in the chat. Can be “creator”, “administrator”, “member”, “left” or “kicked”
         $chatMember = self::getChatMember($user_id, $chat_id);
+
         if (isset($chatMember['status'])) {
-            return !Util::isInEnum('left,kicked', $chatMember['status']);
+            return $chatMember['status'];
         }
-        return false;
+        return $chatMember;
     }
 
     public static function getChatMembersCount($chat_id)

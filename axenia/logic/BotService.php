@@ -97,6 +97,7 @@ class BotService
             Lang::message("user.stat.sum") . round($this->db->SumKarma($from_id), 0) . "\r\n" .
             Lang::message("user.stat.place") . $this->db->UsersPlace($from_id) . "\r\n" .
             Lang::message("user.stat.membership") . implode(", ", $this->getUserGroup($from_id)) . "\r\n";
+            //Lang::message("user.stat.cookies") . $this->db->getDonates($from_id) . "\r\n";
         if ($a = $this->getAllUserRewards($from_id)) {
             $res .= Lang::message("user.stat.rewards") . implode(", ", $a);
         }
@@ -115,9 +116,7 @@ class BotService
                 }else{
                     array_push($stack, $value[2].":".$value[0]);
                 }
-
             }
-
             return $stack;
         }
 
@@ -227,9 +226,29 @@ class BotService
         return $this->db->getCooldown($chat_id);
     }
 
+    public function getGrowth($chat_id)
+    {
+        return $this->db->getGrowth($chat_id);
+    }
+
+    public function getAccess($chat_id)
+    {
+        return $this->db->getAccess($chat_id);
+    }
+
     public function setCooldown($chat_id, $cooldown)
     {
         return $this->db->setCooldown($chat_id, $cooldown);
+    }
+
+    public function switchGrowth($chat_id)
+    {
+        return $this->db->setGrowth($chat_id, ($this->db->getGrowth($chat_id)+1)%2);
+    }
+
+    public function switchAccess($chat_id)
+    {
+        return $this->db->setAccess($chat_id, ($this->db->getAccess($chat_id)+1)%2);
     }
 
     public function getChatsIds()
@@ -381,16 +400,21 @@ class BotService
         return array('good' => $good, 'msg' => $msg, 'newLevel' => $level);
     }
 
-    public function checkCoolDown($from_id, $chat){
+    public function checkConditions($from_id, $chat){
         // TODO Время учитывается только если будет удачное голосование, если не удачное то кулдуан не срабаывает. НАдо подумать
         $chat_id = $chat['id'];
-        if ($this->isGroup($chat) && $this->db->isCooldown($from_id, $chat_id)) {
-            if(!$this->db->getTooFastShowed($from_id, $chat_id)) {
-                $this->initLang($chat);
-                Request::sendHtmlMessage($chat_id, Lang::message('karma.tooFast'));
-                $this->db->setTooFastShowed($from_id, $chat_id);
+        if ($this->isGroup($chat)){
+            if($this->getAccess($chat_id)==1 && !$this->isAdminInChat($from_id,$chat)){
+                return false;
             }
-            return false;
+            if($this->db->isCooldown($from_id, $chat_id)) {
+                if(!$this->db->getTooFastShowed($from_id, $chat_id)) {
+                    $this->initLang($chat);
+                    Request::sendHtmlMessage($chat_id, Lang::message('karma.tooFast'));
+                    $this->db->setTooFastShowed($from_id, $chat_id);
+                }
+                return false;
+            }
         }
         return true;
     }
@@ -405,7 +429,7 @@ class BotService
         if ($fromLevel < 0) return $this->createHandleKarmaResult(true, Lang::message('karma.tooSmallKarma'), $newLevel);
 
         $userFrom = $this->getUserName($from);
-        $fromLevelSqrt = $fromLevel == 0 ? 1 : sqrt($fromLevel);
+        $fromLevelSqrt = $fromLevel == 0 ? 1 : ($this->db->getGrowth($chat_id)==1)?1:sqrt($fromLevel);
         $toLevel = $this->getUserLevel($to, $chat_id);
 
         $newLevel = number_format($toLevel + ($isRise ? $fromLevelSqrt : -$fromLevelSqrt),1, '.', '');
@@ -538,9 +562,28 @@ class BotService
 
 //endregion
 // region -------------------- Donate
-    public function getDonates()
+    public function showDonateMenu($from_id){
+        $button_list=[];
+        foreach($this->getDonateButtons() as $a){
+            array_push($button_list, ['text' => Lang::message('donate.price', ['k' => $a['nominal'], 'r' => $a['price']]), 'callback_data' => 'donate_'.$a['id']]);
+        }
+        $text=Lang::message("donate.title");
+        Request::sendHtmlMessage($from_id, $text, ["reply_markup" => ['inline_keyboard' => array_chunk($button_list,2)]]);
+    }
+
+    public function getDonates($user_id)
     {
-        return $this->db->getDonates();
+        return $this->db->getDonates($user_id);
+    }
+
+    public function setDonates($user_id, $donates)
+    {
+        return $this->db->setDonates($user_id,$donates);
+    }
+
+    public function getDonateButtons()
+    {
+        return $this->db->getDonateButtons();
     }
 
     public function insertBill($txn_id,$donate_id,$user_id)
