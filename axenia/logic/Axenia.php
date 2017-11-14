@@ -588,8 +588,13 @@ class Axenia
                         $rez = $cat;
                         break;
                     case 'buy_gif':
-                        $json = json_decode(file_get_contents("https://api.tenor.com/v1/gifs?key=LIVDSRZULELA&ids=".rand(1,10252835).",".rand(1,10252835).",".rand(1,10252835).",".rand(1,10252835).",".rand(1,10252835)), false);
-                        $rez = $json->results[0]->media[0]->gif->url;
+                        do{
+                            $trends = json_decode(file_get_contents("https://api.tenor.com/v1/autocomplete?key=2U08JTUC3MRE&type=trending"), false);
+                            $json = json_decode(file_get_contents("https://api.tenor.com/v1/search?key=2U08JTUC3MRE&q=".$trends->results[rand(0,10)]."&safesearch=moderate&limit=1&pos=".rand(1,10)), false);
+                            //$json = json_decode(file_get_contents("https://api.tenor.com/v1/gifs?key=LIVDSRZULELA&ids=".rand(1,10252835).",".rand(1,10252835).",".rand(1,10252835).",".rand(1,10252835).",".rand(1,10252835)), false);
+                            $rez = $json->results[0]->media[0]->gif->url;
+                        }while($rez==null);
+
                         break;
                     case 'buy_zadolbali':
                         $redis=new Redis();
