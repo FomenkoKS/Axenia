@@ -96,8 +96,8 @@ class BotService
             ($chat_id == NULL ? "" : (Lang::message("user.stat.inchat") . $this->getUserLevel($from_id, $chat_id) . "\r\n")) .
             Lang::message("user.stat.sum") . round($this->db->SumKarma($from_id), 0) . "\r\n" .
             Lang::message("user.stat.place") . $this->db->UsersPlace($from_id) . "\r\n" .
-            Lang::message("user.stat.membership") . implode(", ", $this->getUserGroup($from_id)) . "\r\n";
-            //Lang::message("user.stat.cookies") . $this->db->getDonates($from_id) . "\r\n";
+            Lang::message("user.stat.membership") . implode(", ", $this->getUserGroup($from_id)) . "\r\n"/*.
+            Lang::message("user.stat.cookies") . $this->db->getDonates($from_id) . "\r\n"*/;
         if ($a = $this->getAllUserRewards($from_id)) {
             $res .= Lang::message("user.stat.rewards") . implode(", ", $a);
         }
@@ -109,14 +109,16 @@ class BotService
     {
         if ($a = $this->db->getUserGroups($id)) {
             $a = array_chunk($a, 3);
+
             $stack = array();
             foreach ($a as $value) {
                 if($links){
-                    array_push($stack, (empty($value[1])) ? $value[0] : "<a href='t.me/" . $value[1] . "'>" . $value[0] . "</a>");
+                    array_push($stack, (empty($value[1])) ? $value[0] : "<a href='t.me/" . $value[1] . "'>" . htmlspecialchars($value[0]) . "</a>");
                 }else{
                     array_push($stack, $value[2].":".$value[0]);
                 }
             }
+            file_put_contents("1",print_r($stack,true));
             return $stack;
         }
 
