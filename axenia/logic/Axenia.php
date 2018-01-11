@@ -595,7 +595,7 @@ class Axenia
                         break;
                     case 'buy_cats':
                         $cat = json_decode(file_get_contents("http://random.cat/meow"), true);
-                        $rez = $cat;
+                        $rez = $cat['file'];
                         break;
                     case 'buy_gif':
                         do{

@@ -22,6 +22,12 @@ function redis_error($error)
     throw new error($error);
 }
 
+function handle($update){
+    Request::setUrl(API_URL);
+    $bot = new Axenia(new BotService(new BotDao()));
+    $bot->handleUpdate($update);
+}
+
 if (!$update) {
     exit;
 } else {
@@ -34,12 +40,15 @@ if (!$update) {
         $count = $redis->get($key);
         if ($count == 1 || $redis->pttl($key) == -1) $redis->expire($key, 10);
         if ($count > 20) $redis->expire($key, $count);
-        if ($count < 7 || isset($update['callback_query'])) {
-            Request::setUrl(API_URL);
-            $bot = new Axenia(new BotService(new BotDao()));
-            $bot->handleUpdate($update);
-            if (!($count < 7 || isset($update['callback_query']))) Request::sendMessage(LOG_CHAT_ID, "Spam count: " . $count . " from:" . $update['message']['from']['id'] . "(@" . $update['message']['from']['username'] . ") chat:@" . $update['message']['chat']['username'] . " ttl:" . $redis->pttl($key));
-
+        if(isset($update['callback_query'])){
+            handle($update);
+        } else {
+            if($count < 7){
+                handle($update);
+            } else {
+                Request::setUrl(API_URL);
+                Request::sendMessage(LOG_CHAT_ID, "Spam count: " . $count . " from:" . $update['message']['from']['id'] . "(@" . $update['message']['from']['username'] . ") chat:@" . $update['message']['chat']['username'] . " ttl:" . $redis->pttl($key));
+            }
         }
         $redis->close();
 
