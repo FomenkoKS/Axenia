@@ -45,10 +45,11 @@ if (!$update) {
         } else {
             if($count < 7){
                 handle($update);
-            } else if($count==7){
-                Request::setUrl(API_URL);
-                Request::sendMessage(LOG_CHAT_ID, 'Spam detected from:' . $update['message']['from']['id'] . '(@' . $update['message']['from']['username'] . ') chat:@' . $update['message']['chat']['username'] . ' ttl:' . $redis->pttl($key));
             }
+//            else if($count==7){
+//                Request::setUrl(API_URL);
+//                Request::sendMessage(LOG_CHAT_ID, 'Spam detected from:' . $update['message']['from']['id'] . '(@' . $update['message']['from']['username'] . ') chat:@' . $update['message']['chat']['username'] . ' ttl:' . $redis->pttl($key));
+//            }
         }
         $redis->close();
 
