@@ -12,7 +12,7 @@ require_once('logic/BotService.php');
 require_once('logic/Axenia.php');
 require_once('logic/ShortUrl.php');
 
-$content = file_get_contents("php://input");
+$content = file_get_contents('php://input');
 $update = json_decode($content, true);
 
 function redis_error($error)
@@ -34,7 +34,7 @@ if (!$update) {
     try {
         $redis = new Redis();
         $redis->connect('127.0.0.1', 6379);
-        $key = "from:" . $update['message']['from']['id'];
+        $key = 'from:' . $update['message']['from']['id'];
 
         if (isset($update['message']['text']) && !isset($update['message']['forward_from'])) $redis->incr($key);
         $count = $redis->get($key);
@@ -45,9 +45,9 @@ if (!$update) {
         } else {
             if($count < 7){
                 handle($update);
-            } else {
+            } else if($count==7){
                 Request::setUrl(API_URL);
-                Request::sendMessage(LOG_CHAT_ID, "Spam count: " . $count . " from:" . $update['message']['from']['id'] . "(@" . $update['message']['from']['username'] . ") chat:@" . $update['message']['chat']['username'] . " ttl:" . $redis->pttl($key));
+                Request::sendMessage(LOG_CHAT_ID, 'Spam detected from:' . $update['message']['from']['id'] . '(@' . $update['message']['from']['username'] . ') chat:@' . $update['message']['chat']['username'] . ' ttl:' . $redis->pttl($key));
             }
         }
         $redis->close();
