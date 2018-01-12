@@ -300,7 +300,7 @@ class Axenia
             } elseif (isset($message['migrate_to_chat_id'])) {
                 $rez = $this->service->migrateToNewChatId($message['migrate_to_chat_id'], $chat_id);
                 if (defined('LOG_CHAT_ID')) {
-                    Request::sendHtmlMessage(LOG_CHAT_ID, " 🌓 " . Util::getChatLink($chat) . " migrated from " . $chat_id . " to " . $message['migrate_to_chat_id'] . ($rez? " successful" : " badly") );
+                    Request::sendHtmlMessage(LOG_CHAT_ID, " 🌓 Group " . Util::getChatLink($chat) . " was migrated to supergroup");
                 }
             }
         }
