@@ -92,13 +92,13 @@ class Axenia
                                     $isRise = Util::isInEnum("+,👍", $matches[1]);
                                     if (isset($message['reply_to_message'])) {
                                         $replyUser = $message['reply_to_message']['from'];
-                                        if ($replyUser['username'] != BOT_NAME && !$this->service->isBot($replyUser['username'])) {
+                                        if ($replyUser['username'] != BOT_NAME && !$this->service->isUserBot($replyUser)) {
                                             $this->service->insertOrUpdateUser($replyUser);
                                             $this->doKarmaAction($isRise, $from_id, $replyUser['id'], $chat_id);
                                         }
                                     } else {
                                         if (preg_match('/@([\w]+)/ui', $matches[2], $user)) {
-                                            if (BOT_NAME != $user[1] && !$this->service->isBot($user[1])) {
+                                            if (BOT_NAME != $user[1] && !$this->service->isUsernameEndBot($user[1])) {
                                                 $to = $this->service->getUserID($user[1]);
                                                 if ($to) {
                                                     if(Request::isChatMember($to, $chat_id)){

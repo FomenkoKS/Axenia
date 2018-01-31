@@ -125,9 +125,14 @@ class BotService
         return false;
     }
 
-    public function isBot($username)
+    public function isUsernameEndBot($username)
     {
         return Util::endsWith(strtolower($username), 'bot');
+    }
+
+    public function isUserBot($user)
+    {
+        return $user["is_bot"];
     }
 
     public function CheckRights($user_id,$type)
