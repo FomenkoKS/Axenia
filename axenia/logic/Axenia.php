@@ -47,7 +47,8 @@ class Axenia
         if (
             isset($message['text']) && (
                 !isset($message['entities']) || (
-                    $message['entities'][0]['type'] == 'pre' && $message['entities'][0]['offset'] > 0
+                    $message['entities'][0]['type'] == 'pre' &&
+                    $message['entities'][0]['offset'] > 0
                 )
             )
         ) {
