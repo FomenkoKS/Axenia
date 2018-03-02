@@ -36,24 +36,31 @@ class Axenia
 
     /**
      * Check if is need to handle the message by bot
-     * @param $message
+     * @param array $message
      * @return bool
      */
-    private function needToHandle($message)
+    private function needToHandle(array $message)
     {
-        if ($message['chat']['type'] != "channel") {
-            if (isset($message['text'])) {
-                return Util::startsWith($message['text'], ["/", "+", "-", '👍', '👎']);
-            }
-            if (isset($message['sticker'])) {
-                return Util::startsWith($message['sticker']['emoji'], ['👍', '👎']);
-            }
-            if (isset($message['new_chat_member']) || isset($message['new_chat_title']) || isset($message['left_chat_member']) || isset($message['migrate_to_chat_id'])) {
-                return true;
-            }
+        if ($message['chat']['type'] == 'channel') {
+            return false;
         }
-
-        return false;
+        if (
+            isset($message['text']) &&
+            (!isset($message['entities']) || $message['entities'][0]['offset'] > 0)
+        ) {
+            return Util::startsWith($message['text'], ['/', '+', '-', '👍', '👎']);
+        }
+        if (isset($message['sticker'])) {
+            return Util::startsWith($message['sticker']['emoji'], ['👍', '👎']);
+        }
+        if (
+            isset($message['new_chat_member']) ||
+            isset($message['new_chat_title']) ||
+            isset($message['left_chat_member']) ||
+            isset($message['migrate_to_chat_id'])
+        ) {
+            return true;
+        }
     }
 
     public function processMessage($message)
