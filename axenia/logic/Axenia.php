@@ -45,8 +45,11 @@ class Axenia
             return false;
         }
         if (
-            isset($message['text']) &&
-            (!isset($message['entities']) || $message['entities'][0]['offset'] > 0)
+            isset($message['text']) && (
+                !isset($message['entities']) || (
+                    $message['entities'][0]['type'] == 'pre' && $message['entities'][0]['offset'] > 0
+                )
+            )
         ) {
             return Util::startsWith($message['text'], ['/', '+', '-', '👍', '👎']);
         }
