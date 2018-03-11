@@ -107,15 +107,16 @@ class BotService
 
     public function getUserGroup($id,$links=true)
     {
+
         if ($a = $this->db->getUserGroups($id)) {
             $a = array_chunk($a, 3);
 
             $stack = array();
             foreach ($a as $value) {
                 if($links){
-                    array_push($stack, (empty($value[1])) ? $value[0] : "<a href='t.me/" . $value[1] . "'>" . htmlspecialchars($value[0]) . "</a>");
+                    array_push($stack, (empty($value[1])) ? htmlspecialchars($value[0]) : "<a href='https://t.me/" . $value[1] . "'>" . htmlspecialchars($value[0]) . "</a>");
                 }else{
-                    array_push($stack, $value[2].":".$value[0]);
+                    array_push($stack, $value[2].":".htmlspecialchars($value[0]));
                 }
             }
             file_put_contents("1",print_r($stack,true));

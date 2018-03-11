@@ -171,55 +171,7 @@ class Axenia
                             }
                         }
                         break;
-                    case Util::startsWith($text, ("/test")):
-                        Request::sendMessage($chat_id,file_get_contents("http://media.obutts.ru/butts_preview/05256.jpg"));
-                        if ($this->service->CheckRights($from_id,5)) {
-                            /* Прикрываю, может стоит сделать отрисовку лишь инвентаря
-                            //$redis->hSet("StatBackgrounds",$from_id,"AgADAgADMKgxGzXdmEg_wwW7rF4IC2QTSw0ABGxhzjOqzk-V-SsIAAEC");
 
-                            array_map("unlink", glob("./imgs/".$from_id."_*"));
-                            //$redis->hSet("StatBackgrounds",$from_id,"AgADAgADMKgxGzXdmEg_wwW7rF4IC2QTSw0ABGxhzjOqzk-V-SsIAAEC");
-                            $photo=Request::getFile($redis->hGet("StatBackgrounds",$from_id));
-                            $file_path="https://api.telegram.org/file/bot".BOT_TOKEN."/".$photo['file_path'];
-                            $pic = ImageCreateFromjpeg($file_path); //открываем рисунок в формате JPEG
-                            Header("Content-type: image/jpeg");
-                            $h = 40;
-                            $w = 20;
-                            $text="Статистика пользователя";
-                            $font_file = './imgs/krabuler.ttf';
-                            ImageTTFtext($pic, 26, 0, $w-2, $h, 0x000000, $font_file, $text);
-                            ImageTTFtext($pic, 26, 0, $w+2, $h, 0x000000, $font_file, $text);
-                            ImageTTFtext($pic, 26, 0, $w, $h-2, 0x000000, $font_file, $text);
-                            ImageTTFtext($pic, 26, 0, $w, $h+2, 0x000000, $font_file, $text);
-                            ImageTTFtext($pic, 26, 0, $w, $h, 0xffffff, $font_file, $text);
-
-                            $light = imagecolorallocatealpha($pic, 250, 250, 250, 100);
-                            imagefilledrectangle($pic,80,70,575,350,$light);
-
-                            $font_file = './imgs/aac.ttf';
-                            ImageTTFtext($pic, 18, 0, 95, 90, 0x000000, $font_file,
-                                Util::getFullNameUser($from).'\r\n'.
-                                Lang::message("user.stat.inchat") . $this->service->getUserLevel($from_id, $chat_id)
-                            );
-
-                            $avatar=Request::getUserProfilePhotos($from_id);
-                            $file_path=Request::getFile($avatar['photos'][0][0]['file_id'])['file_path'];
-                            $file_path="https://api.telegram.org/file/bot".BOT_TOKEN."/".$file_path;
-                            $ava_pic = ImageCreateFromjpeg($file_path);
-                            imagecopyresampled($ava_pic,$ava_pic,0,0,0,0,64,64,imagesx($ava_pic),imagesy($ava_pic));
-                            imagealphablending($pic, false);
-                            imagesavealpha($pic, true);
-                            imagecopymerge($pic, $ava_pic, 20, 60, 0, 0, 64, 64, 100);
-
-                            $imgName="imgs/".$from_id."_".time().".jpg";
-
-                            Imagejpeg($pic,$imgName); //сохраняем рисунок в формате JPEG
-                            ImageDestroy($pic); //освобождаем память и закрываем изображение
-                            ImageDestroy($ava_pic); //освобождаем память и закрываем изображение
-                            Request::sendPhoto($chat_id, "https://axeniabot.ru/format/".$imgName);
-                            */
-                        }
-                        break;
                     case Util::startsWith($text, ("/Redis")):
                         if ($this->service->CheckRights($from_id,5)) {
                             if (preg_match('/^(\/RedisSet) ([\S]+) ([\S]+)/ui ', $text, $matches)) {
@@ -244,30 +196,6 @@ class Axenia
                     case Util::startsWith($text, ("/support")):
                         if ($isPrivate) {
                             Request::sendMessage($chat_id,Lang::message('donate.support'));
-                        }
-                        break;
-                    case Util::startsWith($text, ("/tutu")):
-                        if (defined('TRASH_CHAT_ID')) {
-                            Request::sendTyping($chat_id);
-                            $ok = false;
-                            $ii = 0;
-                            do {
-                                $ii = $ii + 1;
-                                $message = Request::exec("forwardMessage", array('chat_id' => TRASH_CHAT_ID, "from_chat_id" => "@gone_wild", "disable_notification" => true, "message_id" => rand(1, 14575)));
-                                if ($message !== false && isset($message['photo'])) {
-                                    $array = $message['photo'];
-                                    $file_id = $array[0]['file_id'];
-                                    foreach ($array as $file) {
-                                        $height = (int)$file['height'];
-                                        if ($height > 600 && $height <= 1280) {
-                                            $file_id = $file['file_id'];
-                                        }
-                                    }
-                                    Request::sendPhoto($chat_id, $file_id);
-                                    $ok = true;
-                                }
-                                sleep(1);
-                            } while (!$ok && $ii < 4);
                         }
                         break;
                 }
