@@ -415,12 +415,12 @@ class Axenia
                                 'text'  => Lang::message('settings.unfollow'),
                                 'callback_data' =>  'set_escapeFromGroup'
                             ]
-                        ],[
+                        ]/*,[
                             [
                                 'text'  => Lang::message('settings.erase'),
                                 'callback_data' =>  'set_eraseGroup'
                             ]
-                        ]
+                        ]*/
                     ];
                     $text .= Lang::message("settings.title.lang", ["lang" => Lang::getCurrentLangDesc()]) . "\r\n";
                 } else {
