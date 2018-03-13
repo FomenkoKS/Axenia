@@ -141,6 +141,14 @@ class BotService
         return $this->db->GetRights($user_id)[$type];
     }
 
+    public function setEscapeCooldown($chat_id,$user_id){
+        return $this->db->setEscapeCooldown($chat_id,$user_id);
+    }
+
+    public function getEscapeCooldown($chat_id,$user_id){
+        return $this->db->getEscapeCooldown($chat_id,$user_id);
+    }
+
 //endregion
 
 // region -------------------- Admins
@@ -321,7 +329,7 @@ class BotService
 
     public function getGroupName($chat_id)
     {
-        return $this->db->getGroupName($chat_id);
+        return htmlspecialchars($this->db->getGroupName($chat_id));
     }
 
     public function getGroupsMistakes()
@@ -569,6 +577,7 @@ class BotService
     }
 
 //endregion
+
 // region -------------------- Donate
     public function showDonateMenu($from_id){
         $button_list=[];

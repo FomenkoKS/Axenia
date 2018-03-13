@@ -66,6 +66,20 @@ class BotDao extends AbstractDao
         $res = $this->select($q);
         return $res;
     }
+
+    public function setEscapeCooldown($chat_id,$user_id){
+        $redis=$this->rConnect();
+        $result=$redis->hSet('escapeCooldown',$chat_id.":".$user_id,strtotime('+1 week', time()));
+        $redis->close();
+        return $result;
+    }
+
+    public function getEscapeCooldown($chat_id,$user_id){
+        $redis=$this->rConnect();
+        $result=$redis->hGet('escapeCooldown',$chat_id.":".$user_id);
+        $redis->close();
+        return $result;
+    }
 //endregion
 
 // region -------------------- Lang

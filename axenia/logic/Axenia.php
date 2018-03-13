@@ -367,11 +367,17 @@ class Axenia
                 break;
             case "set_escapeFromGroup":
                 $a=$this->service->getUserGroup($chat_id,false);
+                $user_id=$chat_id;
                 $buttons=[];
                 foreach($a as $item){
-                    array_push($buttons,['text'=>explode(":",$item)[1],'callback_data'=>"escape_".explode(":",$item)[0]]);
+                    $chat_id=explode(":",$item)[0];
+                    if(!$this->service->getEscapeCooldown($chat_id,$user_id)){
+                        if($this->service->getEscapeCooldown($chat_id,$user_id)<time()){
+                            array_push($buttons,['text'=>htmlspecialchars_decode(explode(":",$item)[1]),'callback_data'=>"escape_".$chat_id]);
+                        }
+                    }
                 }
-
+                $chat_id=$user_id;
                 $button_list=array_chunk($buttons,3);
                 $text = Lang::message('settings.unfollow.title');
                 break;
@@ -643,6 +649,7 @@ class Axenia
             $escape_chat=$this->service->getGroupName($escape_chat_id);
             if(strpos($data, "accept") !== false){
                 $this->service->deleteUserDataInChat($chat_id,$escape_chat_id);
+                $this->service->setEscapeCooldown($escape_chat_id,$chat_id);
                 $text = Lang::message('settings.unfollow.success',['chat_id' =>$escape_chat_id,'chat'=>$escape_chat]);
                 Request::editMessageText($chat_id, $message['message_id'], $text, ["parse_mode" => "HTML"]);
             }elseif(strpos($data, "reject") !== false){
