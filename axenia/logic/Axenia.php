@@ -532,8 +532,10 @@ class Axenia
                         $rez=substr($json,12,-2);
                         break;
                     case 'buy_cats':
-                        $cat = json_decode(file_get_contents("http://random.cat/meow"), true);
-                        $rez = $cat['file'];
+                        $xml=file_get_contents ("http://thecatapi.com/api/images/get?api_key=Mjg0Mzg2&format=xml");
+                        $s=strpos($xml,"<url>");
+                        $e=strpos($xml,"</url>");
+                        $rez=substr($xml,$s+5,$e-$s-5);
                         break;
                     case 'buy_gif':
                         do{
