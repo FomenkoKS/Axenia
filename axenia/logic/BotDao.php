@@ -526,17 +526,15 @@ class BotDao extends AbstractDao
 // region -------------------- Donate
     public function getDonates($user_id)
     {
-        $redis=new Redis();
-        $redis->connect('127.0.0.1', 6379);
-        $result=$redis->hGet('donates',$user_id);
+        $redis=$this->rConnect();
+        $result=$redis->hGet('cookies',$user_id);
         $redis->close();
         return $result;
     }
     public function setDonates($user_id, $donates)
     {
-        $redis=new Redis();
-        $redis->connect('127.0.0.1', 6379);
-        $result=$redis->hSet('donates',$user_id, $donates);
+        $redis=$this->rConnect();
+        $result=$redis->hSet('cookies',$user_id, $donates);
         $redis->close();
         return $result;
     }
@@ -550,11 +548,13 @@ class BotDao extends AbstractDao
         return array();
     }
 
-    public function insertBill($txn_id,$donate_id,$user_id)
+    public function insertBill($txn_id,$donate,$user_id)
     {
-        $q="INSERT INTO Bills(txn_id,donate_id,user_id) 
-            VALUES('".$txn_id."',".$donate_id.",".$user_id.")";
-        return $this->insert($q);
+        $redis=$this->rConnect();
+        $redis->hSet('bills',$txn_id."_u",$user_id);
+        $result=$redis->hSet('bills',$txn_id."_n",$donate);
+        $redis->close();
+        return $result;
     }
 //endregion
 }

@@ -126,7 +126,7 @@ class Axenia
                         break;
                     case (Util::startsWith($text, "/donate" . $postfix)):
                         if ($isPrivate) {
-                            //$this->service->showDonateMenu($from_id);
+                            $this->service->showDonateMenu($from_id);
                         }
                         break;
                     case (Util::startsWith($text, "/settings" . $postfix)):
@@ -385,28 +385,32 @@ class Axenia
                 $cookies=$this->service->getDonates($chat_id);
                /* $text=$cookies;*/
                // Request::sendMessage($chat_id,);
+                $user_id=$chat_id;
                 if($cookies>=$this->service->getDonateButtons()[0]['nominal']){
-                    $a=$this->service->getUserGroup($chat_id,false);
+                    $a=$this->service->getUserGroup($user_id,false);
                     $buttons=[];
                     foreach($a as $item){
-                        array_push($buttons,['text'=>explode(":",$item)[1],'callback_data'=>"erase_".explode(":",$item)[0]]);
+                        $chat_id=explode(":",$item)[0];
+                        $member=Request::getChatMember($user_id,$chat_id);
+                        if($member['status']=="creator" || $member['status']=="administrator"){
+                            array_push($buttons,['text'=>explode(":",$item)[1],'callback_data'=>"erase_".$chat_id]);
+                        }
                     }
-                    $button_list=array_chunk($buttons,3);
-                    $text = Lang::message('settings.erase.title')."\r\n\r\n". Lang::message('settings.groups.adminonly');
+                    if(count($buttons)>0){
+                        $button_list=array_chunk($buttons,3);
+                        $text = Lang::message('settings.erase.title')."\r\n\r\n". Lang::message('settings.groups.adminonly');
+                    }else{
+                        $button_list=[];
+                        $text = Lang::message('settings.erase.notallow');
+                    }
+
                 }else{
                     $text = Lang::message("donate.notEnough");
                     $button_list = [
                         [['text' => Lang::message("settings.button.back"), 'callback_data' => "set_back"]]
                     ];
                 }
-                /*$a=$this->service->getUserGroup($chat_id,false);
-                $buttons=[];
-                foreach($a as $item){
-                    array_push($buttons,['text'=>explode(":",$item)[1],'callback_data'=>"escape_".explode(":",$item)[0]]);
-                }
-
-                $button_list=array_chunk($buttons,3);
-                $text = Lang::message('settings.unfollow.title');*/
+                $chat_id=$user_id;
                 break;
             default:
                 $text = Lang::message('settings.title') . "\r\n";
@@ -421,12 +425,12 @@ class Axenia
                                 'text'  => Lang::message('settings.unfollow'),
                                 'callback_data' =>  'set_escapeFromGroup'
                             ]
-                        ]/*,[
+                        ],[
                             [
                                 'text'  => Lang::message('settings.erase'),
                                 'callback_data' =>  'set_eraseGroup'
                             ]
-                        ]*/
+                        ]
                     ];
                     $text .= Lang::message("settings.title.lang", ["lang" => Lang::getCurrentLangDesc()]) . "\r\n";
                 } else {
@@ -601,48 +605,24 @@ class Axenia
         } elseif (strpos($data, "donate_") !== false) {
             $donates = $this->service->getDonateButtons();
             foreach ($donates as $k => $a) if ($a['id'] == explode("_", $data)[1]) $key = $k;
-            /*
-
-            $txn_id = substr(hash_hmac('sha256',  rand(1, 99999999), Date('d-m-Yhh-mm-ss')),1,16);
-            Request::sendInvoice(
-                $chat_id,
-                $donates[$key]['nominal'] ." 🍪",
-                Lang::message('donate.bill', ['nom' => $donates[$key]['nominal']]),
-                $donates[$key]['nominal'].":".$txn_id, //в токене будет сумма храниться
-                STRIPE_TOKEN,
-                "PAYLOAD",
-                "RUB",
-                [["label"=>"Цена", "amount"=>$donates[$key]['price']*100]],
-                [
-                    ['need_name'   =>  false],
-                    ['need_phone_number'   =>  false],
-                    ['need_email'   =>  false],
-                    ['need_shipping_address'   =>  false],
-                ]
-            );
-            Request::deleteMessage($chat_id,$message['message_id']);
-            Request::sendMessage($chat_id,Lang::message('donate.attention'));}*/
 
             $text = "https://bill.qiwi.com/order/external/create.action";
-            //$txn_id = substr(hash_hmac('sha256',  rand(1, 99999999), Date('d-m-Yhh-mm-ss')),1,16);
-            $txn_id = md5(Date('dmYhhmmss') . $chat_id);
+            $txn_id = md5(rand(1, 99999999).Date('dmYhhmmss') . $chat_id);
             $params = [
-                "from" => qiwi_api_id,
+                "from" => QIWI_API_ID,
                 "summ" => $donates[$key]['price'],
-                "currency" => "rub",
+                "currency" => "RUB",
                 "comm" => "получение " . $donates[$key]['nominal'] . " печенек",
                 "txn_id" => $txn_id,
-                "iframe" => "true",
-                "successurl" => 'http://axeniabot.ru/success.php',
-                "lifetime" => date('y-m-d', strtotime(date('y-m-d') . " + 1 day")) . "t00:00:00",
-                "target" => "iframe"
+                "successurl" => 'http://axeniabot.ru/QiwiPaid.php',
+                "lifetime" => date('y-m-d', strtotime(date('y-m-d') . " + 1 day")) . "t00:00:00"
             ];
             $url = $text . "?" . http_build_query($params);
             $googer = new GoogleURLAPI(GOOGLE_API_KEY);
             $shortDWName = $googer->shorten($url);
             $text = Lang::message('donate.bill', ['nom' => $donates[$key]['nominal'], 'url' => $shortDWName]);
             Request::editMessageText($chat_id, $message['message_id'], $text, ["parse_mode" => "HTML", "reply_markup" => ['inline_keyboard' => [[["text" => Lang::message("donate.pay"), "url" => $shortDWName]]]]]);
-            $this->service->insertBill($txn_id, $donates[$key]['id'], $chat_id);
+            $this->service->insertBill($txn_id, $donates[$key]['nominal'], $chat_id);
 
         } elseif (strpos($data, "escape_") !== false) {
             $escape_chat_id=explode("_",$data)[1];
@@ -659,19 +639,26 @@ class Axenia
                 $text = Lang::message('settings.unfollow.confirm',['chat_id' =>$escape_chat_id,'chat'=>$escape_chat]);
                 Request::editMessageText($chat_id, $message['message_id'], $text, ["parse_mode" => "HTML", "reply_markup" => ['inline_keyboard' => [[["text" => "✔️".Lang::message("confirm.yes"), "callback_data" => $data."_accept"],["text" => "❌".Lang::message("confirm.no"), "callback_data" => $data."_reject"]]]]]);
             }
+        } elseif (strpos($data, "erase_") !== false) {
+            $erase_chat_id=explode("_",$data)[1];
+            $erase_chat=$this->service->getGroupName($erase_chat_id);
+            if(strpos($data, "accept") !== false){
+                $this->service->deleteChat($erase_chat_id);
+                $balance=$this->service->getDonates($chat_id)-$this->service->getDonateButtons()[0]['nominal'];
+                $this->service->setDonates($chat_id,$balance);
+
+                $text = Lang::message('settings.erase.success',['chat_id' =>$erase_chat_id,'chat'=>$erase_chat]);
+                Request::editMessageText($chat_id, $message['message_id'], $text, ["parse_mode" => "HTML"]);
+            }elseif(strpos($data, "reject") !== false){
+                $text = Lang::message('settings.erase.cancel',['chat_id' =>$erase_chat_id,'chat'=>$erase_chat]);
+                Request::editMessageText($chat_id, $message['message_id'], $text, ["parse_mode" => "HTML"]);
+            }else{
+                $text = Lang::message('settings.erase.confirm',['chat_id' =>$erase_chat_id,'chat'=>$erase_chat]);
+                Request::editMessageText($chat_id, $message['message_id'], $text, ["parse_mode" => "HTML", "reply_markup" => ['inline_keyboard' => [[["text" => "✔️".Lang::message("confirm.yes"), "callback_data" => $data."_accept"],["text" => "❌".Lang::message("confirm.no"), "callback_data" => $data."_reject"]]]]]);
+            }
         }
     }
 
-    public function processCheckout($pre_checkout_query){
-        Request::answerPreCheckoutQuery($pre_checkout_query['id']);
-        Request::sendMessage(LOG_CHAT_ID,"💰 ".Util::getFullNameUser($pre_checkout_query['from'])." donate ".$pre_checkout_query['total_amount']/100 ." rub");
-        $redis=new Redis();
-        $redis->connect('127.0.0.1', 6379);
-        $cookies=$this->service->getDonates($pre_checkout_query['from']['id']);
-        $cookies+=explode(":",$pre_checkout_query['invoice_payload'])[0];
-        $redis->hSet('donates',$pre_checkout_query['from']['id'],$cookies);
-        $redis->close();
-    }
 }
 
 ?>

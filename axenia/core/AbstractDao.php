@@ -40,8 +40,6 @@ class AbstractDao
         return $redis;
     }
 
-
-
     public function connect()
     {
         // Try and connect to the database
