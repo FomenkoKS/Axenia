@@ -88,9 +88,9 @@ $type = $site->getViewType($_GET);
     <div class="container" style="background-color: rgba(92, 80, 155, 0.4);">
         <div class="row" style="padding: 20px 0;">
             <div class="col-md-6 col-xs-6">
-                <button class="btn btn-sm btn-dark" data-toggle="modal" data-target="#myModal" id="for_food">
+                <a href="https://t.me/Axenia_bot?start=donate">
                     Пожертвовать на проект
-                </button>
+                </a>
                 <p style="padding-top: 4px;" >Написать в <a href="https://t.me/axenia_support">группу поддержки</a><br/><a
                         href="https://telegram.me/storebot?start=Axenia_bot">Оставить отзыв</a>
                 </p>
