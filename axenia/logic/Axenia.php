@@ -125,9 +125,7 @@ class Axenia
                         }
                         break;
                     case (Util::startsWith($text, "/donate" . $postfix)):
-                        if ($isPrivate) {
-                            $this->service->showDonateMenu($from_id);
-                        }
+                        $this->service->showDonateMenu($from_id);
                         break;
                     case (Util::startsWith($text, "/settings" . $postfix)):
                         Request::sendTyping($chat_id);
