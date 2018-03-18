@@ -148,7 +148,7 @@ class Util
     public static function getChatLink($chat)
     {
         if (isset($chat["username"])) {
-            $out = "<a href='telegram.me/" . $chat["username"] . "'>" . $chat["title"] . "</a>";
+            $out = "<a href='t.me/" . $chat["username"] . "'>" . $chat["title"] . "</a>";
         } else {
             $out = "<b>" . $chat["title"] . "</b>";
         }
