@@ -343,7 +343,9 @@ class Axenia
                     [
                         ['text' => "0.1" . $minuteText, 'callback_data' => 'set_0'],
                         ['text' => "1" . $minuteText, 'callback_data' => 'set_1'],
-                        ['text' => "2" . $minuteText, 'callback_data' => 'set_2']
+                        ['text' => "2" . $minuteText, 'callback_data' => 'set_2'],
+                        ['text' => "10" . $minuteText, 'callback_data' => 'set_10'],
+                        ['text' => "20" . $minuteText, 'callback_data' => 'set_20']
                     ],
                     [['text' => Lang::message("settings.button.back"), 'callback_data' => "set_back"]]
                 ];

@@ -98,6 +98,7 @@ class BotService
             Lang::message("user.stat.place") . $this->db->UsersPlace($from_id) . "\r\n" .
             Lang::message("user.stat.membership") . implode(", ", $this->getUserGroup($from_id)) . "\r\n".
             Lang::message("user.stat.cookies") . $this->db->getDonates($from_id) . "\r\n";
+            file_put_contents("2",print_r($this->getUserGroup($from_id),true));
         if ($a = $this->getAllUserRewards($from_id)) {
             $res .= Lang::message("user.stat.rewards") . implode(", ", $a);
         }
