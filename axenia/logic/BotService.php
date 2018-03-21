@@ -98,7 +98,6 @@ class BotService
             Lang::message("user.stat.place") . $this->db->UsersPlace($from_id) . "\r\n" .
             Lang::message("user.stat.membership") . implode(", ", $this->getUserGroup($from_id)) . "\r\n".
             Lang::message("user.stat.cookies") . $this->db->getDonates($from_id) . "\r\n";
-            file_put_contents("2",print_r($this->getUserGroup($from_id),true));
         if ($a = $this->getAllUserRewards($from_id)) {
             $res .= Lang::message("user.stat.rewards") . implode(", ", $a);
         }
@@ -111,7 +110,6 @@ class BotService
 
         if ($a = $this->db->getUserGroups($id)) {
             $a = array_chunk($a, 3);
-
             $stack = array();
             foreach ($a as $value) {
                 if($links){
@@ -120,7 +118,7 @@ class BotService
                     array_push($stack, $value[2].":".htmlspecialchars($value[0]));
                 }
             }
-            file_put_contents("1",print_r($stack,true));
+
             return $stack;
         }
 
