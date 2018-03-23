@@ -216,8 +216,7 @@ class BotDao extends AbstractDao
             WHERE k.chat_id=c.id AND k.user_id=" . $user_id . " and c.isPresented=1
             ORDER BY c.title"
         );
-
-        return (!$res[0]) ? false : $res;
+        return (!$res[2]) ? false : $res;
     }
 
     public function getMembersCount($chat_id)

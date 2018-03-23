@@ -592,6 +592,12 @@ class Axenia
                     case 'set_2':
                         $this->service->setCooldown($chat_id, 2);
                         break;
+                    case 'set_10':
+                        $this->service->setCooldown($chat_id, 10);
+                        break;
+                    case 'set_20':
+                        $this->service->setCooldown($chat_id, 20);
+                        break;
                     case 'set_another_growth':
                         $this->service->switchGrowth($chat_id);
                         break;
