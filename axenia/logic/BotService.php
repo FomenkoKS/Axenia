@@ -95,11 +95,11 @@ class BotService
             Lang::message("user.stat.name") . Util::getFullNameUser($from) . "\r\n" .
             ($chat_id == NULL ? "" : (Lang::message("user.stat.inchat") . $this->getUserLevel($from_id, $chat_id) . "\r\n")) .
             Lang::message("user.stat.sum") . round($this->db->SumKarma($from_id), 0) . "\r\n" .
-            Lang::message("user.stat.place") . $this->db->UsersPlace($from_id) . "\r\n" .
-            Lang::message("user.stat.membership") . implode(", ", $this->getUserGroup($from_id)) . "\r\n".
-            Lang::message("user.stat.cookies") . $this->db->getDonates($from_id) . "\r\n";
+            Lang::message("user.stat.place") . $this->db->UsersPlace($from_id) . "\r\n";
+        if(!$this->db->isHidden($from_id)) $res.=Lang::message("user.stat.membership") . implode(", ", $this->getUserGroup($from_id)) . "\r\n";
+        $res.=Lang::message("user.stat.cookies") . $this->db->getDonates($from_id) . "\r\n";
         if ($a = $this->getAllUserRewards($from_id)) {
-            $res .= Lang::message("user.stat.rewards") . implode(", ", $a);
+            $res .= Lang::message("user.s? tat.rewards") . implode(", ", $a);
         }
 
         return $res;
@@ -123,6 +123,15 @@ class BotService
         }
 
         return false;
+    }
+
+    public function isHidden($user_id){
+        return $this->db->isHidden($user_id);
+    }
+
+    public function toggleHidden($user_id){
+        $value=($this->db->isHidden($user_id))?0:1;
+        return $this->db->setHidden($user_id,$value);
     }
 
     public function isUsernameEndBot($username)
@@ -605,6 +614,11 @@ class BotService
     public function insertBill($txn_id,$donate,$user_id)
     {
         return $this->db->insertBill($txn_id,$donate,$user_id);
+    }
+
+    public function getPrice($codename)
+    {
+        return $this->db->getPrice($codename);
     }
 //endregion
 }

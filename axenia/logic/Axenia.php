@@ -169,33 +169,6 @@ class Axenia
                             }
                         }
                         break;
-
-                    case Util::startsWith($text, ("/Redis")):
-                        if ($this->service->CheckRights($from_id,5)) {
-                            if (preg_match('/^(\/RedisSet) ([\S]+) ([\S]+)/ui ', $text, $matches)) {
-                                Request::sendMessage($chat_id, print_r($redis->set($matches[2],$matches[3]),true));
-                            }
-                            if (preg_match('/^(\/RedisGet) ([\S]+)/ui ', $text, $matches)) {
-                                Request::sendMessage($chat_id, print_r($redis->get($matches[2]),true));
-                            }
-                            if (preg_match('/^(\/RedisKeys) ([\S]*)/ui ', $text, $matches)) {
-                                Request::sendMessage($chat_id, print_r($redis->keys($matches[2]),true));
-                            }
-                            if (preg_match('/^(\/RedisDel) ([\S]*)/ui ', $text, $matches)) {
-                                Request::sendMessage($chat_id, print_r($redis->del($matches[2]),true));
-                            }
-                        }
-                        break;
-                    case Util::startsWith($text, ("/terms")):
-                        if ($isPrivate) {
-                            Request::sendHtmlMessage($chat_id,Lang::message('donate.terms'));
-                        }
-                        break;
-                    case Util::startsWith($text, ("/support")):
-                        if ($isPrivate) {
-                            Request::sendMessage($chat_id,Lang::message('donate.support'));
-                        }
-                        break;
                 }
                 $redis->close();
             } elseif (isset($message['new_chat_member'])) {
@@ -388,7 +361,7 @@ class Axenia
                /* $text=$cookies;*/
                // Request::sendMessage($chat_id,);
                 $user_id=$chat_id;
-                if($cookies>=$this->service->getDonateButtons()[0]['nominal']){
+                if($cookies>=$this->service->getPrice('erase')){
                     $a=$this->service->getUserGroup($user_id,false);
                     $buttons=[];
                     foreach($a as $item){
@@ -414,9 +387,23 @@ class Axenia
                 }
                 $chat_id=$user_id;
                 break;
+            case "set_switchHidden":
+                $cookies=$this->service->getDonates($chat_id);
+                if($cookies>=$this->service->getPrice('hidden')){
+                    $this->service->toggleHidden($chat_id);
+                    $data = NULL;
+                    $this->sendSettings($chat, $message, $data);
+                }else{
+                    $text = Lang::message("donate.notEnough");
+                    $button_list = [
+                        [['text' => Lang::message("settings.button.back"), 'callback_data' => "set_back"]]
+                    ];
+                }
+                break;
             default:
                 $text = Lang::message('settings.title') . "\r\n";
                 if ($this->service->isPrivate($chat)) {
+
                     $button_list = [
                         [
                             [
@@ -429,11 +416,22 @@ class Axenia
                             ]
                         ],[
                             [
-                                'text'  => Lang::message('settings.erase'),
+                                'text'  => Lang::message('settings.erase').' '.Lang::message('settings.price',['price'=>$this->service->getPrice('erase')]),
                                 'callback_data' =>  'set_eraseGroup'
                             ]
                         ]
                     ];
+                    $newButton='settings.hidden.';
+                    $newButton.=$this->service->isHidden($chat_id)?'turnoff':'turnon';
+                    $newButton=Lang::message($newButton);
+                    if(is_null($this->service->isHidden($chat_id))) $newButton.=' '.Lang::message('settings.price',['price'=>$this->service->getPrice('hidden')]);
+
+                    array_push($button_list,[
+                        [
+                            'text'  => $newButton,
+                            'callback_data' =>  'set_switchHidden'
+                        ]
+                    ]);
                     $text .= Lang::message("settings.title.lang", ["lang" => Lang::getCurrentLangDesc()]) . "\r\n";
                 } else {
                     $button_list = [

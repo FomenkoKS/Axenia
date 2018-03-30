@@ -80,6 +80,15 @@ class BotDao extends AbstractDao
         $redis->close();
         return $result;
     }
+
+    public function isHidden($user_id){
+        $res = $this->select("SELECT hidden FROM Users WHERE id=" . $user_id);
+        return (is_null($res[0])) ? null : $res[0];
+    }
+
+    public function setHidden($user_id,$value){
+        return $this->update("UPDATE Users SET hidden = ".$value." WHERE id = ".$user_id);
+    }
 //endregion
 
 // region -------------------- Lang
@@ -545,6 +554,12 @@ class BotDao extends AbstractDao
             return $res;
         }
         return array();
+    }
+
+    public function getPrice($codename)
+    {
+        $res = $this->select("SELECT price FROM Prices where codename='".$codename."'");
+        return (!$res[0]) ? 0 : $res[0];
     }
 
     public function insertBill($txn_id,$donate,$user_id)
