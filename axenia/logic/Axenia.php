@@ -390,6 +390,7 @@ class Axenia
             case "set_switchHidden":
                 $cookies=$this->service->getDonates($chat_id);
                 if($cookies>=$this->service->getPrice('hidden')){
+                    if(is_null($this->service->isHidden($chat_id))) $this->service->setDonates($chat_id,$cookies-$this->service->getPrice('hidden'));
                     $this->service->toggleHidden($chat_id);
                     $data = NULL;
                     $this->sendSettings($chat, $message, $data);
@@ -401,7 +402,8 @@ class Axenia
                 }
                 break;
             default:
-                $text = Lang::message('settings.title') . "\r\n";
+                $text=($this->service->isPrivate($chat))?'settings.titlePrivate':'settings.titleGroup';
+                $text = Lang::message($text) . "\r\n";
                 if ($this->service->isPrivate($chat)) {
 
                     $button_list = [

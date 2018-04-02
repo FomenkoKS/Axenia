@@ -335,10 +335,15 @@ Please, give a rating for me ;) t.me/storebot?start=axenia_bot",
         "ru" => "Это предназначено для :user",
         "ruUN" => "Это не для тебя. :user должен сделать выбор."
     ],
-    "settings.title" => [
+    "settings.titleGroup" => [
         "en" => "<b>🛠Settings</b> \r\n<i>Access to changing is only for admins.</i>\r\n",
         "ru" => "<b>🛠Настройки</b> \r\n<i>Изменять могут только администраторы группы.</i>\r\n",
         "ruUN" => "<b>🛠Настройки</b> \r\n<i>Изменять настройки могут только админы.</i>\r\n"
+    ],
+    "settings.titlePrivate" => [
+        "en" => "<b>🛠Settings</b> \r\nAttention please! Some operations for groups enabled only for administrators. Also some functions enabled for cookies🍪. \r\nYou can add cookies with /donate command.\r\n",
+        "ru" => "<b>🛠Настройки</b> \r\nОбратите внимание, что часть операций, связанных с работой группы, доступна только для администраторов группы. Также часть функций доступна за печеньки🍪. \r\nПополнить их запас возможно с помощью команды /donate.\r\n",
+        "ruUN" => "<b>🛠Настройки</b> \r\nОбрати внимание, что часть операций, связанных с работой группы, доступна только для администраторов группы. Также часть функций доступна за печеньки🍪. \r\nПополнить их запас можешь с помощью команды /donate.\r\n"
     ],
     "settings.adminonly" => [
         "en" => "Access to changing is only for admins.",
@@ -517,7 +522,7 @@ Please, give a rating for me ;) t.me/storebot?start=axenia_bot",
     ],
     "donate.title" => [
         "en" => "Please donate for my development. In return, I will thank you with a special currency - a Cookie 🍪",
-        "ru" => "Пожалуйста, пожертвуйте для моего развития. Взамен я отблагодарю тебя особой валютой - Печенькой 🍪",
+        "ru" => "Пожалуйста, пожертвуйте для моей поддержки и развития. Взамен я отблагодарю тебя особой валютой - Печенькой 🍪",
         "ruUN" => "Подкинь деньжат на хостинг. С меня печеньки 🍪 )) "
     ],
     "donate.price" => [
