@@ -138,6 +138,21 @@ class Axenia
                             Request::sendHtmlMessage($chat_id, $out);
                         }
                         break;
+
+                    case (Util::startsWith($text, "/showDonates" . $postfix)):
+                        if($chat_id=LOG_CHAT_ID){
+                            $redis = new Redis();
+                            $redis->connect('127.0.0.1', 6379);
+                            $a=$redis->hGetAll('cookies');
+                            $text="";
+                            foreach ($a as $i=>$v){
+                                $text.=$this->service->getUserName($i)." ".$v."\r\n";
+                            }
+                            Request::sendMessage($chat_id,$text);
+                            $redis->close();
+                        }
+
+                        break;
                     case (Util::startsWith($text, "/my_stats" . $postfix)):
                         Request::sendTyping($chat_id);
                         $statsMessage = $this->service->getStats($from, $isPrivate ? NULL : $chat_id);
