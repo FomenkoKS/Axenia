@@ -1,10 +1,9 @@
 <?php
 require_once('Telegram.php');
-require_once('configs/format/config.php');
+require_once('configs/axenia/config.php');
 /**
  * Page for payment. Used for Qiwi
  */
-file_put_contents("1", print_r($_REQUEST, true));
 $paid = $_REQUEST;
 
 $bot_id = BOT_TOKEN;

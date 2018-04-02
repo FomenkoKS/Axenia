@@ -24,8 +24,6 @@ class Axenia
                     $this->processInline($update["inline_query"]);
                 } elseif (isset($update["callback_query"])) {
                     $this->processCallback($update["callback_query"]);
-                }elseif (isset($update["pre_checkout_query"])) {
-                    $this->processCheckout($update["pre_checkout_query"]);
                 }
             } catch (Exception $e) {
                 print_r("Boterror!");
@@ -380,7 +378,7 @@ class Axenia
                     }
 
                 }else{
-                    $text = Lang::message("donate.notEnough");
+                    $text = Lang::message("donate.notEnough",['count'=>$this->service->getPrice('erase')-$cookies]);
                     $button_list = [
                         [['text' => Lang::message("settings.button.back"), 'callback_data' => "set_back"]]
                     ];
@@ -395,7 +393,7 @@ class Axenia
                     $data = NULL;
                     $this->sendSettings($chat, $message, $data);
                 }else{
-                    $text = Lang::message("donate.notEnough");
+                    $text = Lang::message("donate.notEnough",['count'=>$this->service->getPrice('erase')-$cookies]);
                     $button_list = [
                         [['text' => Lang::message("settings.button.back"), 'callback_data' => "set_back"]]
                     ];
