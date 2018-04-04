@@ -94,8 +94,8 @@ class BotService
             Lang::message("user.stat.title") . "\r\n\r\n" .
             Lang::message("user.stat.name") . Util::getFullNameUser($from) . "\r\n" .
             ($chat_id == NULL ? "" : (Lang::message("user.stat.inchat") . $this->getUserLevel($from_id, $chat_id) . "\r\n")) .
-            Lang::message("user.stat.sum") . round($this->db->SumKarma($from_id), 0) . "\r\n" .
-            Lang::message("user.stat.place") . $this->db->UsersPlace($from_id) . "\r\n";
+            Lang::message("user.stat.sum") . round($this->db->SumKarma($from_id), 0) . "\r\n";
+        if(!$this->db->isHidden($from_id)) $res.=Lang::message("user.stat.place") . $this->db->UsersPlace($from_id) . "\r\n";
         if(!$this->db->isHidden($from_id)) $res.=Lang::message("user.stat.membership") . implode(", ", $this->getUserGroup($from_id)) . "\r\n";
         $res.=Lang::message("user.stat.cookies") . $this->db->getDonates($from_id) . "\r\n";
         if ($a = $this->getAllUserRewards($from_id)) {

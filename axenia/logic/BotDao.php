@@ -537,7 +537,7 @@ class BotDao extends AbstractDao
         $redis=$this->rConnect();
         $result=$redis->hGet('cookies',$user_id);
         $redis->close();
-        return $result;
+        return (empty($result))?0:$result;
     }
     public function setDonates($user_id, $donates)
     {
