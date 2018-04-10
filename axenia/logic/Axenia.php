@@ -158,6 +158,7 @@ class Axenia
                         $statsMessage = $this->service->getStats($from, $isPrivate ? NULL : $chat_id);
                         Request::sendHtmlMessage($chat_id, $statsMessage);
                         break;
+
                     case (Util::startsWith($text, "/start" . $postfix)):
                         if ($isPrivate) {
                             if (preg_match('/donate/ui ', $text)) {
@@ -515,22 +516,23 @@ class Axenia
             if ($data_array[1] == $from['id']) {
                 switch ($data_array[0]) {
                     case 'buy_tits':
-
-                        do{
+                        $tits = json_decode(file_get_contents("http://api.oboobs.ru/boobs/1/1/random"), true);
+                        $rez = "http://media.oboobs.ru/boobs/" . sprintf("%05d", $tits[0]['id']) . ".jpg";
+                        while(@fopen($rez,"r")==false){
                             $tits = json_decode(file_get_contents("http://api.oboobs.ru/boobs/1/1/random"), true);
                             $rez = "http://media.oboobs.ru/boobs/" . sprintf("%05d", $tits[0]['id']) . ".jpg";
-                        }while(
-                            @fopen($rez,"r")==false
-                        );
+                        };
                         break;
                     case 'buy_butts':
-                        do{
+                        $butts = json_decode(file_get_contents("http://api.obutts.ru/butts/1/1/random"), true);
+                        $rez = "http://media.obutts.ru/butts/" . sprintf("%05d", $butts[0]['id']) . ".jpg";
+                        while(@fopen($rez,"r")==false) {
                             $butts = json_decode(file_get_contents("http://api.obutts.ru/butts/1/1/random"), true);
                             $rez = "http://media.obutts.ru/butts/" . sprintf("%05d", $butts[0]['id']) . ".jpg";
-                        }while(
-                            @fopen($rez,"r")==false
-                        );
+                        }
                         break;
+
+
                     case 'buy_bashorg':
                         $rez = str_ireplace("' + '","",file_get_contents("http://bash.im/forweb/?u"));
                         $rez=substr($rez, strpos($rez,"<div id=\"b_q_t\""),-1);

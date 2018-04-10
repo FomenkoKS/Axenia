@@ -142,12 +142,12 @@ Please, give a rating for me ;) t.me/storebot?start=axenia_bot",
     ],
     "karma.plus" => [
         "en" => "<b>:from (:k1)</b> has given some karma points to <b>:to (:k2)</b>",
-        "ru" => "<b>:from (:k1)</b> плюсанул в карму <b>:to (:k2)</b>",
+        "ru" => "<b>:from (:k1)</b> увеличил карму <b>:to (:k2)</b>",
         "ruUN" => "<b>:from (:k1)</b> подкинул в карму <b>:to (:k2)</b>"
     ],
     "karma.minus" => [
         "en" => "<b>:from (:k1)</b> has taken some karma points from <b>:to (:k2)</b>",
-        "ru" => "<b>:from (:k1)</b> минусанул в карму <b>:to (:k2)</b>",
+        "ru" => "<b>:from (:k1)</b> уменьшил карму <b>:to (:k2)</b>",
         "ruUN" => "<b>:from (:k1)</b> насрал в карму <b>:to (:k2)</b>"
     ],
     "karma.yourself" => [
