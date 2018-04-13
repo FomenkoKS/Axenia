@@ -15,3 +15,7 @@ define('DEFAULT_COOLDOWN', 1);
 define('QIWI_API_ID', '');
 define('GOOGLE_API_KEY', '');
 define('STRIPE_TOKEN', '');
+//define('BOT_PROXY', '');
+//define('BOT_PROXYPORT', '');
+//define('BOT_PROXYUSERNAME', '');
+//define('BOT_PROXYUSERPWD', '');

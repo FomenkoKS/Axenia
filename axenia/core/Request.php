@@ -248,6 +248,16 @@ class Request
         }
         $ch = curl_init();
         curl_setopt($ch, CURLOPT_URL, $url);
+
+        if (defined('BOT_PROXY') && defined('BOT_PROXYPORT')) {
+            curl_setopt($ch, CURLOPT_PROXY, BOT_PROXY);
+            curl_setopt($ch, CURLOPT_PROXYPORT, BOT_PROXYPORT);
+            if (defined('BOT_PROXYUSERNAME') && defined('BOT_PROXYUSERPWD')) {
+                curl_setopt($ch, CURLOPT_PROXYUSERNAME, BOT_PROXYUSERNAME);
+                curl_setopt($ch, CURLOPT_PROXYUSERPWD, BOT_PROXYUSERPWD);
+            }
+        }
+
         curl_setopt($ch, CURLOPT_HTTPHEADER, array(
             "Content-Type:multipart/form-data"
         ));
