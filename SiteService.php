@@ -68,7 +68,7 @@ class SiteService
                 $html .= "<div class='row'>";
                 switch ($type) {
                     case "group":
-                        $html .= "<div class='user_photo img-circle col-md-1 col-xs-1' style='background-image:url(users/" . $value[4] . ".jpg)'></div><a class='col-md-1 col-xs-2 title load_user' onclick='load_user(" . $value[4] . ")'>";
+                        $html .= "<div class='user_photo img-circle col-md-1 col-xs-1'></div><a class='col-md-1 col-xs-2 title load_user' onclick='load_user(" . $value[4] . ")'>";
                         //$this->GetAvatar($value[4]);
                         $html .= ($value[0] == "") ? $value[1] . " " . $value[2] : $value[0];
                         $html .= "</a>";
@@ -116,7 +116,7 @@ class SiteService
         switch ($type) {
             case 'user':
                 $user_id = isset($get['user_id']) ? $get['user_id'] : $this->db->getUserID($get['username']);
-                $header = "<div class='user_photo img-circle' style='background-image:url(users/" . $user_id . ".jpg)'></div>";
+                $header = "<div class='user_photo img-circle'></div>";
                 $header .= isset($get['username']) ? $get['username'] : $this->db->getUserName($user_id);
                 $header .= " в гостях у Аксиньи, карма бота Telegram";
                 break;
