@@ -516,23 +516,26 @@ class Axenia
             if ($data_array[1] == $from['id']) {
                 switch ($data_array[0]) {
                     case 'buy_tits':
+                        $ii = 3;
+
                         $tits = json_decode(file_get_contents("http://api.oboobs.ru/boobs/1/1/random"), true);
                         $rez = "http://media.oboobs.ru/boobs/" . sprintf("%05d", $tits[0]['id']) . ".jpg";
-                        while(@fopen($rez,"r")==false){
+                        while(@fopen($rez,"r")==false && $ii > 0){
+                            $ii = $ii - 1;
                             $tits = json_decode(file_get_contents("http://api.oboobs.ru/boobs/1/1/random"), true);
                             $rez = "http://media.oboobs.ru/boobs/" . sprintf("%05d", $tits[0]['id']) . ".jpg";
                         };
                         break;
                     case 'buy_butts':
+                        $ii = 3;
                         $butts = json_decode(file_get_contents("http://api.obutts.ru/butts/1/1/random"), true);
                         $rez = "http://media.obutts.ru/butts/" . sprintf("%05d", $butts[0]['id']) . ".jpg";
-                        while(@fopen($rez,"r")==false) {
+                        while(@fopen($rez,"r")==false && $ii > 0) {
+                            $ii = $ii - 1;
                             $butts = json_decode(file_get_contents("http://api.obutts.ru/butts/1/1/random"), true);
                             $rez = "http://media.obutts.ru/butts/" . sprintf("%05d", $butts[0]['id']) . ".jpg";
                         }
                         break;
-
-
                     case 'buy_bashorg':
                         $rez = str_ireplace("' + '","",file_get_contents("http://bash.im/forweb/?u"));
                         $rez=substr($rez, strpos($rez,"<div id=\"b_q_t\""),-1);
@@ -555,12 +558,14 @@ class Axenia
                         $rez=substr($xml,$s+5,$e-$s-5);
                         break;
                     case 'buy_gif':
+                        $ii = 3;
                         do{
+                            $ii= $ii - 1;
                             $trends = json_decode(file_get_contents("https://api.tenor.com/v1/autocomplete?key=2U08JTUC3MRE&type=trending"), false);
                             $json = json_decode(file_get_contents("https://api.tenor.com/v1/search?key=2U08JTUC3MRE&q=".$trends->results[rand(0,10)]."&safesearch=moderate&limit=1&pos=".rand(1,10)), false);
                             //$json = json_decode(file_get_contents("https://api.tenor.com/v1/gifs?key=LIVDSRZULELA&ids=".rand(1,10252835).",".rand(1,10252835).",".rand(1,10252835).",".rand(1,10252835).",".rand(1,10252835)), false);
                             $rez = $json->results[0]->media[0]->gif->url;
-                        }while($rez==null);
+                        }while($rez==null && $ii > 0);
 
                         break;
                     case 'buy_zadolbali':
