@@ -180,6 +180,16 @@ class BotDao extends AbstractDao
         return ($res[0]===NULL) ? 0 : $res[0];
     }
 
+    public function getShowcaseStatus($chat_id)
+    {
+        $res = $this->select(
+            "SELECT showcase
+            FROM Chats 
+            WHERE id=" . $chat_id
+        );
+        return ($res[0]===NULL) ? 1 : $res[0];
+    }
+
     public function setGrowth($chat_id, $value)
     {
         return $this->update("UPDATE Chats SET ariphmeticGrowth = " . $value . " WHERE id = " . $chat_id);
@@ -188,6 +198,11 @@ class BotDao extends AbstractDao
     public function setAccess($chat_id, $value)
     {
         return $this->update("UPDATE Chats SET forAdmin = " . $value . " WHERE id = " . $chat_id);
+    }
+
+    public function setShowcase($chat_id, $value)
+    {
+        return $this->update("UPDATE Chats SET showcase = " . $value . " WHERE id = " . $chat_id);
     }
 
     public function setCooldown($chat_id,$cooldown)

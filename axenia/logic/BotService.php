@@ -260,6 +260,11 @@ class BotService
         return $this->db->getAccess($chat_id);
     }
 
+    public function getShowcaseStatus($chat_id)
+    {
+        return $this->db->getShowcaseStatus($chat_id);
+    }
+
     public function setCooldown($chat_id, $cooldown)
     {
         return $this->db->setCooldown($chat_id, $cooldown);
@@ -273,6 +278,11 @@ class BotService
     public function switchAccess($chat_id)
     {
         return $this->db->setAccess($chat_id, ($this->db->getAccess($chat_id)+1)%2);
+    }
+
+    public function switchShowcase($chat_id)
+    {
+        return $this->db->setShowcase($chat_id, ($this->db->getShowcaseStatus($chat_id)+1)%2);
     }
 
     public function getChatsIds()

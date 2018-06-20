@@ -116,10 +116,15 @@ class Axenia
                         break;
                     case (Util::startsWith($text, "/buy" . $postfix)):
                         Request::sendTyping($chat_id);
+
                         if ($isPrivate) {
                             Request::sendMessage($chat_id, Lang::message("bot.onlyPrivate"));
                         } else {
-                            $this->sendStore($chat_id, $from);
+                            if($this->service->getShowcaseStatus($chat_id)==1){
+                                $this->sendStore($chat_id, $from);
+                            }else{
+                                Request::sendHtmlMessage($chat_id, Lang::message("store.switchoff"));
+                            }
                         }
                         break;
                     case (Util::startsWith($text, "/donate" . $postfix)):
@@ -322,7 +327,6 @@ class Axenia
     public function sendSettings($chat, $message = NULL, $type = NULL, $showButtons = true)
     {
         $chat_id = $chat['id'];
-        $postfixSilentMode = "silent_mode" . ($this->service->isSilentMode($chat_id) ? "_on" : "_off");
         switch ($type) {
             case "set_cooldown":
                 $minuteText = Lang::message('settings.minute');
@@ -467,14 +471,18 @@ class Axenia
                         ]],
                         [['text' => Lang::message('settings.button.set_another_access', ["type" => ($this->service->getAccess($chat_id)==0)?Lang::message('settings.access.for_admin'):Lang::message('settings.access.for_everyone')]),
                             'callback_data' => 'set_another_access'
+                        ]],
+                        [['text' => Lang::message('settings.button.set_showcase', ["type" => ($this->service->getShowcaseStatus($chat_id)==0)?Lang::message('settings.enable'):Lang::message('settings.disable')]),
+                            'callback_data' => 'set_another_showcase'
                         ]]
                     ];
 
-                    $text .= Lang::message("settings.title." . $postfixSilentMode) . "\r\n";
+                    $text .= Lang::message("settings.title.silent_mode", ["status" => ($this->service->isSilentMode($chat_id))?Lang::message('settings.enabled'):Lang::message('settings.disabled')]).  "\r\n";
                     $text .= Lang::message("settings.title.lang", ["lang" => Lang::getCurrentLangDesc()]) . "\r\n";
                     $text .= Lang::message('settings.title.cooldown', ["cooldown" => $this->service->getCooldown($chat_id)]). "\r\n";
                     $text .= Lang::message('settings.title.growth', ["type" => ($this->service->getGrowth($chat_id)==1)?Lang::message('settings.growth.ariphmetic'):Lang::message('settings.growth.geometric')]). "\r\n";
                     $text .= Lang::message('settings.title.access', ["type" => ($this->service->getAccess($chat_id)==1)?Lang::message('settings.access.for_admin'):Lang::message('settings.access.for_everyone')]). "\r\n";
+                    $text .= Lang::message('settings.title.showcase', ["status" => ($this->service->getShowcaseStatus($chat_id)==1)?Lang::message('settings.enabled'):Lang::message('settings.disabled')]). "\r\n";
                 }
 
                 break;
@@ -623,6 +631,9 @@ class Axenia
                         break;
                     case 'set_another_access':
                         $this->service->switchAccess($chat_id);
+                        break;
+                    case 'set_another_showcase':
+                        $this->service->switchShowcase($chat_id);
                         break;
                     case 'set_back':
                         $data = NULL;

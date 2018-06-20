@@ -225,6 +225,11 @@ Please, give a rating for me ;) t.me/storebot?start=axenia_bot",
         "ru" => "<b>🛍Магазин контента</b>\r\n<i>Приобретайте рандомный контент за карму, порадуйте собеседников!</i>\r\n\r\n<b>:user(:k)</b>, на что желаете потратить карму?",
         "ruUN" => "<b>🛍Магазинчик контента</b>\r\n<i>Приобретайте рандомный контент за карму, порадуйте собеседников!</i>\r\n\r\n<b>:user(:k)</b>, на что ты хочешь посмотреть?"
     ],
+    "store.switchoff" => [
+        "en" => "<b>🛍Content store</b> is disabled by group admin 🤷‍♂️",
+        "ru" => "<b>🛍Магазин контента</b> деактивирован администрацией группы 🤷‍♂️",
+        "ruUN" => "<b>🛍Магазинчик контента</b> отключён админами 🤷‍♂️"
+    ],
     "store.button.buy_tits" => [
         "en" => "*CENSORED*",
         "ru" => "*ЦЕНЗУРА*",
@@ -370,15 +375,25 @@ Please, give a rating for me ;) t.me/storebot?start=axenia_bot",
         "ru" => '👥' . "Карма доступна <b>:type</b>",
         "ruUN" => '👥' . "Карма доступна <b>:type</b>"
     ],
-    "settings.title.silent_mode_on" => [
-        "en" => '🔔' . "Silent-mode is <b>enabled</b>",
-        "ru" => '🔔' . "Тихий режим <b>включен</b>",
-        "ruUN" => '🔔' . "Тихий режим <b>врублен</b>"
+    "settings.title.silent_mode" => [
+        "en" => '🔔' . "Silent-mode is <b>:status</b>",
+        "ru" => '🔔' . "Тихий режим <b>:status</b>",
+        "ruUN" => '🔔' . "Тихий режим <b>:status</b>"
     ],
-    "settings.title.silent_mode_off" => [
-        "en" => '🔔' . "Silent-mode is <b>disabled</b>",
-        "ru" => '🔔' . "Тихий режим <b>выключен</b>",
-        "ruUN" => '🔔' . "Тихий режим <b>вырублен</b>"
+    "settings.title.showcase" => [
+        "en" => '🛍' . "Content store is </is> <b>:status</b>",
+        "ru" => '🛍' . "Магазин контента <b>:status</b>",
+        "ruUN" => '🛍' . "Магазин контента <b>:status</b>"
+    ],
+    "settings.enabled" => [
+        "en" => "enabled",
+        "ru" => "включен",
+        "ruUN" => "работает"
+    ],
+    "settings.disabled" => [
+        "en" => "disabled",
+        "ru" => "выключен",
+        "ruUN" => "не работает"
     ],
     "settings.growth.ariphmetic" => [
         "en" => "Ariphmetic",
@@ -415,6 +430,11 @@ Please, give a rating for me ;) t.me/storebot?start=axenia_bot",
         "ru" => '👥' . "Сделать карму доступной :type",
         "ruUN" => '👥' . "Сделать карму доступной :type"
     ],
+    "settings.button.set_showcase" => [
+        "en" => '🛍' . ":type content store",
+        "ru" => '🛍' . ":type магазин контента",
+        "ruUN" => '🛍' . ":type магазинчик контента"
+    ],
     "settings.button.lang" => [
         "en" => '🗣' . "Language",
         "ru" => '🗣' . "Язык",
@@ -424,6 +444,16 @@ Please, give a rating for me ;) t.me/storebot?start=axenia_bot",
         "en" => '⏱' . "Cooldown time",
         "ru" => '⏱' . "Таймер голосования",
         "ruUN" => '⏱' . "Таймер голосования"
+    ],
+    "settings.enable" => [
+        "en" => "Enable",
+        "ru" => "Включить",
+        "ruUN" => "Врубить"
+    ],
+    "settings.disable" => [
+        "en" => "Disable",
+        "ru" => "Выключить",
+        "ruUN" => "Вырубить"
     ],
     "settings.minute" => [
         "en" => " min.",
