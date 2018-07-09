@@ -347,7 +347,7 @@ class BotService
 
     public function getGroupName($chat_id)
     {
-        return htmlspecialchars($this->db->getGroupName($chat_id));
+        return $this->db->getGroupName($chat_id);
     }
 
     public function getGroupsMistakes()
