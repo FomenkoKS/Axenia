@@ -381,7 +381,7 @@ Please, give a rating for me ;) t.me/storebot?start=axenia_bot",
         "ruUN" => '🔔' . "Тихий режим <b>:status</b>"
     ],
     "settings.title.showcase" => [
-        "en" => '🛍' . "Content store is </is> <b>:status</b>",
+        "en" => '🛍' . "Content store is <b>:status</b>",
         "ru" => '🛍' . "Магазин контента <b>:status</b>",
         "ruUN" => '🛍' . "Магазин контента <b>:status</b>"
     ],
@@ -396,7 +396,7 @@ Please, give a rating for me ;) t.me/storebot?start=axenia_bot",
         "ruUN" => "не работает"
     ],
     "settings.growth.ariphmetic" => [
-        "en" => "Ariphmetic",
+        "en" => "Arithmetic",
         "ru" => "Арифметический",
         "ruUN" => "Арифметический"
     ],

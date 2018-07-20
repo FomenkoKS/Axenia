@@ -359,20 +359,28 @@ class Axenia
                 $text = Lang::message('settings.select.lang');
                 break;
             case "set_escapeFromGroup":
-                $a=$this->service->getUserGroup($chat_id,false);
-                $user_id=$chat_id;
-                $buttons=[];
-                foreach($a as $item){
-                    $chat_id=explode(":",$item)[0];
-                    if(!$this->service->getEscapeCooldown($chat_id,$user_id)){
-                        if($this->service->getEscapeCooldown($chat_id,$user_id)<time()){
-                            array_push($buttons,['text'=>htmlspecialchars_decode(explode(":",$item)[1]),'callback_data'=>"escape_".$chat_id]);
+                $cookies=$this->service->getDonates($chat_id);
+                if($cookies>=$this->service->getPrice('escape')) {
+                    $a=$this->service->getUserGroup($chat_id,false);
+                    $user_id=$chat_id;
+                    $buttons=[];
+                    foreach($a as $item){
+                        $chat_id=explode(":",$item)[0];
+                        if(!$this->service->getEscapeCooldown($chat_id,$user_id)){
+                            if($this->service->getEscapeCooldown($chat_id,$user_id)<time()){
+                                array_push($buttons,['text'=>htmlspecialchars_decode(explode(":",$item)[1]),'callback_data'=>"escape_".$chat_id]);
+                            }
                         }
                     }
+                    $chat_id=$user_id;
+                    $button_list=array_chunk($buttons,3);
+                    $text = Lang::message('settings.unfollow.title');
+                }else {
+                    $text = Lang::message("donate.notEnough", ['count' => $this->service->getPrice('escape') - $cookies]);
+                    $button_list = [
+                        [['text' => Lang::message("settings.button.back"), 'callback_data' => "set_back"]]
+                    ];
                 }
-                $chat_id=$user_id;
-                $button_list=array_chunk($buttons,3);
-                $text = Lang::message('settings.unfollow.title');
                 break;
             case "set_eraseGroup":
                 $cookies=$this->service->getDonates($chat_id);
@@ -429,9 +437,10 @@ class Axenia
                             [
                                 'text' => Lang::message('settings.button.lang'),
                                 'callback_data' => 'set_lang'
-                            ],
+                            ]
+                        ],[
                             [
-                                'text'  => Lang::message('settings.unfollow'),
+                                'text'  => Lang::message('settings.unfollow').' '.Lang::message('settings.price',['price'=>$this->service->getPrice('escape')]),
                                 'callback_data' =>  'set_escapeFromGroup'
                             ]
                         ],[
@@ -673,6 +682,8 @@ class Axenia
                 $this->service->setEscapeCooldown($escape_chat_id,$chat_id);
                 $text = Lang::message('settings.unfollow.success',['chat_id' =>$escape_chat_id,'chat'=>$escape_chat]);
                 Request::editMessageText($chat_id, $message['message_id'], $text, ["parse_mode" => "HTML"]);
+                $balance=$this->service->getDonates($chat_id)-$this->service->getPrice('escape');
+                $this->service->setDonates($chat_id,$balance);
             }elseif(strpos($data, "reject") !== false){
                 $text = Lang::message('settings.unfollow.cancel',['chat_id' =>$escape_chat_id,'chat'=>$escape_chat]);
                 Request::editMessageText($chat_id, $message['message_id'], $text, ["parse_mode" => "HTML"]);
@@ -685,7 +696,7 @@ class Axenia
             $erase_chat=$this->service->getGroupName($erase_chat_id);
             if(strpos($data, "accept") !== false){
                 $this->service->deleteChat($erase_chat_id);
-                $balance=$this->service->getDonates($chat_id)-$this->service->getDonateButtons()[0]['nominal'];
+                $balance=$this->service->getDonates($chat_id)-$this->service->getPrice('erase');
                 $this->service->setDonates($chat_id,$balance);
 
                 $text = Lang::message('settings.erase.success',['chat_id' =>$erase_chat_id,'chat'=>$erase_chat]);
