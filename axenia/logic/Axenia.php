@@ -34,32 +34,24 @@ class Axenia
 
     /**
      * Check if is need to handle the message by bot
-     * @param array $message
+     * @param $message
      * @return bool
      */
-    private function needToHandle(array $message)
+    private function needToHandle($message)
     {
-                !($message['entities'][0]['type'] == 'pre' &&
-        if (
-            isset($message['text']) && (
-                !isset($message['entities']) || 
-                !($message['entities'][0]['type'] == 'pre' &&
-                    $message['entities'][0]['offset'] === 0)
-            )
-        ) {
-            return Util::startsWith($message['text'], ['/', '+', '-', '👍', '👎']);
+        if ($message['chat']['type'] != "channel") {
+            if (isset($message['text'])) {
+                return Util::startsWith($message['text'], ["/", "+", "-", '👍', '👎']);
+            }
+            if (isset($message['sticker'])) {
+                return Util::startsWith($message['sticker']['emoji'], ['👍', '👎']);
+            }
+            if (isset($message['new_chat_member']) || isset($message['new_chat_title']) || isset($message['left_chat_member']) || isset($message['migrate_to_chat_id'])) {
+                return true;
+            }
         }
-        if (isset($message['sticker'])) {
-            return Util::startsWith($message['sticker']['emoji'], ['👍', '👎']);
-        }
-        if (
-            isset($message['new_chat_member']) ||
-            isset($message['new_chat_title']) ||
-            isset($message['left_chat_member']) ||
-            isset($message['migrate_to_chat_id'])
-        ) {
-            return true;
-        }
+
+        return false;
     }
 
     public function processMessage($message)
@@ -665,16 +657,16 @@ class Axenia
             foreach ($donates as $k => $a) if ($a['id'] == explode("_", $data)[1]) $key = $k;
 
             $text = "https://bill.qiwi.com/order/external/create.action";
-            $txn_id = md5(rand(1, 99999999).Date('dmYhhmmss') . $chat_id);
+            $txn_id = substr(md5(rand(1, 99999999).Date('dmYhhmmss') . $chat_id),-10,10);
             $params = [
                 "from" => QIWI_API_ID,
                 "summ" => $donates[$key]['price'],
                 "currency" => "RUB",
                 "comm" => "получение " . $donates[$key]['nominal'] . " печенек",
                 "txn_id" => $txn_id,
-                "successurl" => 'http://axeniabot.ru/QiwiPaid.php',
-                "lifetime" => date('y-m-d', strtotime(date('y-m-d') . " + 1 day")) . "t00:00:00"
+                "successurl" => 'http://axeniabot.ru/QiwiPaid.php'
             ];
+
             $url = $text . "?" . http_build_query($params);
             $googer = new GoogleURLAPI(GOOGLE_API_KEY);
             $shortDWName = $googer->shorten($url);
