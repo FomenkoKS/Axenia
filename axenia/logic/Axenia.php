@@ -39,9 +39,7 @@ class Axenia
      */
     private function needToHandle(array $message)
     {
-        if ($message['chat']['type'] == 'channel') {
-            return false;
-        }
+                !($message['entities'][0]['type'] == 'pre' &&
         if (
             isset($message['text']) && (
                 !isset($message['entities']) || 
