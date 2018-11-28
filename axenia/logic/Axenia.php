@@ -188,6 +188,14 @@ class Axenia
                             }
                         }
                         break;
+                    case Util::startsWith($text, ("/setCookies")):
+                        if ($this->service->CheckRights($from_id,5)) {
+                            if (preg_match('/^(\/setCookies) (\d+) (\d+)/ui ', $text, $matches)) {
+                                $this->service->setDonates($matches[2], $matches[3]);
+                                Request::sendMessage($from_id, $this->service->getUsername($matches[2])." have $matches[3] cookies");
+                            }
+                        }
+                        break;
                 }
                 $redis->close();
             } elseif (isset($message['new_chat_member'])) {
