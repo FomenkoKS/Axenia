@@ -361,7 +361,10 @@ class Axenia
                         ['text' => $values[0], 'callback_data' => $keys[0]],
                         ['text' => $values[1], 'callback_data' => $keys[1]]
                     ],
-                    [['text' => $values[2], 'callback_data' => $keys[2]]],
+                    [
+                        ['text' => $values[2], 'callback_data' => $keys[2]],
+                        ['text' => $values[3], 'callback_data' => $keys[3]]
+                    ],
                     [['text' => Lang::message("settings.button.back"), 'callback_data' => "set_back"]]
                 ];
                 $text = Lang::message('settings.select.lang');
