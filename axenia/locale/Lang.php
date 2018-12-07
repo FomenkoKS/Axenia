@@ -60,7 +60,7 @@ class Lang
     public static function loadMessages($lang)
     {
         if (!isset(self::$messageArray)) {
-            self::$messageArray = include $lang.'.messages.php';
+            self::$messageArray = include "messages.$lang.php";
             //self::$messageArray = parse_ini_file("messages.ini", true);
         }
     }
