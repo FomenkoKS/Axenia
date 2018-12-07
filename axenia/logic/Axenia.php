@@ -354,19 +354,21 @@ class Axenia
                 break;
             case "set_lang":
                 $ln = Lang::availableLangs();
-                $keys = array_keys($ln);
-                $values = array_values($ln);
-                $button_list = [
-                    [
-                        ['text' => $values[0], 'callback_data' => $keys[0]],
-                        ['text' => $values[1], 'callback_data' => $keys[1]]
-                    ],
-                    [
-                        ['text' => $values[2], 'callback_data' => $keys[2]],
-                        ['text' => $values[3], 'callback_data' => $keys[3]]
-                    ],
-                    [['text' => Lang::message("settings.button.back"), 'callback_data' => "set_back"]]
-                ];
+
+                $i=0;
+                $button_list=[];
+                $a=[];
+                foreach($ln as $k=>$v){
+                    $i++;
+                    array_push($a,['text' => $v, 'callback_data' => $k]);
+                    if($i%2==0){
+                        array_push($button_list,$a);
+                        $a=[];
+                    }
+                }
+                if(count($a)>0) array_push($button_list,$a);
+                array_push($button_list,[['text' => Lang::message("settings.button.back"), 'callback_data' => "set_back"]]);
+
                 $text = Lang::message('settings.select.lang');
                 break;
             case "set_escapeFromGroup":
