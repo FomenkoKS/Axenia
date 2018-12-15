@@ -381,7 +381,7 @@ class BotService
         $a = array_chunk($top, 4);
         $i = 0;
         foreach ($a as $value) {
-            $username = ($value[0] == "") ? $value[1] . " " . $value[2] : $value[0];
+            $username = ($value[0] == "") ? $value[1] . " " . $value[2] : "<a href='tg://resolve?domain=$value[0]'>$value[0]</a>";
             $out .= Lang::message('karma.top.'.($i ==0 ? "firstrow": "row"), ["username" => $username, "karma" => $value[3]]);
             $i++;
         }
