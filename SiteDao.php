@@ -24,7 +24,7 @@ class SiteDao extends BotDao
             WHERE k.chat_id=c.id AND k.user_id=" . $user_id . " 
             ORDER BY level DESC", true
         );
-
+        
         return $res;
     }
 

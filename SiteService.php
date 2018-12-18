@@ -70,12 +70,12 @@ class SiteService
                     case "group":
                         $html .= "<div class='user_photo img-circle col-md-1 col-xs-1'></div><a class='col-md-1 col-xs-2 title load_user' onclick='load_user(" . $value[4] . ")'>";
                         //$this->GetAvatar($value[4]);
-                        $html .= ($value[0] == "") ? $value[1] . " " . $value[2] : $value[0];
+                        $html .= ($value[0] == "") ? htmlspecialchars($value[1] . " " . $value[2]) : $value[0];
                         $html .= "</a>";
                         break;
                     case "user":
                         $html .= "<a class=\"title col-md-2 col-xs-3 load_group\" onclick='load_group(" . $value[1] . ")'>";
-                        $html .= $value[0] . "</a>";
+                        $html .= htmlspecialchars($value[0]) . "</a>";
                         break;
                 }
                 $val = round(($value[3] / $max) * 100);
@@ -285,6 +285,7 @@ class SiteService
         $query = stripslashes($postQuery);
         $users = $this->db->getUsersByName($query, 5);
         $out = array_chunk($users, 4);
+        $out = array_map("htmlspecialchars", $out);
 
         return json_encode($out);
     }
@@ -294,7 +295,7 @@ class SiteService
         $query = stripslashes($postQuery);
         $groups = $this->db->getGroupsByName($query, 5);
         $out = array_chunk($groups, 2);
-
+        $out = array_map("htmlspecialchars", $out);
         return json_encode($out);
     }
 
