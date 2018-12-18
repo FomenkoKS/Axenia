@@ -322,7 +322,7 @@ class BotDao extends AbstractDao
         $query = "
         SELECT u . username, u . firstname, u . lastname, k . level 
         FROM Karma k, Users u 
-        WHERE k . user_id = u . id AND k . chat_id = " . $chat_id . " 
+        WHERE k . user_id = u . id AND k . chat_id = " . $chat_id . " and (u.hidden=0 or u.hidden is NULL)
         ORDER BY level 
         DESC LIMIT " . $limit;
 
