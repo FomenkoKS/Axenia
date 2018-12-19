@@ -158,10 +158,10 @@ class AbstractDao
         if (is_array($inp))
             return array_map(__METHOD__, $inp);
 
-        if (!empty($inp) && is_string($inp)) {
+        /*if (!empty($inp) && is_string($inp)) {
             return str_replace(array('\\', "\0", "\n", "\r", "'", '"', "\x1a"), array('\\\\', '\\0', '\\n', '\\r', "\\'", '\\"', '\\Z'), $inp);
-        }
-
+        }*/
+        $inp=mysql_real_escape_string($inp);
         return $inp;
     }
 
