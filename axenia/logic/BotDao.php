@@ -38,6 +38,7 @@ class BotDao extends AbstractDao
         return (!$res[0] && !$res[1] && !$res[2]) ? false : ['username'=> $res[0], 'first_name'=> $res[1],'last_name'=> $res[2]];
     }
 
+    public function getUsersIDByUsername($username)
     public function getUserName($id)
     {
         $res = $this->select("SELECT username,firstname,lastname FROM Users WHERE id=" . $id);
