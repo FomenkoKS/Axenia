@@ -188,6 +188,7 @@ class Axenia
                             }
                         }
                         break;
+                        
                     case Util::startsWith($text, ("/setCookies")):
                         if ($this->service->CheckRights($from_id,5)) {
                             if (preg_match('/^(\/setCookies) (\d+) (\d+)/ui ', $text, $matches)) {

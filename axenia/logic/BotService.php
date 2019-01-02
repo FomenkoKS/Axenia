@@ -44,8 +44,11 @@ class BotService
 
     public function getUserID($username)
     {
+        $this->checkUsernames($username);
         return $this->db->getUserID($username);
     }
+
+
 
     //todo
     public function insertOrUpdateUser($user)
@@ -157,6 +160,12 @@ class BotService
         return $this->db->getEscapeCooldown($chat_id,$user_id);
     }
 
+    public function checkUsernames($username){
+        foreach(array_chunk($this->db->getUsersIDByUsername($username),2) as $i){
+            $ChatMember=Request::getChatMember($i[0],$i[1]);
+            $this->db->insertOrUpdateUser($ChatMember['user']);
+        }
+    }
 //endregion
 
 // region -------------------- Admins

@@ -8,8 +8,8 @@ class BotDao extends AbstractDao
     public function getUserID($username)
     {
         $username = "'" . (isset($username) ? $this->escape_mimic($username) : '') . "'";
-        $username = str_ireplace("@", "", $username);
-        $res = $this->select("SELECT id FROM Users WHERE username=$username");
+        $username = strtolower(str_ireplace("@", "", $username));
+        $res = $this->select("SELECT id FROM Users WHERE lower(username)=$username");
 
         return (!$res[0]) ? false : $res[0];
     }
@@ -39,6 +39,14 @@ class BotDao extends AbstractDao
     }
 
     public function getUsersIDByUsername($username)
+    {
+        $username = "'" . (isset($username) ? $this->escape_mimic($username) : '') . "'";
+        $username = strtolower(str_ireplace("@", "", $username));
+        $res = $this->select("SELECT u.id, k.chat_id FROM Users u, Karma k WHERE k.user_id=u.id and lower(u.username)=$username");
+
+        return (!$res[0]) ? false : $res;
+    }
+
     public function getUserName($id)
     {
         $res = $this->select("SELECT username,firstname,lastname FROM Users WHERE id=" . $id);
