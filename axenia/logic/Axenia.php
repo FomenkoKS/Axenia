@@ -341,10 +341,11 @@ class Axenia
                 $button_list = [
                     [
                         ['text' => "0.1" . $minuteText, 'callback_data' => 'set_0'],
-                        ['text' => "1" . $minuteText, 'callback_data' => 'set_1'],
-                        ['text' => "2" . $minuteText, 'callback_data' => 'set_2']
+                        ['text' => "0.5" . $minuteText, 'callback_data' => 'set_0.5'],
+                        ['text' => "1" . $minuteText, 'callback_data' => 'set_1']
                     ],
                     [
+                        ['text' => "2" . $minuteText, 'callback_data' => 'set_2'],
                         ['text' => "10" . $minuteText, 'callback_data' => 'set_10'],
                         ['text' => "20" . $minuteText, 'callback_data' => 'set_20']
                     ],
@@ -635,6 +636,9 @@ class Axenia
                         break;
                     case 'set_0':
                         $this->service->setCooldown($chat_id, 0.1);
+                        break;
+                    case 'set_0.5':
+                        $this->service->setCooldown($chat_id, 0.5);
                         break;
                     case 'set_1':
                         $this->service->setCooldown($chat_id, 1);

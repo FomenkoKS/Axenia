@@ -33,7 +33,6 @@ class BotDao extends AbstractDao
 
     public function getUser($id)
     {
-        $id=intval($id);
         $res = $this->select("SELECT username,firstname,lastname FROM Users WHERE id=" . $id);
 
         return (!$res[0] && !$res[1] && !$res[2]) ? false : ['username'=> $res[0], 'first_name'=> $res[1],'last_name'=> $res[2]];
@@ -41,7 +40,6 @@ class BotDao extends AbstractDao
 
     public function getUserName($id)
     {
-        $id=intval($id);
         $res = $this->select("SELECT username,firstname,lastname FROM Users WHERE id=" . $id);
 
         return (!$res[0]) ? $res[1] : $res[0];
@@ -258,7 +256,6 @@ class BotDao extends AbstractDao
 
     public function getGroupName($chat_id)
     {
-        $chat_id=intval($chat_id);
         $res = $this->select("SELECT title FROM Chats WHERE id = " . $chat_id);
 
         return (!$res[0]) ? false : htmlspecialchars($res[0]);
@@ -325,7 +322,7 @@ class BotDao extends AbstractDao
         $query = "
         SELECT u . username, u . firstname, u . lastname, k . level 
         FROM Karma k, Users u 
-        WHERE k . user_id = u . id AND k . chat_id = " . $chat_id . " and (u.hidden=0 or u.hidden is NULL)
+        WHERE k . user_id = u . id AND k . chat_id = " . $chat_id . " 
         ORDER BY level 
         DESC LIMIT " . $limit;
 
