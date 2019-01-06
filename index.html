@@ -1,8 +1,3 @@
-<?php
-require_once("SiteService.php");
-$site = new SiteService();
-$type = $site->getViewType($_GET);
-?>
 <!doctype html>
 <html lang="en">
   <head>
@@ -44,11 +39,15 @@ $type = $site->getViewType($_GET);
         </div>
       </header>
           
-    
+    <main role="main" class="inner cover">
+            <p class="lead">
+                <a href="tg://resolve?domain=Axenia_Bot&startgroup=0">
+                    <img src="./axenia.png">
+                </a>
+            </p>
+    </main>
           
-    <?
-        include($type . "_view.php");
-    ?>      
+          
       
       
       <footer class="mastfoot mt-auto">
