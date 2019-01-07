@@ -29,7 +29,7 @@
 "karma.top.title" => "<b>🏆Самые почётные люди группы «:chatName»:</b>\r\n\r\n",
 "karma.top.row" => ":username (:karma)\r\n",
 "karma.top.firstrow" => "⭐:username (:karma)\r\n",
-"karma.top.footer" => "<a href=':pathToSite?group_id=:chatId'>Подробнее..</a>",
+"karma.top.footer" => "<a href=':pathToSite?chat_id=:chatId'>Подробнее..</a>",
 "karma.top.private" => "Топ кармы доступен только в групповых чатах.",
 "karma.plus" => "<b>:from (:k1)</b> увеличил карму <b>:to (:k2)</b>",
 "karma.minus" => "<b>:from (:k1)</b> уменьшил карму <b>:to (:k2)</b>",

@@ -394,7 +394,7 @@ class BotService
             $out .= Lang::message('karma.top.'.($i ==0 ? "firstrow": "row"), ["username" => $username, "karma" => $value[3]]);
             $i++;
         }
-       // $out .= Lang::message('karma.top.footer', ["pathToSite" => PATH_TO_SITE, "chatId" => $chat_id]);
+        $out .= Lang::message('karma.top.footer', ["pathToSite" => PATH_TO_SITE, "chatId" => $chat_id]);
 
         return $out;
     }

@@ -23,7 +23,7 @@ $type = $site->getViewType($_GET);
     <meta name="msapplication-TileImage" content="http://axeniabot.ru/mstile-144x144.png" />
 
     <link href="./css/bootstrap.min.css" rel="stylesheet">
-    <link href="cover.css" rel="stylesheet">
+    <link href="./css/style.css" rel="stylesheet">
 
     <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
     <script>
@@ -35,29 +35,11 @@ $type = $site->getViewType($_GET);
   </head>
 
   <body class="text-center">
-
-    <div class="cover-container d-flex w-100 h-100 p-3 mx-auto flex-column">
-      <header class="masthead mb-auto">
-        <div class="inner">
-          <h3 class="masthead-brand">@Axenia_bot</h3>
-          
-        </div>
-      </header>
-          
-    
-          
+ 
     <?
         include($type . "_view.php");
     ?>      
-      
-      
-      <footer class="mastfoot mt-auto">
-        <div class="inner">
-          <p>Support: <a href="tg://resolve?domain=axeniasupport">@AxeniaSupport</a></p>
-        </div>
-      </footer>
-    </div>
-
+   
     <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
     <script>window.jQuery || document.write('<script src="../../assets/js/vendor/jquery-slim.min.js"><\/script>')</script>
     <script src="./js/popper.min.js"></script>

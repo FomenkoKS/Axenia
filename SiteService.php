@@ -33,7 +33,7 @@ class SiteService
                 break;
             case isset($get['chat_id']):
                 $type='chat';
-                //$type = $this->db->getGroupName($get['chat_id']) ? "chat" : "cover";
+                //$type = $this->db->getGroupName(intval($get['chat_id'])) ? "chat" : "cover";
                 break;
             case isset($get['donate']):
                 //$type = ($get['donate']=="success") ? "thanks" : "cover";
@@ -46,8 +46,15 @@ class SiteService
     }
 
     public function getTopUsers($chat_id){
-        $users=$this->db->getTop($chat_id, 100);
-        return $users;
+        return array_chunk($this->db->getTop(intval($chat_id), 200),4);
+    }
+
+
+    public function beutifyName($username, $firstname, $lastname){
+        if (strlen($lastname)>0) $firstname.=" ".$lastname;
+        $firstname=htmlspecialchars($firstname);
+        if(strlen($username)>0) $firstname="<a href=\"tg://resolve?domain=$username\">$firstname</a>";
+        return $firstname;
     }
 
 
