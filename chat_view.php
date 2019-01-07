@@ -1,12 +1,19 @@
 <div class="d-flex w-100 h-100 mx-auto flex-column">
-<? include('header.php'); ?>
+<? include('header.php'); 
+$chat_id=$_GET['chat_id'];
+?>
 
 
 <main role="main" class="mb-auto bg-light p-5 text-dark">
+    <div class='row'>
+        <div class="col">
+            <h1><?php $site->getGroupName($chat_id); ?></h1>
+        </div>
+    </div>
     <div id="carouselIndicators" class="carousel slide" data-ride="carousel">
         <ol class="carousel-indicators">
             <?php 
-                $users=array_chunk($site->getTopUsers($_GET['chat_id']),10);
+                $users=array_chunk($site->getTopUsers($chat_id),10);
                 if(count($users)>1)
                     foreach($users as $n=>$u){
                         echo "<li data-target=\"#carouselIndicators\" data-slide-to=\"$n\"";

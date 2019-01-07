@@ -32,8 +32,7 @@ class SiteService
                 //$type = $this->db->getUserName($get['user_id']) ? "user" : "cover";
                 break;
             case isset($get['chat_id']):
-                $type='chat';
-                //$type = $this->db->getGroupName(intval($get['chat_id'])) ? "chat" : "cover";
+                $type = $this->db->getGroupName($get['chat_id']) ? "chat" : "cover";
                 break;
             case isset($get['donate']):
                 //$type = ($get['donate']=="success") ? "thanks" : "cover";
@@ -55,6 +54,10 @@ class SiteService
         $firstname=htmlspecialchars($firstname);
         if(strlen($username)>0) $firstname="<a href=\"tg://resolve?domain=$username\">$firstname</a>";
         return $firstname;
+    }
+
+    public function getGroupName($chat_id){
+        return $this->db->getGroupName($chat_id);
     }
 
 

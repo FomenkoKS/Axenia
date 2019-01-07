@@ -265,7 +265,7 @@ class BotDao extends AbstractDao
 
     public function getGroupName($chat_id)
     {
-        $res = $this->select("SELECT title FROM Chats WHERE id = " . $chat_id);
+        $res = $this->select("SELECT title FROM Chats WHERE id = " . intval($chat_id));
 
         return (!$res[0]) ? false : htmlspecialchars($res[0]);
     }
