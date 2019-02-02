@@ -7,7 +7,7 @@ $chat_id=$_GET['chat_id'];
 <main role="main" class="mb-auto bg-light p-5 text-dark">
     <div class='row'>
         <div class="col">
-            <h1><?php $site->getGroupName($chat_id); ?></h1>
+            <h1><?php echo $site->getGroupName($chat_id); ?></h1>
         </div>
     </div>
     <div id="carouselIndicators" class="carousel slide" data-ride="carousel">
