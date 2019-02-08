@@ -381,11 +381,7 @@ class Axenia
                     $buttons=[];
                     foreach($a as $item){
                         $chat_id=explode(":",$item)[0];
-                        if(!$this->service->getEscapeCooldown($chat_id,$user_id)){
-                            if($this->service->getEscapeCooldown($chat_id,$user_id)<time()){
-                                array_push($buttons,['text'=>htmlspecialchars_decode(explode(":",$item)[1]),'callback_data'=>"escape_".$chat_id]);
-                            }
-                        }
+                        array_push($buttons,['text'=>htmlspecialchars_decode(explode(":",$item)[1]),'callback_data'=>"escape_".$chat_id]);
                     }
                     $chat_id=$user_id;
                     $button_list=array_chunk($buttons,3);
