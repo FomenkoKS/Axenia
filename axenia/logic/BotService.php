@@ -102,7 +102,7 @@ class BotService
         if(!$this->db->isHidden($from_id)) $res.=Lang::message("user.stat.membership") . implode(", ", $this->getUserGroup($from_id)) . "\r\n";
         $res.=Lang::message("user.stat.cookies") . $this->db->getDonates($from_id) . "\r\n";
         if ($a = $this->getAllUserRewards($from_id)) {
-            $res .= Lang::message("user.s? tat.rewards") . implode(", ", $a);
+            $res .= Lang::message("user.stat.rewards") . implode(", ", $a);
         }
 
         return $res;

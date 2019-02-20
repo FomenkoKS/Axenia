@@ -3,7 +3,6 @@
 "bot.start" => "So it begins.",
 "bot.error" => "Ops! Something broken.. 🤷‍♀️",
 "bot.onlyPrivate" => "Sorry, but this I can do only in groups.",
-"bot.rating" => "Hey, <b>:user</b>, if you like this bot, please, give him ⭐️⭐️⭐️⭐️⭐️ in t.me/storebot?start=:botName",
 "user.pickChat" => "Please, <a href='t.me/:botName?startgroup=0'>pick а group</a> where I'll handle the karma points and more. ✌😊",
 "chat.greetings" => "Hello! My name is Axenia and I can count the karma points.\r\nUse /help to see more about and /settings for switch language.",
 "chat.help" => "<b>💬 What I can?</b>\r\n\r\n<b>Raising/reducing karma</b>

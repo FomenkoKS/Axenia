@@ -3,7 +3,6 @@
 "bot.start" => "Boshlaymiz!",
 "bot.error" => "Bir narsa ishdan chiqqanga o'xshaydi... 🤷♀️",
 "bot.onlyPrivate" => "Men faqat guruh suhbatlarida buni qila olaman.",
-"bot.rating" => "<b>:user</b>, agar senga bizning boy yoqqan bo'lsa, unga ⭐️⭐️⭐️⭐️⭐️ qo'y: t.me/storebot?start=:botName",
 "user.pickChat" => "<a href = 't.me/:botName?startgroup=0'> Guruhni tanla </a>, bu yerda men karma va yana boshqa narsalarni sanayman. ✌😊",
 "chat.greetings" => "Salom.  Mening ismim Aksinya. Men karmani sanashni bilaman. Tafsilotlarni ko'rish uchun /help va tilni o'zgartirish uchun /settings tanla",
 "chat.help" => "<b>💬 Men nima qila olaman?</ b> \r\n\r\n <b> Karmani oshirish / kamaytirish </ b>
