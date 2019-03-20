@@ -4,6 +4,7 @@ class Axenia
 {
 
     private $service;
+    private $r;
 
     /**
      * Axenia constructor.
@@ -12,6 +13,7 @@ class Axenia
     public function __construct($service)
     {
         $this->service = $service;
+        $this->r=new BotRedis();
     }
 
     public function handleUpdate($update)
@@ -134,6 +136,7 @@ class Axenia
                         Request::sendTyping($chat_id);
                         $this->sendSettings($chat, NULL, NULL, $this->service->isAdminInChat($from_id, $chat));
                         break;
+
                     case (Util::startsWith($text, "/top" . $postfix)):
                         Request::sendTyping($chat_id);
                         if ($isPrivate) {
