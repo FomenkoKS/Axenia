@@ -4,7 +4,7 @@ class BotService
 {
 
     private $db;
-
+    private $r;
     /**
      * Axenia constructor.
      * @param $db BotDao
@@ -12,6 +12,7 @@ class BotService
     public function __construct($db)
     {
         $this->db = $db;
+        $this->r=new BotRedis();
     }
 
     /**
@@ -108,7 +109,7 @@ class BotService
             Lang::message("user.stat.sum") . round($this->db->SumKarma($from_id), 0) . "\r\n";
         if(!$this->db->isHidden($from_id)) $res.=Lang::message("user.stat.place") . $this->db->UsersPlace($from_id) . "\r\n";
         if(!$this->db->isHidden($from_id)) $res.=Lang::message("user.stat.membership") . implode(", ", $this->getUserGroup($from_id)) . "\r\n";
-        $res.=Lang::message("user.stat.cookies") . $this->db->getDonates($from_id) . "\r\n";
+        $res.=Lang::message("user.stat.cookies") . $this->r->getDonates($from_id) . "\r\n";
         if ($a = $this->getAllUserRewards($from_id)) {
             $res .= Lang::message("user.stat.rewards") . implode(", ", $a);
         }
@@ -621,16 +622,6 @@ class BotService
         }
         $text=Lang::message("donate.title");
         Request::sendHtmlMessage($from_id, $text, ["reply_markup" => ['inline_keyboard' => array_chunk($button_list,2)]]);
-    }
-
-    public function getDonates($user_id)
-    {
-        return $this->db->getDonates($user_id);
-    }
-
-    public function setDonates($user_id, $donates)
-    {
-        return $this->db->setDonates($user_id,$donates);
     }
 
     public function getDonateButtons()

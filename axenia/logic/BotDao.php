@@ -556,20 +556,6 @@ class BotDao extends AbstractDao
 //endregion
 
 // region -------------------- Donate
-    public function getDonates($user_id)
-    {
-        $redis=$this->rConnect();
-        $result=$redis->hGet('cookies',$user_id);
-        $redis->close();
-        return (empty($result))?0:$result;
-    }
-    public function setDonates($user_id, $donates)
-    {
-        $redis=$this->rConnect();
-        $result=$redis->hSet('cookies',$user_id, $donates);
-        $redis->close();
-        return $result;
-    }
 
     public function getDonateButtons()
     {

@@ -19,4 +19,10 @@ class BotRedis
         $result=$this->redis->hGet('cookies',$user_id);
         return (empty($result))?0:$result;
     }
+
+    public function setDonates($user_id, $donates)
+    {
+        $result=$this->redis->hSet('cookies',$user_id, $donates);
+        return $result;
+    }
 }

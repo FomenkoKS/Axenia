@@ -195,7 +195,7 @@ class Axenia
                     case Util::startsWith($text, ("/setCookies")):
                         if ($this->service->CheckRights($from_id,5)) {
                             if (preg_match('/^(\/setCookies) (\d+) (\d+)/ui ', $text, $matches)) {
-                                $this->service->setDonates($matches[2], $matches[3]);
+                                $this->r->setDonates($matches[2], $matches[3]);
                                 Request::sendMessage($from_id, $this->service->getUsername($matches[2])." have $matches[3] cookies");
                             }
                         }
@@ -372,7 +372,7 @@ class Axenia
                 $text = Lang::message('settings.select.lang');
                 break;
             case "set_escapeFromGroup":
-                $cookies=$this->service->getDonates($chat_id);
+                $cookies=$this->r->getDonates($chat_id);
                 if($cookies>=$this->service->getPrice('escape')) {
                     $a=$this->service->getUserGroup($chat_id,false);
                     $user_id=$chat_id;
@@ -392,7 +392,7 @@ class Axenia
                 }
                 break;
             case "set_eraseGroup":
-                $cookies=$this->service->getDonates($chat_id);
+                $cookies=$this->r->getDonates($chat_id);
                /* $text=$cookies;*/
                // Request::sendMessage($chat_id,);
                 $user_id=$chat_id;
@@ -423,9 +423,9 @@ class Axenia
                 $chat_id=$user_id;
                 break;
             case "set_switchHidden":
-                $cookies=$this->service->getDonates($chat_id);
+                $cookies=$this->r->getDonates($chat_id);
                 if($cookies>=$this->service->getPrice('hidden')){
-                    if(is_null($this->service->isHidden($chat_id))) $this->service->setDonates($chat_id,$cookies-$this->service->getPrice('hidden'));
+                    if(is_null($this->service->isHidden($chat_id))) $this->r->setDonates($chat_id,$cookies-$this->service->getPrice('hidden'));
                     $this->service->toggleHidden($chat_id);
                     $data = NULL;
                     $this->sendSettings($chat, $message, $data);
@@ -694,8 +694,8 @@ class Axenia
                 $this->service->setEscapeCooldown($escape_chat_id,$chat_id);
                 $text = Lang::message('settings.unfollow.success',['chat_id' =>$escape_chat_id,'chat'=>$escape_chat]);
                 Request::editMessageText($chat_id, $message['message_id'], $text, ["parse_mode" => "HTML"]);
-                $balance=$this->service->getDonates($chat_id)-$this->service->getPrice('escape');
-                $this->service->setDonates($chat_id,$balance);
+                $balance=$this->r->getDonates($chat_id)-$this->service->getPrice('escape');
+                $this->r->setDonates($chat_id,$balance);
             }elseif(strpos($data, "reject") !== false){
                 $text = Lang::message('settings.unfollow.cancel',['chat_id' =>$escape_chat_id,'chat'=>$escape_chat]);
                 Request::editMessageText($chat_id, $message['message_id'], $text, ["parse_mode" => "HTML"]);
@@ -708,8 +708,8 @@ class Axenia
             $erase_chat=$this->service->getGroupName($erase_chat_id);
             if(strpos($data, "accept") !== false){
                 $this->service->deleteChat($erase_chat_id);
-                $balance=$this->service->getDonates($chat_id)-$this->service->getPrice('erase');
-                $this->service->setDonates($chat_id,$balance);
+                $balance=$this->r->getDonates($chat_id)-$this->service->getPrice('erase');
+                $this->r->setDonates($chat_id,$balance);
 
                 $text = Lang::message('settings.erase.success',['chat_id' =>$erase_chat_id,'chat'=>$erase_chat]);
                 Request::editMessageText($chat_id, $message['message_id'], $text, ["parse_mode" => "HTML"]);
