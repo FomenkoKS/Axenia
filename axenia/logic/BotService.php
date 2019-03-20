@@ -40,6 +40,14 @@ class BotService
         }
     }
 
+
+    public function debug($text)
+    {
+        if (defined('LOG_CHAT_ID')) {
+            Request::sendMessage(LOG_CHAT_ID, print_r($text,true));
+        }
+    }
+
 // region -------------------- Users
 
     public function getUserID($username)
