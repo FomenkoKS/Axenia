@@ -34,12 +34,6 @@ class AbstractDao
         return $out;
     }
 
-    public function rConnect(){
-        $redis = new Redis();
-        $redis->connect('127.0.0.1', 6379);
-        return $redis;
-    }
-
     public function connect()
     {
         // Try and connect to the database

@@ -76,19 +76,6 @@ class BotDao extends AbstractDao
         return $res;
     }
 
-    public function setEscapeCooldown($chat_id,$user_id){
-        $redis=$this->rConnect();
-        $result=$redis->hSet('escapeCooldown',$chat_id.":".$user_id,strtotime('+1 week', time()));
-        $redis->close();
-        return $result;
-    }
-
-    public function getEscapeCooldown($chat_id,$user_id){
-        $redis=$this->rConnect();
-        $result=$redis->hGet('escapeCooldown',$chat_id.":".$user_id);
-        $redis->close();
-        return $result;
-    }
 
     public function isHidden($user_id){
         $res = $this->select("SELECT hidden FROM Users WHERE id=" . $user_id);
@@ -572,14 +559,7 @@ class BotDao extends AbstractDao
         return (!$res[0]) ? 0 : $res[0];
     }
 
-    public function insertBill($txn_id,$donate,$user_id)
-    {
-        $redis=$this->rConnect();
-        $redis->hSet('bills',$txn_id."_u",$user_id);
-        $result=$redis->hSet('bills',$txn_id."_n",$donate);
-        $redis->close();
-        return $result;
-    }
+    
 //endregion
 }
 

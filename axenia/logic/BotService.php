@@ -161,13 +161,7 @@ class BotService
         return $this->db->GetRights($user_id)[$type];
     }
 
-    public function setEscapeCooldown($chat_id,$user_id){
-        return $this->db->setEscapeCooldown($chat_id,$user_id);
-    }
 
-    public function getEscapeCooldown($chat_id,$user_id){
-        return $this->db->getEscapeCooldown($chat_id,$user_id);
-    }
 
     public function checkUsernames($username){
         foreach(array_chunk($this->db->getUsersIDByUsername($username),2) as $i){
@@ -629,10 +623,6 @@ class BotService
         return $this->db->getDonateButtons();
     }
 
-    public function insertBill($txn_id,$donate,$user_id)
-    {
-        return $this->db->insertBill($txn_id,$donate,$user_id);
-    }
 
     public function getPrice($codename)
     {
