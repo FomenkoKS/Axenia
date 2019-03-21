@@ -45,4 +45,22 @@ class BotRedis
     function setLimit($string,$limit){
         return $this->redis->set("limit:".$string,$limit);
     }
+
+    function insertReward($user_id,$type){
+        return $this->redis->sAdd('achievement:'.$user_id,$type);
+    }
+
+    function addTypeReward($limit){
+        $this->redis->sAdd('achievementByLevel',10);
+        $this->redis->sAdd('achievementByLevel',100);
+        $this->redis->sAdd('achievementByLevel',500);
+        $this->redis->sAdd('achievementByLevel',1000);
+        $this->redis->sAdd('achievementByLevel',5000);
+        $this->redis->sAdd('achievementByLevel',10000);
+        $this->redis->sAdd('achievementByLevel',50000);
+        $this->redis->sAdd('achievementByLevel',100000);
+        $this->redis->sAdd('achievementByLevel',1000000);
+        $this->redis->sAdd('achievementByLevel',10000000);
+        $this->redis->sort('achievementByLevel');
+    }
 }

@@ -461,7 +461,7 @@ class BotDao extends AbstractDao
 //endregion
 
 //region -------------------- Rewards
-
+/*
     public function getUserRewardIds($user_id, $chat_id)
     {
         $res = $this->select("SELECT type_id FROM Rewards WHERE user_id = " . $user_id . " AND group_id = " . $chat_id);
@@ -539,7 +539,7 @@ class BotDao extends AbstractDao
 
         return $this->update($query);
     }
-
+*/
 //endregion
 
 // region -------------------- Donate

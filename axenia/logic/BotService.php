@@ -110,9 +110,9 @@ class BotService
         if(!$this->db->isHidden($from_id)) $res.=Lang::message("user.stat.place") . $this->db->UsersPlace($from_id) . "\r\n";
         if(!$this->db->isHidden($from_id)) $res.=Lang::message("user.stat.membership") . implode(", ", $this->getUserGroup($from_id)) . "\r\n";
         $res.=Lang::message("user.stat.cookies") . $this->r->getDonates($from_id) . "\r\n";
-        if ($a = $this->getAllUserRewards($from_id)) {
+        /*if ($a = $this->getAllUserRewards($from_id)) {
             $res .= Lang::message("user.stat.rewards") . implode(", ", $a);
-        }
+        }*/
 
         return $res;
     }
@@ -336,9 +336,9 @@ class BotService
     {
         if ($this->db->deleteChat($chat_id)) {
             if ($this->db->deleteAllKarmaInChat($chat_id)) {
-                if ($this->db->deleteAllRewardsInChat($chat_id)) {
+                //if ($this->db->deleteAllRewardsInChat($chat_id)) {
                     return true;
-                }
+                //}
             }
         }
 
@@ -348,9 +348,9 @@ class BotService
     public function deleteUserDataInChat($user_id, $chat_id)
     {
         if ($this->db->deleteUserKarmaInChat($user_id, $chat_id)) {
-            if ($this->db->deleteUserRewardsInChat($user_id, $chat_id)) {
+            //if ($this->db->deleteUserRewardsInChat($user_id, $chat_id)) {
                 return true;
-            }
+            //}
         }
 
         return false;
@@ -374,11 +374,11 @@ class BotService
 
     public function migrateToNewChatId($newChatId, $oldChatId)
     {
-        $rewards = $this->db->changeChatIdInRewards($newChatId, $oldChatId);
+        //$rewards = $this->db->changeChatIdInRewards($newChatId, $oldChatId);
         $karmas = $this->db->changeChatIdInKarma($newChatId, $oldChatId);
         $chats = $this->db->changeChatIdIn($newChatId, $oldChatId);
 
-        return $chats && $karmas && $rewards;
+        return $chats && $karmas /*&& $rewards*/;
     }
 
 
@@ -531,7 +531,7 @@ class BotService
 //endregion
 
 //region -------------------- Rewards
-
+/*
     public function handleRewards($currentCarma, $chat_id, $user_id)
     {
         $out = [];
@@ -556,7 +556,7 @@ class BotService
             $username = $this->getUserName($user_id);
             foreach ($rewardTypes as $type) {
                 $desc = Lang::messageRu('reward.type.karma.desc', [$groupName, $type['karma_min']]);
-
+                //$this->r->insertReward($user_id,$type['id']);
                 $insertRes = $this->db->insertReward($type['id'], $desc, $user_id, $chat_id);
                 if ($insertRes !== false) {
                     $msg = Lang::message('reward.new', ['user' => $username, 'path' => PATH_TO_SITE, 'user_id' => $user_id, 'title' => Lang::message('reward.type.' . $type['code'])]);
@@ -567,13 +567,13 @@ class BotService
 
         return $out;
     }
-
+*/
     /**
      * Формирует сообщения для отпарки по команде rewards
      * @param $user_id
      * @param $chat_id
      */
-    public function getUserRewards($user_id, $chat_id)
+   /* public function getUserRewards($user_id, $chat_id)
     {
         if ($user_id != $chat_id) {
             $res = $this->db->getUserRewardsInChat($user_id, $chat_id);
@@ -605,7 +605,7 @@ class BotService
         return false;
 
     }
-
+*/
 //endregion
 
 // region -------------------- Donate
