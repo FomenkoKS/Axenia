@@ -50,7 +50,7 @@ class BotRedis
         return $this->redis->sAdd('achievement:'.$user_id,$type);
     }
 
-    function addTypeReward($limit){
+    function addTypeReward(){
         $this->redis->sAdd('achievementByLevel',10);
         $this->redis->sAdd('achievementByLevel',100);
         $this->redis->sAdd('achievementByLevel',500);
@@ -62,5 +62,9 @@ class BotRedis
         $this->redis->sAdd('achievementByLevel',1000000);
         $this->redis->sAdd('achievementByLevel',10000000);
         $this->redis->sort('achievementByLevel');
+    }
+
+    function getTitulLevels(){
+        return $this->redis->sMembers('achievementByLevel');
     }
 }

@@ -19,7 +19,7 @@ $update = json_decode($content, true);
 function redis_error($error)
 {
     Request::setUrl(API_URL);
-    Request::sendMessage(LOG_CHAT_ID, $error);
+    Request::sendMessage(LOG_CHAT_ID, 'Redis: '.$error);
     throw new error($error);
 }
 
@@ -41,6 +41,7 @@ if (!$update) {
         $count = $redis->get($key);
         if ($count == 1 || $redis->pttl($key) == -1) $redis->expire($key, 10);
         if ($count > 20) $redis->expire($key, $count);
+        
         if(isset($update['callback_query'])){
             handle($update);
         } else {

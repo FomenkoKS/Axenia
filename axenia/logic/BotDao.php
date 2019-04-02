@@ -26,15 +26,13 @@ class BotDao extends AbstractDao
             VALUES ($user_id,$username,$firstname,$lastname, now()) 
             ON DUPLICATE KEY UPDATE username=$username, firstname=$firstname, lastname=$lastname, last_updated=now()
         ";
-
-        return $this->insert($query);
+        return ($firstname=='')?$this->insert($query):null;
     }
 
 
     public function getUser($id)
     {
         $res = $this->select("SELECT username,firstname,lastname FROM Users WHERE id=" . $id);
-
         return (!$res[0] && !$res[1] && !$res[2]) ? false : ['username'=> $res[0], 'first_name'=> $res[1],'last_name'=> $res[2]];
     }
 

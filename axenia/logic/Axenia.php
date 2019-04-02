@@ -127,6 +127,7 @@ class Axenia
                             }
                         }
                         break;
+                    
                     case (Util::startsWith($text, "/donate" . $postfix)):
                         $this->service->showDonateMenu($from_id);
                         break;
@@ -149,6 +150,12 @@ class Axenia
                         Request::sendTyping($chat_id);
                         $statsMessage = $this->service->getStats($from, $isPrivate ? NULL : $chat_id);
                         Request::sendHtmlMessage($chat_id, $statsMessage);
+                        break;
+
+                        
+
+                    case (Util::startsWith($text, "/test" . $postfix)):
+                        //$this->service->debug($this->r->getTitulLevels());
                         break;
 
                     case (Util::startsWith($text, "/start" . $postfix)):
@@ -423,7 +430,7 @@ class Axenia
                     $data = NULL;
                     $this->sendSettings($chat, $message, $data);
                 }else{
-                    $text = Lang::message("donate.notEnough",['count'=>$this->service->getPrice('erase')-$cookies]);
+                    $text = Lang::message("donate.notEnough",['count'=>$this->service->getPrice('hidden')-$cookies]);
                     $button_list = [
                         [['text' => Lang::message("settings.button.back"), 'callback_data' => "set_back"]]
                     ];
