@@ -1543,14 +1543,7 @@ class Telegram {
         curl_setopt($ch, CURLOPT_URL, $url);
         curl_setopt($ch, CURLOPT_HEADER, false);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-        if (defined('BOT_PROXY') && defined('BOT_PROXYPORT')) {
-            curl_setopt($ch, CURLOPT_PROXY, BOT_PROXY);
-            curl_setopt($ch, CURLOPT_PROXYPORT, BOT_PROXYPORT);
-            if (defined('BOT_PROXYUSERNAME') && defined('BOT_PROXYUSERPWD')) {
-                curl_setopt($ch, CURLOPT_PROXYUSERNAME, BOT_PROXYUSERNAME);
-                curl_setopt($ch, CURLOPT_PROXYUSERPWD, BOT_PROXYUSERPWD);
-            }
-        }
+
         if ($post) {
             curl_setopt($ch, CURLOPT_POST, 1);
             curl_setopt($ch, CURLOPT_POSTFIELDS, $content);

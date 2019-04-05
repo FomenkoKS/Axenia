@@ -94,7 +94,7 @@ class Request
             return false;
         } else if ($http_code != 200) {
             $response = json_decode($response, true);
-            error_log("Request has failed with error {$response['error_code']}: {$response['description']}\n");
+            error_log("Request has failed with error {$response['error_code']}: {$response['description']}\n".$handle);
             if ($http_code == 401) {
                 throw new Exception('Invalid access token provided');
             }

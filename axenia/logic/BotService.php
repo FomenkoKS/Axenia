@@ -4,7 +4,7 @@ class BotService
 {
 
     private $db;
-
+    private $r;
     /**
      * Axenia constructor.
      * @param $db BotDao
@@ -12,6 +12,7 @@ class BotService
     public function __construct($db)
     {
         $this->db = $db;
+        $this->r=new BotRedis();
     }
 
     /**
@@ -40,12 +41,23 @@ class BotService
         }
     }
 
+
+    public function debug($text)
+    {
+        if (defined('LOG_CHAT_ID')) {
+            Request::sendMessage(LOG_CHAT_ID, print_r($text,true));
+        }
+    }
+
 // region -------------------- Users
 
     public function getUserID($username)
     {
+        $this->checkUsernames($username);
         return $this->db->getUserID($username);
     }
+
+
 
     //todo
     public function insertOrUpdateUser($user)
@@ -97,10 +109,10 @@ class BotService
             Lang::message("user.stat.sum") . round($this->db->SumKarma($from_id), 0) . "\r\n";
         if(!$this->db->isHidden($from_id)) $res.=Lang::message("user.stat.place") . $this->db->UsersPlace($from_id) . "\r\n";
         if(!$this->db->isHidden($from_id)) $res.=Lang::message("user.stat.membership") . implode(", ", $this->getUserGroup($from_id)) . "\r\n";
-        $res.=Lang::message("user.stat.cookies") . $this->db->getDonates($from_id) . "\r\n";
-        if ($a = $this->getAllUserRewards($from_id)) {
-            $res .= Lang::message("user.s? tat.rewards") . implode(", ", $a);
-        }
+        $res.=Lang::message("user.stat.cookies") . $this->r->getDonates($from_id) . "\r\n";
+        /*if ($a = $this->getAllUserRewards($from_id)) {
+            $res .= Lang::message("user.stat.rewards") . implode(", ", $a);
+        }*/
 
         return $res;
     }
@@ -149,14 +161,14 @@ class BotService
         return $this->db->GetRights($user_id)[$type];
     }
 
-    public function setEscapeCooldown($chat_id,$user_id){
-        return $this->db->setEscapeCooldown($chat_id,$user_id);
-    }
 
-    public function getEscapeCooldown($chat_id,$user_id){
-        return $this->db->getEscapeCooldown($chat_id,$user_id);
-    }
 
+    public function checkUsernames($username){
+        foreach(array_chunk($this->db->getUsersIDByUsername($username),2) as $i){
+            $ChatMember=Request::getChatMember($i[0],$i[1]);
+            $this->db->insertOrUpdateUser($ChatMember['user']);
+        }
+    }
 //endregion
 
 // region -------------------- Admins
@@ -324,9 +336,9 @@ class BotService
     {
         if ($this->db->deleteChat($chat_id)) {
             if ($this->db->deleteAllKarmaInChat($chat_id)) {
-                if ($this->db->deleteAllRewardsInChat($chat_id)) {
+                //if ($this->db->deleteAllRewardsInChat($chat_id)) {
                     return true;
-                }
+                //}
             }
         }
 
@@ -336,9 +348,9 @@ class BotService
     public function deleteUserDataInChat($user_id, $chat_id)
     {
         if ($this->db->deleteUserKarmaInChat($user_id, $chat_id)) {
-            if ($this->db->deleteUserRewardsInChat($user_id, $chat_id)) {
+            //if ($this->db->deleteUserRewardsInChat($user_id, $chat_id)) {
                 return true;
-            }
+            //}
         }
 
         return false;
@@ -362,11 +374,11 @@ class BotService
 
     public function migrateToNewChatId($newChatId, $oldChatId)
     {
-        $rewards = $this->db->changeChatIdInRewards($newChatId, $oldChatId);
+        //$rewards = $this->db->changeChatIdInRewards($newChatId, $oldChatId);
         $karmas = $this->db->changeChatIdInKarma($newChatId, $oldChatId);
         $chats = $this->db->changeChatIdIn($newChatId, $oldChatId);
 
-        return $chats && $karmas && $rewards;
+        return $chats && $karmas /*&& $rewards*/;
     }
 
 
@@ -381,7 +393,7 @@ class BotService
         $a = array_chunk($top, 4);
         $i = 0;
         foreach ($a as $value) {
-            $username = ($value[0] == "") ? $value[1] . " " . $value[2] : $value[0];
+            $username = ($value[0] == "") ? $value[1] . " " . $value[2] : "<a href='tg://resolve?domain=$value[0]'>$value[0]</a>";
             $out .= Lang::message('karma.top.'.($i ==0 ? "firstrow": "row"), ["username" => $username, "karma" => $value[3]]);
             $i++;
         }
@@ -470,6 +482,7 @@ class BotService
 
         $userTo = $this->getUserName($to);
 
+
         $res = $this->db->setUserLevel($to, $chat_id, $newLevel);
         if ($res) {
             $mod = $isRise ? 'karma.plus' : 'karma.minus';
@@ -519,7 +532,7 @@ class BotService
 //endregion
 
 //region -------------------- Rewards
-
+/*
     public function handleRewards($currentCarma, $chat_id, $user_id)
     {
         $out = [];
@@ -544,7 +557,7 @@ class BotService
             $username = $this->getUserName($user_id);
             foreach ($rewardTypes as $type) {
                 $desc = Lang::messageRu('reward.type.karma.desc', [$groupName, $type['karma_min']]);
-
+                //$this->r->insertReward($user_id,$type['id']);
                 $insertRes = $this->db->insertReward($type['id'], $desc, $user_id, $chat_id);
                 if ($insertRes !== false) {
                     $msg = Lang::message('reward.new', ['user' => $username, 'path' => PATH_TO_SITE, 'user_id' => $user_id, 'title' => Lang::message('reward.type.' . $type['code'])]);
@@ -555,13 +568,13 @@ class BotService
 
         return $out;
     }
-
+*/
     /**
      * Формирует сообщения для отпарки по команде rewards
      * @param $user_id
      * @param $chat_id
      */
-    public function getUserRewards($user_id, $chat_id)
+   /* public function getUserRewards($user_id, $chat_id)
     {
         if ($user_id != $chat_id) {
             $res = $this->db->getUserRewardsInChat($user_id, $chat_id);
@@ -593,7 +606,7 @@ class BotService
         return false;
 
     }
-
+*/
 //endregion
 
 // region -------------------- Donate
@@ -606,25 +619,11 @@ class BotService
         Request::sendHtmlMessage($from_id, $text, ["reply_markup" => ['inline_keyboard' => array_chunk($button_list,2)]]);
     }
 
-    public function getDonates($user_id)
-    {
-        return $this->db->getDonates($user_id);
-    }
-
-    public function setDonates($user_id, $donates)
-    {
-        return $this->db->setDonates($user_id,$donates);
-    }
-
     public function getDonateButtons()
     {
         return $this->db->getDonateButtons();
     }
 
-    public function insertBill($txn_id,$donate,$user_id)
-    {
-        return $this->db->insertBill($txn_id,$donate,$user_id);
-    }
 
     public function getPrice($codename)
     {
