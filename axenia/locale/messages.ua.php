@@ -28,7 +28,7 @@
 "karma.top.title" => "<b>🏆Найповажніші люди «:chatName»:</b>\r\n\r\n",
 "karma.top.row" => ":username (:karma)\r\n",
 "karma.top.firstrow" => "⭐:username (:karma)\r\n",
-"karma.top.footer" => "<a href=':pathToSite?group_id=:chatId'>Більше подробиць..</a>",
+"karma.top.footer" => "<a href=':pathToSite?chat_id=:chatId'>Більше подробиць..</a>",
 "karma.top.private" => "Список перших у кармі доступний лише у гуртових бесідах.",
 "karma.plus" => "<b>:from (:k1)</b> збільшив карму <b>:to (:k2)</b>",
 "karma.minus" => "<b>:from (:k1)</b> зменшив карму <b>:to (:k2)</b>",
