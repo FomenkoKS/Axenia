@@ -674,10 +674,10 @@ class Axenia
             ];
 
             $url = $text . "?" . http_build_query($params);
-            $googer = new GoogleURLAPI(GOOGLE_API_KEY);
-            $shortDWName = $googer->shorten($url);
-            $text = Lang::message('donate.bill', ['nom' => $donates[$key]['nominal'], 'url' => $shortDWName]);
-            Request::editMessageText($chat_id, $message['message_id'], $text, ["parse_mode" => "HTML", "reply_markup" => ['inline_keyboard' => [[["text" => Lang::message("donate.pay"), "url" => $shortDWName]]]]]);
+            //$googer = new GoogleURLAPI(GOOGLE_API_KEY);
+            //$shortDWName = $googer->shorten($url);
+            $text = Lang::message('donate.bill', ['nom' => $donates[$key]['nominal'], 'url' => $url]);
+            Request::editMessageText($chat_id, $message['message_id'], $text, ["parse_mode" => "HTML", "reply_markup" => ['inline_keyboard' => [[["text" => Lang::message("donate.pay"), "url" => $url]]]]]);
             $this->r->insertBill($txn_id, $donates[$key]['nominal'], $chat_id);
 
         } elseif (strpos($data, "escape_") !== false) {
