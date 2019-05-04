@@ -89,7 +89,7 @@
 "settings.button.set_another_growth" => "📈Сменить рост кармы на \":type\"",
 "settings.button.set_another_access" => "👥Сделать карму доступной :type",
 "settings.button.set_showcase" => "🛍:type магазинчик контента",
-"settings.button.lang" => "🗣Язык",
+"settings.button.lang" => "🗣Язык/Language",
 "settings.button.set_cooldown" => "⏱Таймер голосования",
 "settings.enable" => "Врубить",
 "settings.disable" => "Вырубить",

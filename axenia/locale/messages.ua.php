@@ -89,7 +89,7 @@
 "settings.button.set_another_growth" => "📈Змінити зростання карми на \":type\"",
 "settings.button.set_another_access" => "👥Зробити карму доступною :type",
 "settings.button.set_showcase" => "🛍:type крамниця вмісту",
-"settings.button.lang" => "🗣Мова",
+"settings.button.lang" => "🗣Мова/Language",
 "settings.button.set_cooldown" => "⏱Часовідлік голосування",
 "settings.enable" => "Увімкнути",
 "settings.disable" => "Вимкнути",
