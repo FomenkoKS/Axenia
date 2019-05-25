@@ -583,6 +583,12 @@ class Axenia
                         $e=strpos($xml,"</url>");
                         $rez=substr($xml,$s+5,$e-$s-5);
                         break;
+                        
+                    case 'buy_dogs':
+                        $json = json_decode(file_get_contents("https://dog.ceo/api/breeds/image/random"), false);
+                        $rez=$json->message;
+                        break;
+
                     case 'buy_gif':
                         $ii = 3;
                         do{
