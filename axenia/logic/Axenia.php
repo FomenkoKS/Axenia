@@ -564,10 +564,10 @@ class Axenia
                         break;
                     case 'buy_bashorg':
                         $rez = str_ireplace("' + '","",file_get_contents("http://bash.im/forweb/?u"));
-                        $rez=substr($rez, strpos($rez,"<div id=\"b_q_t\""),-1);
+                        $rez=substr($rez, strpos($rez,"<div style=\"margin:"),-1);
                         $rez=str_replace("<br>","\r\n",$rez);
                         $rez=html_entity_decode($rez);
-                        $rez=strip_tags(substr($rez, 0,strpos($rez,"<small>")));
+                        $rez=strip_tags(substr($rez, 0,strpos($rez,"<footer")));
                         break;
                     case 'buy_jokes':
                         $json=iconv("CP1251", "UTF-8",file_get_contents ("http://rzhunemogu.ru/RandJSON.aspx?CType=1"));
