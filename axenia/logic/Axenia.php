@@ -241,18 +241,6 @@ class Axenia
         if (!$this->service->isSilentMode($chat_id)) {
             Request::sendHtmlMessage($chat_id, $out['msg']);
         }
-        /*
-        if ($out['good'] == true) {
-            if ($out['newLevel'] != null) {
-                $rewardMessages = $this->service->handleRewards($out['newLevel'], $chat_id, $user_id);
-                if (count($rewardMessages) > 0) {
-                    foreach ($rewardMessages as $msg) {
-                        Request::sendHtmlMessage($chat_id, $msg);
-                    }
-                }
-            }
-        }
-        */
     }
 
     public function processInline($inline)
