@@ -1,7 +1,7 @@
 <?
 require_once("../configs/axenia/config.php");
 
-$chat_id = $_GET['chat_id'];
+$chat_id = intval($_GET['chat_id']);
 $mysqli = new mysqli("localhost", MYSQL_USER, MYSQL_PASSWORD, MYSQL_DATABASE);
 $output = array();
 $q = '';

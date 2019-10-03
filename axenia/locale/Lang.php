@@ -9,7 +9,7 @@ class Lang
     public static function availableLangs()
     {
         if (!isset(self::$availableLangs)) {
-            self::$availableLangs = ["en" => '🇬🇧 English', "ru" => '🇷🇺 Русский', "ua" => '🇺🇦Українська', "ruUN" => '🔞 Русский (матерный)'];
+            self::$availableLangs = ["en" => '🇬🇧 English', "ru" => '🇷🇺 Русский', "ua" => '🇺🇦 Українська', "ruUN" => '🔞 Русский (матерный)', "uz" => "🇺🇿 O'zbek"];
         }
 
         return self::$availableLangs;
