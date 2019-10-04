@@ -34,12 +34,6 @@ class AbstractDao
         return $out;
     }
 
-    public function rConnect(){
-        $redis = new Redis();
-        $redis->connect('127.0.0.1', 6379);
-        return $redis;
-    }
-
     public function connect()
     {
         // Try and connect to the database
@@ -51,7 +45,7 @@ class AbstractDao
                 exit();
             }
             self::$connection->query("SET SESSION collation_connection = 'utf8_general_ci'");
-            self::$connection->query("SET NAMES 'utf8'");
+            self::$connection->query("SET NAMES 'utf8mb4'");
         }
 
         // If connection was not successful, handle the error

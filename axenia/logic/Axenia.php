@@ -4,6 +4,7 @@ class Axenia
 {
 
     private $service;
+    private $r;
 
     /**
      * Axenia constructor.
@@ -12,6 +13,7 @@ class Axenia
     public function __construct($service)
     {
         $this->service = $service;
+        $this->r=new BotRedis();
     }
 
     public function handleUpdate($update)
@@ -71,8 +73,6 @@ class Axenia
             }
 
             if (isset($message['text']) || isset($message['sticker'])) {
-                $redis=new Redis();
-                $redis->connect('127.0.0.1', 6379, 2.5);
                 $isPrivate = $this->service->isPrivate($chat);
                 $postfix = $isPrivate ? "" : ("@" . BOT_NAME);
                 if (isset($message['sticker'])) {
@@ -127,6 +127,7 @@ class Axenia
                             }
                         }
                         break;
+                    
                     case (Util::startsWith($text, "/donate" . $postfix)):
                         $this->service->showDonateMenu($from_id);
                         break;
@@ -134,6 +135,7 @@ class Axenia
                         Request::sendTyping($chat_id);
                         $this->sendSettings($chat, NULL, NULL, $this->service->isAdminInChat($from_id, $chat));
                         break;
+
                     case (Util::startsWith($text, "/top" . $postfix)):
                         Request::sendTyping($chat_id);
                         if ($isPrivate) {
@@ -144,24 +146,16 @@ class Axenia
                         }
                         break;
 
-                    case (Util::startsWith($text, "/showDonates" . $postfix)):
-                        if($chat_id=LOG_CHAT_ID){
-                            $redis = new Redis();
-                            $redis->connect('127.0.0.1', 6379);
-                            $a=$redis->hGetAll('cookies');
-                            $text="";
-                            foreach ($a as $i=>$v){
-                                $text.=$this->service->getUserName($i)." ".$v."\r\n";
-                            }
-                            Request::sendMessage($chat_id,$text);
-                            $redis->close();
-                        }
-
-                        break;
                     case (Util::startsWith($text, "/my_stats" . $postfix)):
                         Request::sendTyping($chat_id);
                         $statsMessage = $this->service->getStats($from, $isPrivate ? NULL : $chat_id);
                         Request::sendHtmlMessage($chat_id, $statsMessage);
+                        break;
+
+                        
+
+                    case (Util::startsWith($text, "/test" . $postfix)):
+                        //$this->service->debug($this->r->getTitulLevels());
                         break;
 
                     case (Util::startsWith($text, "/start" . $postfix)):
@@ -188,16 +182,25 @@ class Axenia
                             }
                         }
                         break;
+                        
                     case Util::startsWith($text, ("/setCookies")):
                         if ($this->service->CheckRights($from_id,5)) {
                             if (preg_match('/^(\/setCookies) (\d+) (\d+)/ui ', $text, $matches)) {
-                                $this->service->setDonates($matches[2], $matches[3]);
+                                $this->r->setDonates($matches[2], $matches[3]);
                                 Request::sendMessage($from_id, $this->service->getUsername($matches[2])." have $matches[3] cookies");
                             }
                         }
                         break;
+                        
+                    case Util::startsWith($text, ("/setLimit")):
+                        if ($this->service->CheckRights($from_id,5)) {
+                            if (preg_match('/^(\/setLimit) (\w+) (\d+)/ui ', $text, $matches)) {
+                                $this->r->setLimit($matches[2], $matches[3]);
+                                Request::sendMessage($from_id, "$matches[2] set limit $matches[3]");
+                            }
+                        }
+                    break;
                 }
-                $redis->close();
             } elseif (isset($message['new_chat_member'])) {
                 $newMember = $message['new_chat_member'];
                 if (BOT_NAME == $newMember['username']) {
@@ -237,22 +240,6 @@ class Axenia
         $out = $this->service->handleKarma($isRise, $from_id, $user_id, $chat_id);
         if (!$this->service->isSilentMode($chat_id)) {
             Request::sendHtmlMessage($chat_id, $out['msg']);
-        }
-
-        if ($out['good'] == true) {
-            if ($out['newLevel'] != null) {
-                $rewardMessages = $this->service->handleRewards($out['newLevel'], $chat_id, $user_id);
-                if (count($rewardMessages) > 0) {
-                    foreach ($rewardMessages as $msg) {
-                        Request::sendHtmlMessage($chat_id, $msg);
-                    }
-                    if ($user = $this->service->getUser($user_id)) {
-                        sleep(2);
-                        $username = Util::getFullNameUser($user, false);
-                        Request::sendHtmlMessage($chat_id, Lang::message('bot.rating', ['user' => $username, 'botName' => BOT_NAME]));
-                    }
-                }
-            }
         }
     }
 
@@ -341,10 +328,11 @@ class Axenia
                 $button_list = [
                     [
                         ['text' => "0.1" . $minuteText, 'callback_data' => 'set_0'],
-                        ['text' => "1" . $minuteText, 'callback_data' => 'set_1'],
-                        ['text' => "2" . $minuteText, 'callback_data' => 'set_2']
+                        ['text' => "0.5" . $minuteText, 'callback_data' => 'set_0.5'],
+                        ['text' => "1" . $minuteText, 'callback_data' => 'set_1']
                     ],
                     [
+                        ['text' => "2" . $minuteText, 'callback_data' => 'set_2'],
                         ['text' => "10" . $minuteText, 'callback_data' => 'set_10'],
                         ['text' => "20" . $minuteText, 'callback_data' => 'set_20']
                     ],
@@ -372,18 +360,14 @@ class Axenia
                 $text = Lang::message('settings.select.lang');
                 break;
             case "set_escapeFromGroup":
-                $cookies=$this->service->getDonates($chat_id);
+                $cookies=$this->r->getDonates($chat_id);
                 if($cookies>=$this->service->getPrice('escape')) {
                     $a=$this->service->getUserGroup($chat_id,false);
                     $user_id=$chat_id;
                     $buttons=[];
                     foreach($a as $item){
                         $chat_id=explode(":",$item)[0];
-                        if(!$this->service->getEscapeCooldown($chat_id,$user_id)){
-                            if($this->service->getEscapeCooldown($chat_id,$user_id)<time()){
-                                array_push($buttons,['text'=>htmlspecialchars_decode(explode(":",$item)[1]),'callback_data'=>"escape_".$chat_id]);
-                            }
-                        }
+                        array_push($buttons,['text'=>htmlspecialchars_decode(explode(":",$item)[1]),'callback_data'=>"escape_".$chat_id]);
                     }
                     $chat_id=$user_id;
                     $button_list=array_chunk($buttons,3);
@@ -396,7 +380,7 @@ class Axenia
                 }
                 break;
             case "set_eraseGroup":
-                $cookies=$this->service->getDonates($chat_id);
+                $cookies=$this->r->getDonates($chat_id);
                /* $text=$cookies;*/
                // Request::sendMessage($chat_id,);
                 $user_id=$chat_id;
@@ -427,14 +411,14 @@ class Axenia
                 $chat_id=$user_id;
                 break;
             case "set_switchHidden":
-                $cookies=$this->service->getDonates($chat_id);
+                $cookies=$this->r->getDonates($chat_id);
                 if($cookies>=$this->service->getPrice('hidden')){
-                    if(is_null($this->service->isHidden($chat_id))) $this->service->setDonates($chat_id,$cookies-$this->service->getPrice('hidden'));
+                    if(is_null($this->service->isHidden($chat_id))) $this->r->setDonates($chat_id,$cookies-$this->service->getPrice('hidden'));
                     $this->service->toggleHidden($chat_id);
                     $data = NULL;
                     $this->sendSettings($chat, $message, $data);
                 }else{
-                    $text = Lang::message("donate.notEnough",['count'=>$this->service->getPrice('erase')-$cookies]);
+                    $text = Lang::message("donate.notEnough",['count'=>$this->service->getPrice('hidden')-$cookies]);
                     $button_list = [
                         [['text' => Lang::message("settings.button.back"), 'callback_data' => "set_back"]]
                     ];
@@ -568,10 +552,10 @@ class Axenia
                         break;
                     case 'buy_bashorg':
                         $rez = str_ireplace("' + '","",file_get_contents("http://bash.im/forweb/?u"));
-                        $rez=substr($rez, strpos($rez,"<div id=\"b_q_t\""),-1);
+                        $rez=substr($rez, strpos($rez,"<div style=\"margin:"),-1);
                         $rez=str_replace("<br>","\r\n",$rez);
                         $rez=html_entity_decode($rez);
-                        $rez=strip_tags(substr($rez, 0,strpos($rez,"<small>")));
+                        $rez=strip_tags(substr($rez, 0,strpos($rez,"<footer")));
                         break;
                     case 'buy_jokes':
                         $json=iconv("CP1251", "UTF-8",file_get_contents ("http://rzhunemogu.ru/RandJSON.aspx?CType=1"));
@@ -587,38 +571,37 @@ class Axenia
                         $e=strpos($xml,"</url>");
                         $rez=substr($xml,$s+5,$e-$s-5);
                         break;
+                        
+                    case 'buy_dogs':
+                        $json = json_decode(file_get_contents("https://dog.ceo/api/breeds/image/random"), false);
+                        $rez=$json->message;
+                        break;
+
                     case 'buy_gif':
                         $ii = 3;
                         do{
                             $ii= $ii - 1;
                             $trends = json_decode(file_get_contents("https://api.tenor.com/v1/autocomplete?key=2U08JTUC3MRE&type=trending"), false);
                             $json = json_decode(file_get_contents("https://api.tenor.com/v1/search?key=2U08JTUC3MRE&q=".$trends->results[rand(0,10)]."&safesearch=moderate&limit=1&pos=".rand(1,10)), false);
-                            //$json = json_decode(file_get_contents("https://api.tenor.com/v1/gifs?key=LIVDSRZULELA&ids=".rand(1,10252835).",".rand(1,10252835).",".rand(1,10252835).",".rand(1,10252835).",".rand(1,10252835)), false);
                             $rez = $json->results[0]->media[0]->gif->url;
                         }while($rez==null && $ii > 0);
 
                         break;
                     case 'buy_zadolbali':
-                        $redis=new Redis();
-                        $redis->connect('127.0.0.1', 6379, 2.5);
-                        $max=$redis->get("limit:zadolbali");
+                        $max=$this->r->getLimit('zadolbali');
                         $text=file_get_contents("http://zadolba.li/story/".rand(1,$max));
                         $text=substr($text, strpos($text,"<div class='text'>"),-1);
                         $text=str_replace("<br>","\r\n",$text);
                         $text=html_entity_decode($text);
                         $rez=strip_tags(substr($text, 0,strpos($text,"</div>")));
-                        $redis->close();
                         break;
                     case 'buy_ideer':
-                        $redis=new Redis();
-                        $redis->connect('127.0.0.1', 6379, 2.5);
-                        $max=$redis->get("limit:ideer");
+                        $max=$this->r->getLimit('ideer');
                         $text=file_get_contents("https://ideer.ru/".rand(1,$max));
                         $text=substr($text, strpos($text,"<div class=\"shortContent\">"),-1);
                         $text=str_replace("<br>","\r\n",$text);
                         $text=html_entity_decode($text);
                         $rez=strip_tags(substr($text, 0,strpos($text,"</div>")));
-                        $redis->close();
                         break;
                     default:
                         $rez = $data;
@@ -635,6 +618,9 @@ class Axenia
                         break;
                     case 'set_0':
                         $this->service->setCooldown($chat_id, 0.1);
+                        break;
+                    case 'set_0.5':
+                        $this->service->setCooldown($chat_id, 0.5);
                         break;
                     case 'set_1':
                         $this->service->setCooldown($chat_id, 1);
@@ -681,22 +667,19 @@ class Axenia
             ];
 
             $url = $text . "?" . http_build_query($params);
-            $googer = new GoogleURLAPI(GOOGLE_API_KEY);
-            $shortDWName = $googer->shorten($url);
-            $text = Lang::message('donate.bill', ['nom' => $donates[$key]['nominal'], 'url' => $shortDWName]);
-            Request::editMessageText($chat_id, $message['message_id'], $text, ["parse_mode" => "HTML", "reply_markup" => ['inline_keyboard' => [[["text" => Lang::message("donate.pay"), "url" => $shortDWName]]]]]);
-            $this->service->insertBill($txn_id, $donates[$key]['nominal'], $chat_id);
+            $text = Lang::message('donate.bill', ['nom' => $donates[$key]['nominal'], 'url' => $url]);
+            Request::editMessageText($chat_id, $message['message_id'], $text, ["parse_mode" => "HTML", "reply_markup" => ['inline_keyboard' => [[["text" => Lang::message("donate.pay"), "url" => $url]]]]]);
+            $this->r->insertBill($txn_id, $donates[$key]['nominal'], $chat_id);
 
         } elseif (strpos($data, "escape_") !== false) {
             $escape_chat_id=explode("_",$data)[1];
             $escape_chat=$this->service->getGroupName($escape_chat_id);
             if(strpos($data, "accept") !== false){
                 $this->service->deleteUserDataInChat($chat_id,$escape_chat_id);
-                $this->service->setEscapeCooldown($escape_chat_id,$chat_id);
                 $text = Lang::message('settings.unfollow.success',['chat_id' =>$escape_chat_id,'chat'=>$escape_chat]);
                 Request::editMessageText($chat_id, $message['message_id'], $text, ["parse_mode" => "HTML"]);
-                $balance=$this->service->getDonates($chat_id)-$this->service->getPrice('escape');
-                $this->service->setDonates($chat_id,$balance);
+                $balance=$this->r->getDonates($chat_id)-$this->service->getPrice('escape');
+                $this->r->setDonates($chat_id,$balance);
             }elseif(strpos($data, "reject") !== false){
                 $text = Lang::message('settings.unfollow.cancel',['chat_id' =>$escape_chat_id,'chat'=>$escape_chat]);
                 Request::editMessageText($chat_id, $message['message_id'], $text, ["parse_mode" => "HTML"]);
@@ -709,8 +692,8 @@ class Axenia
             $erase_chat=$this->service->getGroupName($erase_chat_id);
             if(strpos($data, "accept") !== false){
                 $this->service->deleteChat($erase_chat_id);
-                $balance=$this->service->getDonates($chat_id)-$this->service->getPrice('erase');
-                $this->service->setDonates($chat_id,$balance);
+                $balance=$this->r->getDonates($chat_id)-$this->service->getPrice('erase');
+                $this->r->setDonates($chat_id,$balance);
 
                 $text = Lang::message('settings.erase.success',['chat_id' =>$erase_chat_id,'chat'=>$erase_chat]);
                 Request::editMessageText($chat_id, $message['message_id'], $text, ["parse_mode" => "HTML"]);

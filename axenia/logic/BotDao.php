@@ -8,8 +8,8 @@ class BotDao extends AbstractDao
     public function getUserID($username)
     {
         $username = "'" . (isset($username) ? $this->escape_mimic($username) : '') . "'";
-        $username = str_ireplace("@", "", $username);
-        $res = $this->select("SELECT id FROM Users WHERE username=$username");
+        $username = strtolower(str_ireplace("@", "", $username));
+        $res = $this->select("SELECT id FROM Users WHERE lower(username)=$username");
 
         return (!$res[0]) ? false : $res[0];
     }
@@ -26,16 +26,24 @@ class BotDao extends AbstractDao
             VALUES ($user_id,$username,$firstname,$lastname, now()) 
             ON DUPLICATE KEY UPDATE username=$username, firstname=$firstname, lastname=$lastname, last_updated=now()
         ";
-
-        return $this->insert($query);
+        
+        return $this->insert($query):null;
     }
 
 
     public function getUser($id)
     {
         $res = $this->select("SELECT username,firstname,lastname FROM Users WHERE id=" . $id);
-
         return (!$res[0] && !$res[1] && !$res[2]) ? false : ['username'=> $res[0], 'first_name'=> $res[1],'last_name'=> $res[2]];
+    }
+
+    public function getUsersIDByUsername($username)
+    {
+        $username = "'" . (isset($username) ? $this->escape_mimic($username) : '') . "'";
+        $username = strtolower(str_ireplace("@", "", $username));
+        $res = $this->select("SELECT u.id, k.chat_id FROM Users u, Karma k WHERE k.user_id=u.id and lower(u.username)=$username");
+
+        return (!$res[0]) ? false : $res;
     }
 
     public function getUserName($id)
@@ -67,19 +75,6 @@ class BotDao extends AbstractDao
         return $res;
     }
 
-    public function setEscapeCooldown($chat_id,$user_id){
-        $redis=$this->rConnect();
-        $result=$redis->hSet('escapeCooldown',$chat_id.":".$user_id,strtotime('+1 week', time()));
-        $redis->close();
-        return $result;
-    }
-
-    public function getEscapeCooldown($chat_id,$user_id){
-        $redis=$this->rConnect();
-        $result=$redis->hGet('escapeCooldown',$chat_id.":".$user_id);
-        $redis->close();
-        return $result;
-    }
 
     public function isHidden($user_id){
         $res = $this->select("SELECT hidden FROM Users WHERE id=" . $user_id);
@@ -256,7 +251,7 @@ class BotDao extends AbstractDao
 
     public function getGroupName($chat_id)
     {
-        $res = $this->select("SELECT title FROM Chats WHERE id = " . $chat_id);
+        $res = $this->select("SELECT title FROM Chats WHERE id = " . intval($chat_id));
 
         return (!$res[0]) ? false : htmlspecialchars($res[0]);
     }
@@ -322,7 +317,7 @@ class BotDao extends AbstractDao
         $query = "
         SELECT u . username, u . firstname, u . lastname, k . level 
         FROM Karma k, Users u 
-        WHERE k . user_id = u . id AND k . chat_id = " . $chat_id . " 
+        WHERE k . user_id = u . id AND k . level <> 0 AND k . chat_id = " . $chat_id . "
         ORDER BY level 
         DESC LIMIT " . $limit;
 
@@ -465,7 +460,7 @@ class BotDao extends AbstractDao
 //endregion
 
 //region -------------------- Rewards
-
+/*
     public function getUserRewardIds($user_id, $chat_id)
     {
         $res = $this->select("SELECT type_id FROM Rewards WHERE user_id = " . $user_id . " AND group_id = " . $chat_id);
@@ -543,24 +538,10 @@ class BotDao extends AbstractDao
 
         return $this->update($query);
     }
-
+*/
 //endregion
 
 // region -------------------- Donate
-    public function getDonates($user_id)
-    {
-        $redis=$this->rConnect();
-        $result=$redis->hGet('cookies',$user_id);
-        $redis->close();
-        return (empty($result))?0:$result;
-    }
-    public function setDonates($user_id, $donates)
-    {
-        $redis=$this->rConnect();
-        $result=$redis->hSet('cookies',$user_id, $donates);
-        $redis->close();
-        return $result;
-    }
 
     public function getDonateButtons()
     {
@@ -577,14 +558,7 @@ class BotDao extends AbstractDao
         return (!$res[0]) ? 0 : $res[0];
     }
 
-    public function insertBill($txn_id,$donate,$user_id)
-    {
-        $redis=$this->rConnect();
-        $redis->hSet('bills',$txn_id."_u",$user_id);
-        $result=$redis->hSet('bills',$txn_id."_n",$donate);
-        $redis->close();
-        return $result;
-    }
+    
 //endregion
 }
 
