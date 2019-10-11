@@ -1,5 +1,5 @@
 <?
-require_once("../configs/axenia/config.php");
+/*require_once("../configs/axenia/config.php");
 
 $chat_id = intval($_GET['chat_id']);
 $mysqli = new mysqli("localhost", MYSQL_USER, MYSQL_PASSWORD, MYSQL_DATABASE);
@@ -24,6 +24,6 @@ if ($result = $stmt->get_result()) {
 }
 $mysqli->close();
 print_r(json_encode($output, true));
-
+*/
 
 ?>

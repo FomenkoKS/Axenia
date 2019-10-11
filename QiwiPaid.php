@@ -1,6 +1,6 @@
 <?php
-require_once('Telegram.php');
 require_once('configs/axenia/config.php');
+require_once('Telegram.php');
 /**
  * Page for payment. Used for Qiwi
  */

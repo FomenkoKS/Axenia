@@ -483,6 +483,7 @@ class BotService
         $userTo = $this->getUserName($to);
         
 
+
         $res = $this->db->setUserLevel($to, $chat_id, $newLevel);
         if ($res) {
             $mod = $isRise ? 'karma.plus' : 'karma.minus';

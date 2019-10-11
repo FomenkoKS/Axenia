@@ -127,7 +127,7 @@ class Axenia
                             }
                         }
                         break;
-                    
+
                     case (Util::startsWith($text, "/donate" . $postfix)):
                         $this->service->showDonateMenu($from_id);
                         break;
@@ -152,7 +152,7 @@ class Axenia
                         Request::sendHtmlMessage($chat_id, $statsMessage);
                         break;
 
-                        
+
 
                     case (Util::startsWith($text, "/test" . $postfix)):
                         //$this->service->debug($this->r->getTitulLevels());
@@ -182,7 +182,7 @@ class Axenia
                             }
                         }
                         break;
-                        
+
                     case Util::startsWith($text, ("/setCookies")):
                         if ($this->service->CheckRights($from_id,5)) {
                             if (preg_match('/^(\/setCookies) (\d+) (\d+)/ui ', $text, $matches)) {
@@ -191,7 +191,7 @@ class Axenia
                             }
                         }
                         break;
-                        
+
                     case Util::startsWith($text, ("/setLimit")):
                         if ($this->service->CheckRights($from_id,5)) {
                             if (preg_match('/^(\/setLimit) (\w+) (\d+)/ui ', $text, $matches)) {
@@ -241,6 +241,18 @@ class Axenia
         if (!$this->service->isSilentMode($chat_id)) {
             Request::sendHtmlMessage($chat_id, $out['msg']);
         }
+        /*
+        if ($out['good'] == true) {
+            if ($out['newLevel'] != null) {
+                $rewardMessages = $this->service->handleRewards($out['newLevel'], $chat_id, $user_id);
+                if (count($rewardMessages) > 0) {
+                    foreach ($rewardMessages as $msg) {
+                        Request::sendHtmlMessage($chat_id, $msg);
+                    }
+                }
+            }
+        }
+        */
     }
 
     public function processInline($inline)
@@ -552,10 +564,10 @@ class Axenia
                         break;
                     case 'buy_bashorg':
                         $rez = str_ireplace("' + '","",file_get_contents("http://bash.im/forweb/?u"));
-                        $rez=substr($rez, strpos($rez,"<div style=\"margin:"),-1);
+                        $rez=substr($rez, strpos($rez,"<div id=\"b_q_t\""),-1);
                         $rez=str_replace("<br>","\r\n",$rez);
                         $rez=html_entity_decode($rez);
-                        $rez=strip_tags(substr($rez, 0,strpos($rez,"<footer")));
+                        $rez=strip_tags(substr($rez, 0,strpos($rez,"<small>")));
                         break;
                     case 'buy_jokes':
                         $json=iconv("CP1251", "UTF-8",file_get_contents ("http://rzhunemogu.ru/RandJSON.aspx?CType=1"));
@@ -571,18 +583,13 @@ class Axenia
                         $e=strpos($xml,"</url>");
                         $rez=substr($xml,$s+5,$e-$s-5);
                         break;
-                        
-                    case 'buy_dogs':
-                        $json = json_decode(file_get_contents("https://dog.ceo/api/breeds/image/random"), false);
-                        $rez=$json->message;
-                        break;
-
                     case 'buy_gif':
                         $ii = 3;
                         do{
                             $ii= $ii - 1;
                             $trends = json_decode(file_get_contents("https://api.tenor.com/v1/autocomplete?key=2U08JTUC3MRE&type=trending"), false);
                             $json = json_decode(file_get_contents("https://api.tenor.com/v1/search?key=2U08JTUC3MRE&q=".$trends->results[rand(0,10)]."&safesearch=moderate&limit=1&pos=".rand(1,10)), false);
+                            //$json = json_decode(file_get_contents("https://api.tenor.com/v1/gifs?key=LIVDSRZULELA&ids=".rand(1,10252835).",".rand(1,10252835).",".rand(1,10252835).",".rand(1,10252835).",".rand(1,10252835)), false);
                             $rez = $json->results[0]->media[0]->gif->url;
                         }while($rez==null && $ii > 0);
 
@@ -667,8 +674,10 @@ class Axenia
             ];
 
             $url = $text . "?" . http_build_query($params);
-            $text = Lang::message('donate.bill', ['nom' => $donates[$key]['nominal'], 'url' => $url]);
-            Request::editMessageText($chat_id, $message['message_id'], $text, ["parse_mode" => "HTML", "reply_markup" => ['inline_keyboard' => [[["text" => Lang::message("donate.pay"), "url" => $url]]]]]);
+            $googer = new GoogleURLAPI(GOOGLE_API_KEY);
+            $shortDWName = $googer->shorten($url);
+            $text = Lang::message('donate.bill', ['nom' => $donates[$key]['nominal'], 'url' => $shortDWName]);
+            Request::editMessageText($chat_id, $message['message_id'], $text, ["parse_mode" => "HTML", "reply_markup" => ['inline_keyboard' => [[["text" => Lang::message("donate.pay"), "url" => $shortDWName]]]]]);
             $this->r->insertBill($txn_id, $donates[$key]['nominal'], $chat_id);
 
         } elseif (strpos($data, "escape_") !== false) {

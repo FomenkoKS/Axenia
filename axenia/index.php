@@ -1,5 +1,5 @@
 <?php
-require_once('../configs/axenia/config.php');
+require_once('../configs/format/config.php');
 
 require_once('core/util.php');
 require_once('core/AbstractDao.php');
@@ -33,6 +33,7 @@ if (!$update) {
     exit;
 } else {
     try {
+
         $redis = new Redis();
         $redis->connect('127.0.0.1', 6379);
         $key = 'from:' . $update['message']['from']['id'];
@@ -41,13 +42,14 @@ if (!$update) {
         $count = $redis->get($key);
         if ($count == 1 || $redis->pttl($key) == -1) $redis->expire($key, 10);
         if ($count > 20) $redis->expire($key, $count);
-        
+
         if(isset($update['callback_query'])){
             handle($update);
         } else {
             if($count < 7){
                 handle($update);
             }
+
 //            else if($count==7){
 //                Request::setUrl(API_URL);
 //                Request::sendMessage(LOG_CHAT_ID, 'Spam detected from:' . $update['message']['from']['id'] . '(@' . $update['message']['from']['username'] . ') chat:@' . $update['message']['chat']['username'] . ' ttl:' . $redis->pttl($key));
