@@ -13,8 +13,7 @@ Also I understand messages in format like \"+ @username\" and etc.\r\n
 /my_stats - show your global statistics.
 /settings - open dialog to change the language and to toggle silent-mode which mute bot comments and cooldown time between user's messages about decrease/increase karma points (admin only)
 /buy - Also you may buy some content (kitty, gif etc) on your karma points.\r\n
-<i>Statistics are available on</i> axeniabot.ru. 
-Please, give a rating for me ;) t.me/storebot?start=axenia_bot",
+<i>Statistics are available on</i> axeniabot.ru.",
 "user.stat.inline" => "Statistic of the 👤 :user",
 "user.stat.title" => " ℹ️ <b>The user's statistic</b>",
 "user.stat.name" => "👤 Name: ",

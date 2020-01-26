@@ -14,8 +14,7 @@ Shuningdek, "+ @ username +" va shunga o'xshash xabar formatini tushunaman. \r\n
 /settings - mening sozlamalarim: tilni o'zgartirish, sharh qoldirmaslik rejimiga o'tish (jimlik rejimi) va foydalanuvchi buyruqlari orasidagi taymerni o'zgartirish
 /buy - kontent do'koni. Karmani qiziq suratlarni sotib olishga sarflash mumkin
 /donate - mualliflarga rahmat aytish. Ularga bu hostingga kerak. Minnatdorchilik sifatida mualliflar pishiriqchalar qo'shib berishadi \r\n
-<i>Statistikani quyidagi web-saytda ko'rish mumkin </i> axeniabot.ru <i>. Qo'llab-quvvatlash kanali: </i> @Axenia_Channel.
-Baho berish bot t.me/storebot?start=axenia_bot",
+<i>Statistikani quyidagi web-saytda ko'rish mumkin </i> axeniabot.ru <i>. Qo'llab-quvvatlash kanali: </i> @Axenia_Channel.",
 "user.stat.inline" => "Foydalanuvchi statistikasi 👤:user",
 "user.stat.title" => " ℹ️ <b>Foydalanuvchi statistikasi</b>",
 "user.stat.name" => "👤 Ism:",
