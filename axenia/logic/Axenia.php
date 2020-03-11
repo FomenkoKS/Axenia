@@ -152,12 +152,6 @@ class Axenia
                         Request::sendHtmlMessage($chat_id, $statsMessage);
                         break;
 
-                        
-
-                    case (Util::startsWith($text, "/test" . $postfix)):
-                        //$this->service->debug($this->r->getTitulLevels());
-                        break;
-
                     case (Util::startsWith($text, "/start" . $postfix)):
                         if ($isPrivate) {
                             if (preg_match('/donate/ui ', $text)) {
@@ -571,12 +565,14 @@ class Axenia
                         $e=strpos($xml,"</url>");
                         $rez=substr($xml,$s+5,$e-$s-5);
                         break;
-                        
+                    case 'buy_pandas':
+                        $json = json_decode(file_get_contents("https://some-random-api.ml/img/panda"), false);
+                        $rez=$json->link;
+                        break;
                     case 'buy_dogs':
                         $json = json_decode(file_get_contents("https://dog.ceo/api/breeds/image/random"), false);
                         $rez=$json->message;
                         break;
-
                     case 'buy_gif':
                         $ii = 3;
                         do{

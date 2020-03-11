@@ -494,7 +494,6 @@ class BotService
         return $this->createHandleKarmaResult(false, Lang::message('bot.error'), null);
     }
 
-
     public function handleKarmaFromBot($isRise, $user_id, $chat_id)
     {
         $user2 = $this->getUserName($user_id);
