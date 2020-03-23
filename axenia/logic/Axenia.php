@@ -523,9 +523,13 @@ class Axenia
             $data_array = explode('|', $data);
             if ($data_array[1] == $from['id']) {
                 switch ($data_array[0]) {
+                    case 'buy_sharks':
+                        $filenames = array_diff(scandir('../sharks'),['..','.']);
+                        $filename = $filenames[rand(0,count($filenames)-1)];
+                        $rez = "http://axeniabot.ru/sharks/".$filename;
+                        break;
                     case 'buy_tits':
                         $ii = 3;
-
                         $tits = json_decode(file_get_contents("http://api.oboobs.ru/boobs/1/1/random"), true);
                         $rez = "http://media.oboobs.ru/boobs/" . sprintf("%05d", $tits[0]['id']) . ".jpg";
                         while(@fopen($rez,"r")==false && $ii > 0){
