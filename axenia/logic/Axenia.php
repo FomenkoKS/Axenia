@@ -525,7 +525,7 @@ class Axenia
                 switch ($data_array[0]) {
                     case 'buy_sharks':
                         $filenames = array_diff(scandir('../sharks'),['..','.']);
-                        $filename = $filenames[rand(0,count($filenames)-1)];
+                        $filename = $filenames[rand(1,count($filenames)-1)];
                         $rez = "http://axeniabot.ru/sharks/".$filename;
                         break;
                     case 'buy_tits':
