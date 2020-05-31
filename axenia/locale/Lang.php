@@ -61,7 +61,6 @@ class Lang
     {
         if (!isset(self::$messageArray)) {
             self::$messageArray = include "messages.$lang.php";
-            //self::$messageArray = parse_ini_file("messages.ini", true);
         }
     }
 

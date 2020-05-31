@@ -393,7 +393,7 @@ class BotService
         $a = array_chunk($top, 4);
         $i = 0;
         foreach ($a as $value) {
-            $username = ($value[0] == "") ? $value[1] . " " . $value[2] : "<a href='tg://resolve?domain=$value[0]'>$value[0]</a>";
+            $username = ($value[0] == "") ? htmlspecialchars($value[1] . " " . $value[2]) : "<a href='tg://resolve?domain=$value[0]'>$value[0]</a>";
             $out .= Lang::message('karma.top.'.($i ==0 ? "firstrow": "row"), ["username" => $username, "karma" => $value[3]]);
             $i++;
         }
@@ -478,7 +478,7 @@ class BotService
         $fromLevelSqrt = $fromLevel == 0 ? 1 : ($this->db->getGrowth($chat_id)==1)?1:sqrt($fromLevel);
         $toLevel = $this->getUserLevel($to, $chat_id);
 
-        $newLevel = number_format($toLevel + ($isRise ? $fromLevelSqrt : -$fromLevelSqrt),1, '.', '');
+        $newLevel = round($toLevel + ($isRise ? $fromLevelSqrt : -$fromLevelSqrt), 2);
 
         $userTo = $this->getUserName($to);
 
@@ -493,7 +493,6 @@ class BotService
 
         return $this->createHandleKarmaResult(false, Lang::message('bot.error'), null);
     }
-
 
     public function handleKarmaFromBot($isRise, $user_id, $chat_id)
     {

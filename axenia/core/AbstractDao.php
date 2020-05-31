@@ -44,7 +44,7 @@ class AbstractDao
                 error_log(printf("Error connection: %s\n", self::$connection->connect_error));
                 exit();
             }
-            self::$connection->query("SET SESSION collation_connection = 'utf8_general_ci'");
+            self::$connection->query("SET SESSION collation_connection = 'utf8mb4_general_ci'");
             self::$connection->query("SET NAMES 'utf8mb4'");
         }
 

@@ -33,7 +33,6 @@ if (!$update) {
     exit;
 } else {
     try {
-
         $redis = new Redis();
         $redis->connect('127.0.0.1', 6379);
         $key = 'from:' . $update['message']['from']['id'];
@@ -49,11 +48,6 @@ if (!$update) {
             if($count < 7){
                 handle($update);
             }
-
-//            else if($count==7){
-//                Request::setUrl(API_URL);
-//                Request::sendMessage(LOG_CHAT_ID, 'Spam detected from:' . $update['message']['from']['id'] . '(@' . $update['message']['from']['username'] . ') chat:@' . $update['message']['chat']['username'] . ' ttl:' . $redis->pttl($key));
-//            }
         }
         $redis->close();
 
