@@ -13,7 +13,7 @@ class Axenia
     public function __construct($service)
     {
         $this->service = $service;
-        $this->r=new BotRedis();
+        $this->r = new BotRedis();
     }
 
     public function handleUpdate($update)
@@ -99,7 +99,7 @@ class Axenia
                                             if (BOT_NAME != $user[1] && !$this->service->isUsernameEndBot($user[1])) {
                                                 $to = $this->service->getUserID($user[1]);
                                                 if ($to) {
-                                                    if(Request::isChatMember($to, $chat_id)){
+                                                    if (Request::isChatMember($to, $chat_id)) {
                                                         $this->doKarmaAction($isRise, $from_id, $to, $chat_id);
                                                     } else {
                                                         Request::sendHtmlMessage($chat_id, Lang::message('karma.unknownUser.kicked'), ['reply_to_message_id' => $message_id]);
@@ -120,9 +120,9 @@ class Axenia
                         if ($isPrivate) {
                             Request::sendMessage($chat_id, Lang::message("bot.onlyPrivate"));
                         } else {
-                            if($this->service->getShowcaseStatus($chat_id)==1){
+                            if ($this->service->getShowcaseStatus($chat_id) == 1) {
                                 $this->sendStore($chat_id, $from);
-                            }else{
+                            } else {
                                 Request::sendHtmlMessage($chat_id, Lang::message("store.switchoff"));
                             }
                         }
@@ -156,10 +156,10 @@ class Axenia
                         if ($isPrivate) {
                             if (preg_match('/donate/ui ', $text)) {
                                 $this->service->showDonateMenu($from_id);
-                            }else{
+                            } else {
                                 Request::sendTyping($chat_id);
                                 Request::sendHtmlMessage($chat_id, Lang::message('chat.greetings'));
-                                Request::sendHtmlMessage($chat_id, Lang::message('user.pickChat', ["botName"=> BOT_NAME]));
+                                Request::sendHtmlMessage($chat_id, Lang::message('user.pickChat', ["botName" => BOT_NAME]));
                             }
                         } else {
                             $this->service->rememberChat($chat, $from_id);
@@ -170,7 +170,7 @@ class Axenia
                         Request::sendHtmlMessage($chat_id, Lang::message('chat.help'));
                         break;
                     case Util::startsWith($text, ("/set @")):
-                        if ($this->service->CheckRights($from_id,5)) {
+                        if ($this->service->CheckRights($from_id, 5)) {
                             if (preg_match('/^(\/set) @([\w]+) (-?\d+)/ui ', $text, $matches)) {
                                 Request::sendMessage($from_id, $this->service->setLevelByUsername($matches[2], $chat_id, $matches[3]));
                             }
@@ -178,22 +178,22 @@ class Axenia
                         break;
 
                     case Util::startsWith($text, ("/setCookies")):
-                        if ($this->service->CheckRights($from_id,5)) {
+                        if ($this->service->CheckRights($from_id, 5)) {
                             if (preg_match('/^(\/setCookies) (\d+) (\d+)/ui ', $text, $matches)) {
                                 $this->r->setDonates($matches[2], $matches[3]);
-                                Request::sendMessage($from_id, $this->service->getUsername($matches[2])." have $matches[3] cookies");
+                                Request::sendMessage($from_id, $this->service->getUsername($matches[2]) . " have $matches[3] cookies");
                             }
                         }
                         break;
 
                     case Util::startsWith($text, ("/setLimit")):
-                        if ($this->service->CheckRights($from_id,5)) {
+                        if ($this->service->CheckRights($from_id, 5)) {
                             if (preg_match('/^(\/setLimit) (\w+) (\d+)/ui ', $text, $matches)) {
                                 $this->r->setLimit($matches[2], $matches[3]);
                                 Request::sendMessage($from_id, "$matches[2] set limit $matches[3]");
                             }
                         }
-                    break;
+                        break;
                 }
             } elseif (isset($message['new_chat_member'])) {
                 $newMember = $message['new_chat_member'];
@@ -202,7 +202,7 @@ class Axenia
                     $this->service->setBotPresentedInChat($chat_id, true);
                     if ($isRemembered !== false) {
                         if (defined('LOG_CHAT_ID')) {
-                            Request::sendHtmlMessage(LOG_CHAT_ID, " 🌝 " . Request::getChatMembersCount($chat_id) . "|" . $this->service->getChatMembersCount($chat_id) . " (" . Util::getChatLink($chat) . ") by ". Util::getFullNameUser($from, false));
+                            Request::sendHtmlMessage(LOG_CHAT_ID, " 🌝 " . Request::getChatMembersCount($chat_id) . "|" . $this->service->getChatMembersCount($chat_id) . " (" . Util::getChatLink($chat) . ") by " . Util::getFullNameUser($from, false));
                         }
                         Request::sendMessage($chat_id, Lang::message('chat.greetings'), ["parse_mode" => "Markdown"]);
                     }
@@ -217,14 +217,11 @@ class Axenia
                     //$isDeleted = $this->service->deleteChat($chat_id);
                     $this->service->setBotPresentedInChat($chat_id, false);
                     if (defined('LOG_CHAT_ID')) {
-                        Request::sendHtmlMessage(LOG_CHAT_ID, " 🌚 -1|" . $this->service->getChatMembersCount($chat_id) . " (" . Util::getChatLink($chat) . ") by ". Util::getFullNameUser($from, false));
+                        Request::sendHtmlMessage(LOG_CHAT_ID, " 🌚 -1|" . $this->service->getChatMembersCount($chat_id) . " (" . Util::getChatLink($chat) . ") by " . Util::getFullNameUser($from, false));
                     }
                 }
             } elseif (isset($message['migrate_to_chat_id'])) {
                 $rez = $this->service->migrateToNewChatId($message['migrate_to_chat_id'], $chat_id);
-                if (defined('LOG_CHAT_ID')) {
-                    Request::sendHtmlMessage(LOG_CHAT_ID, " 🌓 Group " . Util::getChatLink($chat) . " was migrated to supergroup");
-                }
             }
         }
     }
@@ -275,19 +272,19 @@ class Axenia
     public function sendStore($chat_id, $from = NULL, $message = NULL, $text = NULL, $callback = NULL, $callback_id = NULL)
     {
         $message_id = $message['message_id'];
-        $store=$this->service->getShowcase();
-        $store=array_chunk($store,3);
+        $store = $this->service->getShowcase();
+        $store = array_chunk($store, 3);
 
-        $button_list =[];
-        foreach ($store as $value){
-            if($value[2]=="0" || (Lang::isUncensored() && $value[2]=="1") ) array_push($button_list,
-                    [
-                        'text' => Lang::message('store.button.buy_'.$value[0],['price'=>$value[1]]),
-                        'callback_data' => 'buy_'.$value[0] . '|' . $from['id'] . '|' .$value[1]
-                    ]
-                );
+        $button_list = [];
+        foreach ($store as $value) {
+            if ($value[2] == "0" || (Lang::isUncensored() && $value[2] == "1")) array_push($button_list,
+                [
+                    'text' => Lang::message('store.button.buy_' . $value[0], ['price' => $value[1]]),
+                    'callback_data' => 'buy_' . $value[0] . '|' . $from['id'] . '|' . $value[1]
+                ]
+            );
         }
-        $inline_keyboard = array_chunk($button_list,2);
+        $inline_keyboard = array_chunk($button_list, 2);
         $username = $this->service->getUserName($from['id']);
         $karma = $this->service->getUserLevel($from['id'], $chat_id);
 
@@ -349,36 +346,36 @@ class Axenia
             case "set_lang":
                 $ln = Lang::availableLangs();
 
-                $i=0;
-                $button_list=[];
-                $a=[];
-                foreach($ln as $k=>$v){
+                $i = 0;
+                $button_list = [];
+                $a = [];
+                foreach ($ln as $k => $v) {
                     $i++;
-                    array_push($a,['text' => $v, 'callback_data' => $k]);
-                    if($i%2==0){
-                        array_push($button_list,$a);
-                        $a=[];
+                    array_push($a, ['text' => $v, 'callback_data' => $k]);
+                    if ($i % 2 == 0) {
+                        array_push($button_list, $a);
+                        $a = [];
                     }
                 }
-                if(count($a)>0) array_push($button_list,$a);
-                array_push($button_list,[['text' => Lang::message("settings.button.back"), 'callback_data' => "set_back"]]);
+                if (count($a) > 0) array_push($button_list, $a);
+                array_push($button_list, [['text' => Lang::message("settings.button.back"), 'callback_data' => "set_back"]]);
 
                 $text = Lang::message('settings.select.lang');
                 break;
             case "set_escapeFromGroup":
-                $cookies=$this->r->getDonates($chat_id);
-                if($cookies>=$this->service->getPrice('escape')) {
-                    $a=$this->service->getUserGroup($chat_id,false);
-                    $user_id=$chat_id;
-                    $buttons=[];
-                    foreach($a as $item){
-                        $chat_id=explode(":",$item)[0];
-                        array_push($buttons,['text'=>htmlspecialchars_decode(explode(":",$item)[1]),'callback_data'=>"escape_".$chat_id]);
+                $cookies = $this->r->getDonates($chat_id);
+                if ($cookies >= $this->service->getPrice('escape')) {
+                    $a = $this->service->getUserGroup($chat_id, false);
+                    $user_id = $chat_id;
+                    $buttons = [];
+                    foreach ($a as $item) {
+                        $chat_id = explode(":", $item)[0];
+                        array_push($buttons, ['text' => htmlspecialchars_decode(explode(":", $item)[1]), 'callback_data' => "escape_" . $chat_id]);
                     }
-                    $chat_id=$user_id;
-                    $button_list=array_chunk($buttons,3);
+                    $chat_id = $user_id;
+                    $button_list = array_chunk($buttons, 3);
                     $text = Lang::message('settings.unfollow.title');
-                }else {
+                } else {
                     $text = Lang::message("donate.notEnough", ['count' => $this->service->getPrice('escape') - $cookies]);
                     $button_list = [
                         [['text' => Lang::message("settings.button.back"), 'callback_data' => "set_back"]]
@@ -386,52 +383,52 @@ class Axenia
                 }
                 break;
             case "set_eraseGroup":
-                $cookies=$this->r->getDonates($chat_id);
-               /* $text=$cookies;*/
-               // Request::sendMessage($chat_id,);
-                $user_id=$chat_id;
-                if($cookies>=$this->service->getPrice('erase')){
-                    $a=$this->service->getUserGroup($user_id,false);
-                    $buttons=[];
-                    foreach($a as $item){
-                        $chat_id=explode(":",$item)[0];
-                        $member=Request::getChatMember($user_id,$chat_id);
-                        if($member['status']=="creator" || $member['status']=="administrator"){
-                            array_push($buttons,['text'=>explode(":",$item)[1],'callback_data'=>"erase_".$chat_id]);
+                $cookies = $this->r->getDonates($chat_id);
+                /* $text=$cookies;*/
+                // Request::sendMessage($chat_id,);
+                $user_id = $chat_id;
+                if ($cookies >= $this->service->getPrice('erase')) {
+                    $a = $this->service->getUserGroup($user_id, false);
+                    $buttons = [];
+                    foreach ($a as $item) {
+                        $chat_id = explode(":", $item)[0];
+                        $member = Request::getChatMember($user_id, $chat_id);
+                        if ($member['status'] == "creator" || $member['status'] == "administrator") {
+                            array_push($buttons, ['text' => explode(":", $item)[1], 'callback_data' => "erase_" . $chat_id]);
                         }
                     }
-                    if(count($buttons)>0){
-                        $button_list=array_chunk($buttons,3);
-                        $text = Lang::message('settings.erase.title')."\r\n\r\n". Lang::message('settings.groups.adminonly');
-                    }else{
-                        $button_list=[];
+                    if (count($buttons) > 0) {
+                        $button_list = array_chunk($buttons, 3);
+                        $text = Lang::message('settings.erase.title') . "\r\n\r\n" . Lang::message('settings.groups.adminonly');
+                    } else {
+                        $button_list = [];
                         $text = Lang::message('settings.erase.notallow');
                     }
 
-                }else{
-                    $text = Lang::message("donate.notEnough",['count'=>$this->service->getPrice('erase')-$cookies]);
+                } else {
+                    $text = Lang::message("donate.notEnough", ['count' => $this->service->getPrice('erase') - $cookies]);
                     $button_list = [
                         [['text' => Lang::message("settings.button.back"), 'callback_data' => "set_back"]]
                     ];
                 }
-                $chat_id=$user_id;
+                $chat_id = $user_id;
                 break;
             case "set_switchHidden":
-                $cookies=$this->r->getDonates($chat_id);
-                if($cookies>=$this->service->getPrice('hidden')){
-                    if(is_null($this->service->isHidden($chat_id))) $this->r->setDonates($chat_id,$cookies-$this->service->getPrice('hidden'));
+                $cookies = $this->r->getDonates($chat_id);
+                if ($cookies >= $this->service->getPrice('hidden')) {
+                    if (is_null($this->service->isHidden($chat_id))) $this->r->setDonates($chat_id, $cookies - $this->service->getPrice('hidden'));
                     $this->service->toggleHidden($chat_id);
                     $data = NULL;
                     $this->sendSettings($chat, $message, $data);
-                }else{
-                    $text = Lang::message("donate.notEnough",['count'=>$this->service->getPrice('hidden')-$cookies]);
+                } else {
+                    $text = Lang::message("donate.notEnough", ['count' => $this->service->getPrice('hidden') - $cookies]);
                     $button_list = [
                         [['text' => Lang::message("settings.button.back"), 'callback_data' => "set_back"]]
                     ];
                 }
                 break;
             default:
-                $text=($this->service->isPrivate($chat))?'settings.titlePrivate':'settings.titleGroup';
+                $text = ($this->service->isPrivate($chat)) ? 'settings.titlePrivate' : 'settings.titleGroup';
                 $text = Lang::message($text) . "\r\n";
                 if ($this->service->isPrivate($chat)) {
 
@@ -441,27 +438,27 @@ class Axenia
                                 'text' => Lang::message('settings.button.lang'),
                                 'callback_data' => 'set_lang'
                             ]
-                        ],[
+                        ], [
                             [
-                                'text'  => Lang::message('settings.unfollow').' '.Lang::message('settings.price',['price'=>$this->service->getPrice('escape')]),
-                                'callback_data' =>  'set_escapeFromGroup'
+                                'text' => Lang::message('settings.unfollow') . ' ' . Lang::message('settings.price', ['price' => $this->service->getPrice('escape')]),
+                                'callback_data' => 'set_escapeFromGroup'
                             ]
-                        ],[
+                        ], [
                             [
-                                'text'  => Lang::message('settings.erase').' '.Lang::message('settings.price',['price'=>$this->service->getPrice('erase')]),
-                                'callback_data' =>  'set_eraseGroup'
+                                'text' => Lang::message('settings.erase') . ' ' . Lang::message('settings.price', ['price' => $this->service->getPrice('erase')]),
+                                'callback_data' => 'set_eraseGroup'
                             ]
                         ]
                     ];
-                    $newButton='settings.hidden.';
-                    $newButton.=$this->service->isHidden($chat_id)?'turnoff':'turnon';
-                    $newButton=Lang::message($newButton);
-                    if(is_null($this->service->isHidden($chat_id))) $newButton.=' '.Lang::message('settings.price',['price'=>$this->service->getPrice('hidden')]);
+                    $newButton = 'settings.hidden.';
+                    $newButton .= $this->service->isHidden($chat_id) ? 'turnoff' : 'turnon';
+                    $newButton = Lang::message($newButton);
+                    if (is_null($this->service->isHidden($chat_id))) $newButton .= ' ' . Lang::message('settings.price', ['price' => $this->service->getPrice('hidden')]);
 
-                    array_push($button_list,[
+                    array_push($button_list, [
                         [
-                            'text'  => $newButton,
-                            'callback_data' =>  'set_switchHidden'
+                            'text' => $newButton,
+                            'callback_data' => 'set_switchHidden'
                         ]
                     ]);
                     $text .= Lang::message("settings.title.lang", ["lang" => Lang::getCurrentLangDesc()]) . "\r\n";
@@ -478,23 +475,23 @@ class Axenia
                         [['text' => Lang::message('settings.button.set_cooldown'),
                             'callback_data' => 'set_cooldown'
                         ]],
-                        [['text' => Lang::message('settings.button.set_another_growth', ["type" => ($this->service->getGrowth($chat_id)==0)?Lang::message('settings.growth.ariphmetic'):Lang::message('settings.growth.geometric')]),
+                        [['text' => Lang::message('settings.button.set_another_growth', ["type" => ($this->service->getGrowth($chat_id) == 0) ? Lang::message('settings.growth.ariphmetic') : Lang::message('settings.growth.geometric')]),
                             'callback_data' => 'set_another_growth'
                         ]],
-                        [['text' => Lang::message('settings.button.set_another_access', ["type" => ($this->service->getAccess($chat_id)==0)?Lang::message('settings.access.for_admin'):Lang::message('settings.access.for_everyone')]),
+                        [['text' => Lang::message('settings.button.set_another_access', ["type" => ($this->service->getAccess($chat_id) == 0) ? Lang::message('settings.access.for_admin') : Lang::message('settings.access.for_everyone')]),
                             'callback_data' => 'set_another_access'
                         ]],
-                        [['text' => Lang::message('settings.button.set_showcase', ["type" => ($this->service->getShowcaseStatus($chat_id)==0)?Lang::message('settings.enable'):Lang::message('settings.disable')]),
+                        [['text' => Lang::message('settings.button.set_showcase', ["type" => ($this->service->getShowcaseStatus($chat_id) == 0) ? Lang::message('settings.enable') : Lang::message('settings.disable')]),
                             'callback_data' => 'set_another_showcase'
                         ]]
                     ];
 
-                    $text .= Lang::message("settings.title.silent_mode", ["status" => ($this->service->isSilentMode($chat_id))?Lang::message('settings.enabled'):Lang::message('settings.disabled')]).  "\r\n";
+                    $text .= Lang::message("settings.title.silent_mode", ["status" => ($this->service->isSilentMode($chat_id)) ? Lang::message('settings.enabled') : Lang::message('settings.disabled')]) . "\r\n";
                     $text .= Lang::message("settings.title.lang", ["lang" => Lang::getCurrentLangDesc()]) . "\r\n";
-                    $text .= Lang::message('settings.title.cooldown', ["cooldown" => $this->service->getCooldown($chat_id)]). "\r\n";
-                    $text .= Lang::message('settings.title.growth', ["type" => ($this->service->getGrowth($chat_id)==1)?Lang::message('settings.growth.ariphmetic'):Lang::message('settings.growth.geometric')]). "\r\n";
-                    $text .= Lang::message('settings.title.access', ["type" => ($this->service->getAccess($chat_id)==1)?Lang::message('settings.access.for_admin'):Lang::message('settings.access.for_everyone')]). "\r\n";
-                    $text .= Lang::message('settings.title.showcase', ["status" => ($this->service->getShowcaseStatus($chat_id)==1)?Lang::message('settings.enabled'):Lang::message('settings.disabled')]). "\r\n";
+                    $text .= Lang::message('settings.title.cooldown', ["cooldown" => $this->service->getCooldown($chat_id)]) . "\r\n";
+                    $text .= Lang::message('settings.title.growth', ["type" => ($this->service->getGrowth($chat_id) == 1) ? Lang::message('settings.growth.ariphmetic') : Lang::message('settings.growth.geometric')]) . "\r\n";
+                    $text .= Lang::message('settings.title.access', ["type" => ($this->service->getAccess($chat_id) == 1) ? Lang::message('settings.access.for_admin') : Lang::message('settings.access.for_everyone')]) . "\r\n";
+                    $text .= Lang::message('settings.title.showcase', ["status" => ($this->service->getShowcaseStatus($chat_id) == 1) ? Lang::message('settings.enabled') : Lang::message('settings.disabled')]) . "\r\n";
                 }
 
                 break;
@@ -536,15 +533,15 @@ class Axenia
             if ($data_array[1] == $from['id']) {
                 switch ($data_array[0]) {
                     case 'buy_sharks':
-                        $filenames = array_diff(scandir('../sharks'),['..','.']);
-                        $filename = $filenames[rand(1,count($filenames)-1)];
-                        $rez = "http://axeniabot.ru/sharks/".$filename;
+                        $filenames = array_diff(scandir('../sharks'), ['..', '.']);
+                        $filename = $filenames[rand(1, count($filenames) - 1)];
+                        $rez = "http://axeniabot.ru/sharks/" . $filename;
                         break;
                     case 'buy_tits':
                         $ii = 3;
                         $tits = json_decode(file_get_contents("http://api.oboobs.ru/boobs/1/1/random"), true);
                         $rez = "http://media.oboobs.ru/boobs/" . sprintf("%05d", $tits[0]['id']) . ".jpg";
-                        while(@fopen($rez,"r")==false && $ii > 0){
+                        while (@fopen($rez, "r") == false && $ii > 0) {
                             $ii = $ii - 1;
                             $tits = json_decode(file_get_contents("http://api.oboobs.ru/boobs/1/1/random"), true);
                             $rez = "http://media.oboobs.ru/boobs/" . sprintf("%05d", $tits[0]['id']) . ".jpg";
@@ -554,66 +551,66 @@ class Axenia
                         $ii = 3;
                         $butts = json_decode(file_get_contents("http://api.obutts.ru/butts/1/1/random"), true);
                         $rez = "http://media.obutts.ru/butts/" . sprintf("%05d", $butts[0]['id']) . ".jpg";
-                        while(@fopen($rez,"r")==false && $ii > 0) {
+                        while (@fopen($rez, "r") == false && $ii > 0) {
                             $ii = $ii - 1;
                             $butts = json_decode(file_get_contents("http://api.obutts.ru/butts/1/1/random"), true);
                             $rez = "http://media.obutts.ru/butts/" . sprintf("%05d", $butts[0]['id']) . ".jpg";
                         }
                         break;
                     case 'buy_bashorg':
-                        $rez = str_ireplace("' + '","",file_get_contents("http://bash.im/forweb/?u"));
-                        $rez=substr($rez, strpos($rez,"<div style=\"margin:"),-1);
-                        $rez=str_replace("<br>","\r\n",$rez);
-                        $rez=html_entity_decode($rez);
-                        $rez=strip_tags(substr($rez, 0,strpos($rez,"<footer")));
+                        $rez = str_ireplace("' + '", "", file_get_contents("http://bash.im/forweb/?u"));
+                        $rez = substr($rez, strpos($rez, "<div style=\"margin:"), -1);
+                        $rez = str_replace("<br>", "\r\n", $rez);
+                        $rez = html_entity_decode($rez);
+                        $rez = strip_tags(substr($rez, 0, strpos($rez, "<footer")));
                         break;
                     case 'buy_jokes':
-                        $json=iconv("CP1251", "UTF-8",file_get_contents ("http://rzhunemogu.ru/RandJSON.aspx?CType=1"));
-                        $rez=substr($json,12,-2);
+                        $json = iconv("CP1251", "UTF-8", file_get_contents("http://rzhunemogu.ru/RandJSON.aspx?CType=1"));
+                        $rez = substr($json, 12, -2);
                         break;
                     case 'buy_jokes18':
-                        $json=iconv("CP1251", "UTF-8",file_get_contents ("http://rzhunemogu.ru/RandJSON.aspx?CType=11"));
-                        $rez=substr($json,12,-2);
+                        $json = iconv("CP1251", "UTF-8", file_get_contents("http://rzhunemogu.ru/RandJSON.aspx?CType=11"));
+                        $rez = substr($json, 12, -2);
                         break;
                     case 'buy_cats':
-                        $xml=file_get_contents ("http://thecatapi.com/api/images/get?api_key=Mjg0Mzg2&format=xml");
-                        $s=strpos($xml,"<url>");
-                        $e=strpos($xml,"</url>");
-                        $rez=substr($xml,$s+5,$e-$s-5);
+                        $xml = file_get_contents("http://thecatapi.com/api/images/get?api_key=Mjg0Mzg2&format=xml");
+                        $s = strpos($xml, "<url>");
+                        $e = strpos($xml, "</url>");
+                        $rez = substr($xml, $s + 5, $e - $s - 5);
                         break;
                     case 'buy_pandas':
                         $json = json_decode(file_get_contents("https://some-random-api.ml/img/panda"), false);
-                        $rez=$json->link;
+                        $rez = $json->link;
                         break;
                     case 'buy_dogs':
                         $json = json_decode(file_get_contents("https://dog.ceo/api/breeds/image/random"), false);
-                        $rez=$json->message;
+                        $rez = $json->message;
                         break;
                     case 'buy_gif':
                         $ii = 3;
-                        do{
-                            $ii= $ii - 1;
+                        do {
+                            $ii = $ii - 1;
                             $trends = json_decode(file_get_contents("https://api.tenor.com/v1/autocomplete?key=2U08JTUC3MRE&type=trending"), false);
-                            $json = json_decode(file_get_contents("https://api.tenor.com/v1/search?key=2U08JTUC3MRE&q=".$trends->results[rand(0,10)]."&safesearch=moderate&limit=1&pos=".rand(1,10)), false);
+                            $json = json_decode(file_get_contents("https://api.tenor.com/v1/search?key=2U08JTUC3MRE&q=" . $trends->results[rand(0, 10)] . "&safesearch=moderate&limit=1&pos=" . rand(1, 10)), false);
                             $rez = $json->results[0]->media[0]->gif->url;
-                        }while($rez==null && $ii > 0);
+                        } while ($rez == null && $ii > 0);
 
                         break;
                     case 'buy_zadolbali':
-                        $max=$this->r->getLimit('zadolbali');
-                        $text=file_get_contents("http://zadolba.li/story/".rand(1,$max));
-                        $text=substr($text, strpos($text,"<div class='text'>"),-1);
-                        $text=str_replace("<br>","\r\n",$text);
-                        $text=html_entity_decode($text);
-                        $rez=strip_tags(substr($text, 0,strpos($text,"</div>")));
+                        $max = $this->r->getLimit('zadolbali');
+                        $text = file_get_contents("http://zadolba.li/story/" . rand(1, $max));
+                        $text = substr($text, strpos($text, "<div class='text'>"), -1);
+                        $text = str_replace("<br>", "\r\n", $text);
+                        $text = html_entity_decode($text);
+                        $rez = strip_tags(substr($text, 0, strpos($text, "</div>")));
                         break;
                     case 'buy_ideer':
-                        $max=$this->r->getLimit('ideer');
-                        $text=file_get_contents("https://ideer.ru/".rand(1,$max));
-                        $text=substr($text, strpos($text,"<div class=\"shortContent\">"),-1);
-                        $text=str_replace("<br>","\r\n",$text);
-                        $text=html_entity_decode($text);
-                        $rez=strip_tags(substr($text, 0,strpos($text,"</div>")));
+                        $max = $this->r->getLimit('ideer');
+                        $text = file_get_contents("https://ideer.ru/" . rand(1, $max));
+                        $text = substr($text, strpos($text, "<div class=\"shortContent\">"), -1);
+                        $text = str_replace("<br>", "\r\n", $text);
+                        $text = html_entity_decode($text);
+                        $rez = strip_tags(substr($text, 0, strpos($text, "</div>")));
                         break;
                     default:
                         $rez = $data;
@@ -668,7 +665,7 @@ class Axenia
             foreach ($donates as $k => $a) if ($a['id'] == explode("_", $data)[1]) $key = $k;
 
             $text = "https://bill.qiwi.com/order/external/create.action";
-            $txn_id = substr(md5(rand(1, 99999999).Date('dmYhhmmss') . $chat_id),-10,10);
+            $txn_id = substr(md5(rand(1, 99999999) . Date('dmYhhmmss') . $chat_id), -10, 10);
             $params = [
                 "from" => QIWI_API_ID,
                 "summ" => $donates[$key]['price'],
@@ -684,37 +681,37 @@ class Axenia
             $this->r->insertBill($txn_id, $donates[$key]['nominal'], $chat_id);
 
         } elseif (strpos($data, "escape_") !== false) {
-            $escape_chat_id=explode("_",$data)[1];
-            $escape_chat=$this->service->getGroupName($escape_chat_id);
-            if(strpos($data, "accept") !== false){
-                $this->service->deleteUserDataInChat($chat_id,$escape_chat_id);
-                $text = Lang::message('settings.unfollow.success',['chat_id' =>$escape_chat_id,'chat'=>$escape_chat]);
+            $escape_chat_id = explode("_", $data)[1];
+            $escape_chat = $this->service->getGroupName($escape_chat_id);
+            if (strpos($data, "accept") !== false) {
+                $this->service->deleteUserDataInChat($chat_id, $escape_chat_id);
+                $text = Lang::message('settings.unfollow.success', ['chat_id' => $escape_chat_id, 'chat' => $escape_chat]);
                 Request::editMessageText($chat_id, $message['message_id'], $text, ["parse_mode" => "HTML"]);
-                $balance=$this->r->getDonates($chat_id)-$this->service->getPrice('escape');
-                $this->r->setDonates($chat_id,$balance);
-            }elseif(strpos($data, "reject") !== false){
-                $text = Lang::message('settings.unfollow.cancel',['chat_id' =>$escape_chat_id,'chat'=>$escape_chat]);
+                $balance = $this->r->getDonates($chat_id) - $this->service->getPrice('escape');
+                $this->r->setDonates($chat_id, $balance);
+            } elseif (strpos($data, "reject") !== false) {
+                $text = Lang::message('settings.unfollow.cancel', ['chat_id' => $escape_chat_id, 'chat' => $escape_chat]);
                 Request::editMessageText($chat_id, $message['message_id'], $text, ["parse_mode" => "HTML"]);
-            }else{
-                $text = Lang::message('settings.unfollow.confirm',['chat_id' =>$escape_chat_id,'chat'=>$escape_chat]);
-                Request::editMessageText($chat_id, $message['message_id'], $text, ["parse_mode" => "HTML", "reply_markup" => ['inline_keyboard' => [[["text" => "✔️".Lang::message("confirm.yes"), "callback_data" => $data."_accept"],["text" => "❌".Lang::message("confirm.no"), "callback_data" => $data."_reject"]]]]]);
+            } else {
+                $text = Lang::message('settings.unfollow.confirm', ['chat_id' => $escape_chat_id, 'chat' => $escape_chat]);
+                Request::editMessageText($chat_id, $message['message_id'], $text, ["parse_mode" => "HTML", "reply_markup" => ['inline_keyboard' => [[["text" => "✔️" . Lang::message("confirm.yes"), "callback_data" => $data . "_accept"], ["text" => "❌" . Lang::message("confirm.no"), "callback_data" => $data . "_reject"]]]]]);
             }
         } elseif (strpos($data, "erase_") !== false) {
-            $erase_chat_id=explode("_",$data)[1];
-            $erase_chat=$this->service->getGroupName($erase_chat_id);
-            if(strpos($data, "accept") !== false){
+            $erase_chat_id = explode("_", $data)[1];
+            $erase_chat = $this->service->getGroupName($erase_chat_id);
+            if (strpos($data, "accept") !== false) {
                 $this->service->deleteChat($erase_chat_id);
-                $balance=$this->r->getDonates($chat_id)-$this->service->getPrice('erase');
-                $this->r->setDonates($chat_id,$balance);
+                $balance = $this->r->getDonates($chat_id) - $this->service->getPrice('erase');
+                $this->r->setDonates($chat_id, $balance);
 
-                $text = Lang::message('settings.erase.success',['chat_id' =>$erase_chat_id,'chat'=>$erase_chat]);
+                $text = Lang::message('settings.erase.success', ['chat_id' => $erase_chat_id, 'chat' => $erase_chat]);
                 Request::editMessageText($chat_id, $message['message_id'], $text, ["parse_mode" => "HTML"]);
-            }elseif(strpos($data, "reject") !== false){
-                $text = Lang::message('settings.erase.cancel',['chat_id' =>$erase_chat_id,'chat'=>$erase_chat]);
+            } elseif (strpos($data, "reject") !== false) {
+                $text = Lang::message('settings.erase.cancel', ['chat_id' => $erase_chat_id, 'chat' => $erase_chat]);
                 Request::editMessageText($chat_id, $message['message_id'], $text, ["parse_mode" => "HTML"]);
-            }else{
-                $text = Lang::message('settings.erase.confirm',['chat_id' =>$erase_chat_id,'chat'=>$erase_chat]);
-                Request::editMessageText($chat_id, $message['message_id'], $text, ["parse_mode" => "HTML", "reply_markup" => ['inline_keyboard' => [[["text" => "✔️".Lang::message("confirm.yes"), "callback_data" => $data."_accept"],["text" => "❌".Lang::message("confirm.no"), "callback_data" => $data."_reject"]]]]]);
+            } else {
+                $text = Lang::message('settings.erase.confirm', ['chat_id' => $erase_chat_id, 'chat' => $erase_chat]);
+                Request::editMessageText($chat_id, $message['message_id'], $text, ["parse_mode" => "HTML", "reply_markup" => ['inline_keyboard' => [[["text" => "✔️" . Lang::message("confirm.yes"), "callback_data" => $data . "_accept"], ["text" => "❌" . Lang::message("confirm.no"), "callback_data" => $data . "_reject"]]]]]);
             }
         }
     }
