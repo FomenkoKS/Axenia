@@ -11,8 +11,8 @@ require_once('logic/BotDao.php');
 require_once('logic/BotService.php');
 require_once('logic/BotRedis.php');
 require_once('logic/Axenia.php');
-require_once('logic/ShortUrl.php');
 
+ini_set('always_populate_raw_post_data','-1');
 $content = file_get_contents('php://input');
 $update = json_decode($content, true);
 
@@ -33,8 +33,26 @@ if (!$update) {
     exit;
 } else {
     try {
-        handle($update);
+        $redis = new Redis();
+        $redis->connect('127.0.0.1', 6379);
+        $key = 'from:' . $update['message']['from']['id'];
+
+        if (isset($update['message']['text']) && !isset($update['message']['forward_from'])) $redis->incr($key);
+        $count = $redis->get($key);
+        if ($count == 1 || $redis->pttl($key) == -1) $redis->expire($key, 10);
+        if ($count > 20) $redis->expire($key, $count);
+
+        if(isset($update['callback_query'])){
+            handle($update);
+        } else {
+            if($count < 7){
+                handle($update);
+            }
+        }
+        $redis->close();
+
     } catch (Exception $e) {
+        redis_error($e);
         handle($update);
     }
 }
