@@ -90,7 +90,7 @@ class Axenia
                                     $isRise = Util::isInEnum("+,👍", $matches[1]);
                                     if (isset($message['reply_to_message'])) {
                                         $replyUser = $message['reply_to_message']['from'];
-                                        if ($replyUser['username'] != BOT_NAME && !$this->service->isUserBot($replyUser)) {
+                                        if ((array_key_exists('username', $replyUser) && $replyUser['username'] != BOT_NAME) && !$this->service->isUserBot($replyUser)) {
                                             $this->service->insertOrUpdateUser($replyUser);
                                             $this->doKarmaAction($isRise, $from_id, $replyUser['id'], $chat_id);
                                         }
@@ -197,7 +197,7 @@ class Axenia
                 }
             } elseif (isset($message['new_chat_member'])) {
                 $newMember = $message['new_chat_member'];
-                if (BOT_NAME == $newMember['username']) {
+                if (array_key_exists('username', $newMember) && BOT_NAME == $newMember['username']) {
                     $isRemembered = $this->service->rememberChat($chat, $from_id);
                     $this->service->setBotPresentedInChat($chat_id, true);
                     if ($isRemembered !== false) {

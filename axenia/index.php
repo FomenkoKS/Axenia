@@ -31,7 +31,7 @@ function handle($update){
 
 if (!$update) {
     exit;
-} else {
+} elseif (array_key_exists('message',$update)) {
     try {
         $redis = new Redis();
         $redis->connect('127.0.0.1', 6379);

@@ -400,7 +400,7 @@ class BotDao extends AbstractDao
             WHERE user_id=" . $from_id . " AND chat_id=" . $chat_id
         );
 
-        return ($res[0] == null) ? false : $res[0];
+        return (count($res) == 0 || $res[0] == null) ? false : $res[0];
     }
 
     public function SumKarma($user_id)
