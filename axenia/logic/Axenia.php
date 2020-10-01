@@ -582,6 +582,10 @@ class Axenia
                         $json = json_decode(file_get_contents("https://some-random-api.ml/img/panda"), false);
                         $rez = $json->link;
                         break;
+                    case 'buy_koalas':
+                        $json = json_decode(file_get_contents("https://some-random-api.ml/img/koala"), false);
+                        $rez = $json->link;
+                        break;
                     case 'buy_meme':
                         $json = json_decode(file_get_contents("https://meme-api.herokuapp.com/gimme"), false);
                         $rez = $json->url;
