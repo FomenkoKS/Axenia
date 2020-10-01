@@ -51,7 +51,7 @@
 "store.button.buy_butts" => "*ЦЕНЗУРА*",
 "store.button.buy_cats" => "Котики :price",
 "store.button.buy_sharks" => "Акулы :price",
-"store.button.buy_pandas" => "Панды :price",
+"store.button.buy_pandas" => "Панды :price
 "store.button.buy_koalas" => "Коала :price",
 "store.button.buy_dogs" => "Собаки :price",
 "store.button.buy_meme" => "Мем :price",

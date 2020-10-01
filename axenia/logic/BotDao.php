@@ -558,7 +558,6 @@ class BotDao extends AbstractDao
         return (!$res[0]) ? 0 : $res[0];
     }
 
-    
 //endregion
 }
 

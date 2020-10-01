@@ -35,11 +35,11 @@ $type = $site->getViewType($_GET);
   </head>
 
   <body class="text-center">
- 
+
     <?
         include($type . "_view.php");
-    ?>      
-   
+    ?>
+
     <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
     <script>window.jQuery || document.write('<script src="../../assets/js/vendor/jquery-slim.min.js"><\/script>')</script>
     <script src="./js/popper.min.js"></script>
@@ -56,7 +56,7 @@ $type = $site->getViewType($_GET);
             a.src = g;
             m.parentNode.insertBefore(a, m)
         })(window, document, 'script', 'https://www.google-analytics.com/analytics.js', 'ga');
-    
+      
         ga('create', 'UA-92646836-1', 'auto');
         ga('send', 'pageview');
     
