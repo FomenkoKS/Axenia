@@ -5,7 +5,6 @@ require_once('Telegram.php');
  * Page for payment. Used for Qiwi
  */
 $paid = $_REQUEST;
-
 $bot_id = BOT_TOKEN;
 $log_chat_id = LOG_CHAT_ID;
 

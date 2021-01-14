@@ -672,14 +672,13 @@ class Axenia
             $donates = $this->service->getDonateButtons();
             foreach ($donates as $k => $a) if ($a['id'] == explode("_", $data)[1]) $key = $k;
 
-            $text = "https://bill.qiwi.com/order/external/create.action";
+            $text = "https://oplata.qiwi.com/create";
             $txn_id = substr(md5(rand(1, 99999999) . Date('dmYhhmmss') . $chat_id), -10, 10);
             $params = [
-                "from" => QIWI_API_ID,
-                "summ" => $donates[$key]['price'],
-                "currency" => "RUB",
-                "comm" => "получение " . $donates[$key]['nominal'] . " печенек",
-                "txn_id" => $txn_id,
+                "publicKey" => QIWI_PUBLIC_KEY,
+                "billId" => $txn_id,
+                "amount" => $donates[$key]['price'],
+                "comment" => "получение " . $donates[$key]['nominal'] . " печенек",
                 "successurl" => 'http://axeniabot.ru/QiwiPaid.php'
             ];
 
