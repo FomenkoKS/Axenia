@@ -110,9 +110,6 @@ class BotService
         if(!$this->db->isHidden($from_id)) $res.=Lang::message("user.stat.place") . $this->db->UsersPlace($from_id) . "\r\n";
         if(!$this->db->isHidden($from_id)) $res.=Lang::message("user.stat.membership") . implode(", ", $this->getUserGroup($from_id)) . "\r\n";
         $res.=Lang::message("user.stat.cookies") . $this->r->getDonates($from_id) . "\r\n";
-        /*if ($a = $this->getAllUserRewards($from_id)) {
-            $res .= Lang::message("user.stat.rewards") . implode(", ", $a);
-        }*/
 
         return $res;
     }
@@ -516,96 +513,6 @@ class BotService
             return $this->createHandleKarmaResult(false, Lang::message('karma.unknownUser'), null);
         }
     }
-
-
-//    public function deleteUserDataForChat($userId, $chatId)
-//    {
-//        if($this->db->deleteUserKarmaInChat($userId, $chatId)){
-//            if($this->db->deleteUserRewardsInChat($userId, $chatId)){
-//                return true;
-//            }
-//        }
-//        return false;
-//    }
-
-//endregion
-
-//region -------------------- Rewards
-/*
-    public function handleRewards($currentCarma, $chat_id, $user_id)
-    {
-        $out = [];
-        $oldRewards = $this->db->getUserRewardIds($user_id, $chat_id);
-
-        $newRewards = [];
-        if ($currentCarma >= 200) {
-            array_push($newRewards, 2);
-        }
-        if ($currentCarma >= 500) {
-            array_push($newRewards, 3);
-        }
-        if ($currentCarma >= 1000) {
-            array_push($newRewards, 4);
-        }
-
-        $newRewards = array_diff($newRewards, $oldRewards);
-
-        if (count($newRewards) > 0) {
-            $groupName = $this->getGroupName($chat_id);
-            $rewardTypes = $this->db->getRewardTypes($newRewards);
-            $username = $this->getUserName($user_id);
-            foreach ($rewardTypes as $type) {
-                $desc = Lang::messageRu('reward.type.karma.desc', [$groupName, $type['karma_min']]);
-                //$this->r->insertReward($user_id,$type['id']);
-                $insertRes = $this->db->insertReward($type['id'], $desc, $user_id, $chat_id);
-                if ($insertRes !== false) {
-                    $msg = Lang::message('reward.new', ['user' => $username, 'path' => PATH_TO_SITE, 'user_id' => $user_id, 'title' => Lang::message('reward.type.' . $type['code'])]);
-                    array_push($out, $msg);
-                }
-            }
-        }
-
-        return $out;
-    }
-*/
-    /**
-     * Формирует сообщения для отпарки по команде rewards
-     * @param $user_id
-     * @param $chat_id
-     */
-   /* public function getUserRewards($user_id, $chat_id)
-    {
-        if ($user_id != $chat_id) {
-            $res = $this->db->getUserRewardsInChat($user_id, $chat_id);
-
-        } else {
-            $res = $this->db->getUserRewards($user_id);
-        }
-
-        if (count($res) > 0) {
-        } else {
-        }
-
-    }
-
-    public function getAllUserRewards($user_id)
-    {
-        $res = $this->db->getUserRewards($user_id);
-        if ($res) {
-            $stack = array();
-            foreach (array_chunk($res, 2) as $a) {
-                $text = Lang::message("reward.type." . $a[0]);
-                if ($a[1] > 1) $text .= "<b> x" . $a[1] . "</b>";
-                array_push($stack, $text);
-            }
-
-            return $stack;
-        }
-
-        return false;
-
-    }
-*/
 //endregion
 
 // region -------------------- Donate
