@@ -7,7 +7,7 @@
 "chat.greetings" => "Salom.  Mening ismim Aksinya. Men karmani sanashni bilaman. Tafsilotlarni ko'rish uchun /help va tilni o'zgartirish uchun /settings tanla",
 "chat.help" => "<b>💬 Men nima qila olaman?</ b> \r\n\r\n <b> Karmani oshirish / kamaytirish </ b>
 Biror kishining xabariga javoban karmani oshirish uchun "+" (yoki 👍) va uni tushirish uchun '-' (yoki 👎) qo'ying.
-Shuningdek, "+ @ username +" va shunga o'xshash xabar formatini tushunaman. \r\n
+Shuningdek, \"+ @ username +\" va shunga o'xshash xabar formatini tushunaman. \r\n
 <b>Buyruqlar</b>
 /top - bu guruhdagi eng katta karma egalarini ko'rsataman.
 /my_stats - seni karmangni global statistikasini ko'rsataman

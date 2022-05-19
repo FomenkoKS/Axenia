@@ -65,6 +65,8 @@ class Request
             }
         }
         $url = self::$url . $method . '?' . http_build_query($parameters);
+        
+        file_put_contents('url.txt',print_r($url,true));
         $handle = curl_init($url);
         curl_setopt($handle, CURLOPT_RETURNTRANSFER, true);
         curl_setopt($handle, CURLOPT_CONNECTTIMEOUT, 5);

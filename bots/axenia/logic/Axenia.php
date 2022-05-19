@@ -2,9 +2,7 @@
 
 class Axenia
 {
-
     private $service;
-    private $r;
 
     /**
      * Axenia constructor.
@@ -13,11 +11,11 @@ class Axenia
     public function __construct($service)
     {
         $this->service = $service;
-        $this->r = new BotRedis();
     }
 
     public function handleUpdate($update)
     {
+        file_put_contents('4.txt',print_r($update,true));
         if (isset($update["message"]) || isset($update["inline_query"]) || isset($update["callback_query"]) || isset($update["pre_checkout_query"])) {
             try {
                 if (isset($update["message"])) {
@@ -180,17 +178,7 @@ class Axenia
                     case Util::startsWith($text, ("/setCookies")):
                         if ($this->service->CheckRights($from_id, 5)) {
                             if (preg_match('/^(\/setCookies) (\d+) (\d+)/ui ', $text, $matches)) {
-                                $this->r->setDonates($matches[2], $matches[3]);
                                 Request::sendMessage($from_id, $this->service->getUsername($matches[2]) . " have $matches[3] cookies");
-                            }
-                        }
-                        break;
-
-                    case Util::startsWith($text, ("/setLimit")):
-                        if ($this->service->CheckRights($from_id, 5)) {
-                            if (preg_match('/^(\/setLimit) (\w+) (\d+)/ui ', $text, $matches)) {
-                                $this->r->setLimit($matches[2], $matches[3]);
-                                Request::sendMessage($from_id, "$matches[2] set limit $matches[3]");
                             }
                         }
                         break;
@@ -265,7 +253,8 @@ class Axenia
 
         $button_list = [];
         foreach ($store as $value) {
-            if ($value[2] == "0" || (Lang::isUncensored() && $value[2] == "1")) array_push($button_list,
+            if ($value[2] == "0" || (Lang::isUncensored() && $value[2] == "1")) array_push(
+                $button_list,
                 [
                     'text' => Lang::message('store.button.buy_' . $value[0], ['price' => $value[1]]),
                     'callback_data' => 'buy_' . $value[0] . '|' . $from['id'] . '|' . $value[1]
@@ -337,7 +326,7 @@ class Axenia
                 $i = 0;
                 $button_list = [];
                 $a = [];
-                
+
                 foreach ($ln as $k => $v) {
                     $i++;
                     array_push($a, ['text' => $v, 'callback_data' => $k]);
@@ -399,7 +388,7 @@ class Axenia
                     $newButton = 'settings.hidden.';
                     $newButton .= $this->service->isHidden($chat_id) ? 'turnoff' : 'turnon';
                     $newButton = Lang::message($newButton);
-                    
+
                     array_push($button_list, [
                         [
                             'text' => $newButton,
@@ -410,23 +399,29 @@ class Axenia
                 } else {
                     $button_list = [
                         [
-                            ['text' => Lang::message("settings.button.toggle_silent_mode"),
+                            [
+                                'text' => Lang::message("settings.button.toggle_silent_mode"),
                                 'callback_data' => 'set_toggle_silent_mode'
                             ],
-                            ['text' => Lang::message('settings.button.lang'),
+                            [
+                                'text' => Lang::message('settings.button.lang'),
                                 'callback_data' => 'set_lang'
                             ]
                         ],
-                        [['text' => Lang::message('settings.button.set_cooldown'),
+                        [[
+                            'text' => Lang::message('settings.button.set_cooldown'),
                             'callback_data' => 'set_cooldown'
                         ]],
-                        [['text' => Lang::message('settings.button.set_another_growth', ["type" => ($this->service->getGrowth($chat_id) == 0) ? Lang::message('settings.growth.ariphmetic') : Lang::message('settings.growth.geometric')]),
+                        [[
+                            'text' => Lang::message('settings.button.set_another_growth', ["type" => ($this->service->getGrowth($chat_id) == 0) ? Lang::message('settings.growth.ariphmetic') : Lang::message('settings.growth.geometric')]),
                             'callback_data' => 'set_another_growth'
                         ]],
-                        [['text' => Lang::message('settings.button.set_another_access', ["type" => ($this->service->getAccess($chat_id) == 0) ? Lang::message('settings.access.for_admin') : Lang::message('settings.access.for_everyone')]),
+                        [[
+                            'text' => Lang::message('settings.button.set_another_access', ["type" => ($this->service->getAccess($chat_id) == 0) ? Lang::message('settings.access.for_admin') : Lang::message('settings.access.for_everyone')]),
                             'callback_data' => 'set_another_access'
                         ]],
-                        [['text' => Lang::message('settings.button.set_showcase', ["type" => ($this->service->getShowcaseStatus($chat_id) == 0) ? Lang::message('settings.enable') : Lang::message('settings.disable')]),
+                        [[
+                            'text' => Lang::message('settings.button.set_showcase', ["type" => ($this->service->getShowcaseStatus($chat_id) == 0) ? Lang::message('settings.enable') : Lang::message('settings.disable')]),
                             'callback_data' => 'set_another_showcase'
                         ]]
                     ];
@@ -550,7 +545,7 @@ class Axenia
 
                         break;
                     case 'buy_zadolbali':
-                        $max = $this->r->getLimit('zadolbali');
+                        $max = 1000;
                         $text = file_get_contents("http://zadolba.li/story/" . rand(1, $max));
                         $text = substr($text, strpos($text, "<div class='text'>"), -1);
                         $text = str_replace("<br>", "\r\n", $text);
@@ -558,7 +553,7 @@ class Axenia
                         $rez = strip_tags(substr($text, 0, strpos($text, "</div>")));
                         break;
                     case 'buy_ideer':
-                        $max = $this->r->getLimit('ideer');
+                        $max = 161968;
                         $text = file_get_contents("https://ideer.ru/" . rand(1, $max));
                         $text = substr($text, strpos($text, "<div class=\"shortContent\">"), -1);
                         $text = str_replace("<br>", "\r\n", $text);
@@ -626,18 +621,18 @@ class Axenia
             } else {
                 $text = Lang::message('settings.erase.confirm', ['chat_id' => $erase_chat_id, 'chat' => $erase_chat]);
                 Request::editMessageText(
-                    $chat_id, 
-                    $message['message_id'], 
-                    $text, 
+                    $chat_id,
+                    $message['message_id'],
+                    $text,
                     [
-                        "parse_mode" => "HTML", 
+                        "parse_mode" => "HTML",
                         "reply_markup" => [
                             'inline_keyboard' => [
                                 [
                                     [
-                                        "text" => "✔️" . Lang::message("confirm.yes"), 
+                                        "text" => "✔️" . Lang::message("confirm.yes"),
                                         "callback_data" => $data . "_accept"
-                                    ], 
+                                    ],
                                     [
                                         "text" => "❌" . Lang::message("confirm.no"),
                                         "callback_data" => $data . "_reject"
@@ -650,7 +645,4 @@ class Axenia
             }
         }
     }
-
 }
-
-?>

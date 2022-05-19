@@ -4,7 +4,6 @@ class BotService
 {
 
     private $db;
-    private $r;
     /**
      * Axenia constructor.
      * @param $db BotDao
@@ -12,7 +11,6 @@ class BotService
     public function __construct($db)
     {
         $this->db = $db;
-        $this->r=new BotRedis();
     }
 
     /**
@@ -109,8 +107,7 @@ class BotService
             Lang::message("user.stat.sum") . round($this->db->SumKarma($from_id), 0) . "\r\n";
         if(!$this->db->isHidden($from_id)) $res.=Lang::message("user.stat.place") . $this->db->UsersPlace($from_id) . "\r\n";
         if(!$this->db->isHidden($from_id)) $res.=Lang::message("user.stat.membership") . implode(", ", $this->getUserGroup($from_id)) . "\r\n";
-        $res.=Lang::message("user.stat.cookies") . $this->r->getDonates($from_id) . "\r\n";
-
+        
         return $res;
     }
 
@@ -472,7 +469,7 @@ class BotService
         if ($fromLevel < 0) return $this->createHandleKarmaResult(true, Lang::message('karma.tooSmallKarma'), $newLevel);
 
         $userFrom = $this->getUserName($from);
-        $fromLevelSqrt = $fromLevel == 0 ? 1 : ($this->db->getGrowth($chat_id)==1)?1:sqrt($fromLevel);
+        $fromLevelSqrt = ($fromLevel == 0 ? 1 : ($this->db->getGrowth($chat_id)==1))?1:sqrt($fromLevel);
         $toLevel = $this->getUserLevel($to, $chat_id);
 
         $newLevel = round($toLevel + ($isRise ? $fromLevelSqrt : -$fromLevelSqrt), 2);
@@ -518,7 +515,7 @@ class BotService
 // region -------------------- Donate
     public function showDonateMenu($from_id){
         $text = "https://oplata.qiwi.com/create";
-        $txn_id = substr(md5(rand(1, 99999999) . Date('dmYhhmmss') . $chat_id), -10, 10);
+        $txn_id = substr(md5(rand(1, 99999999) . Date('dmYhhmmss') . $from_id), -10, 10);
         $params = [
             "publicKey" => QIWI_PUBLIC_KEY,
             "billId" => $txn_id,
