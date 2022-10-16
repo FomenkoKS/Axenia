@@ -532,7 +532,7 @@ class BotService
             "comment" => "Поддержка Аксиньи",
             "successurl" => 'http://axeniabot.ru/QiwiPaid.php'
         ];
-        $url = $text . "?" . http_build_query($params);
+        $url_qiwi = $text . "?" . http_build_query($params);
 
         Request::sendHtmlMessage(
             $from_id, 
@@ -540,7 +540,7 @@ class BotService
             ["reply_markup" => [
                 'inline_keyboard' => 
                     [
-                        [["text" => Lang::message("donate.pay"), "url" => $url]],
+                        [["text" => Lang::message("donate.pay"), "url" => $url_qiwi]],
                     ]
                 ]
             ]

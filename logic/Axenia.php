@@ -42,6 +42,9 @@ class Axenia
             if (isset($message['text'])) {
                 return Util::startsWith($message['text'], ["/", "+", "-", '👍', '👎']);
             }
+            if (isset($message['caption'])) {
+                return Util::startsWith($message['caption'], ["/", "+", "-", '👍', '👎']);
+            }
             if (isset($message['sticker']) && array_key_exists('emoji',($message['sticker']))) {
                 return Util::startsWith($message['sticker']['emoji'], ['👍', '👎']);
             }
@@ -69,13 +72,13 @@ class Axenia
                 $this->service->rememberChat($chat, $from_id);
             }
 
-            if (isset($message['text']) || isset($message['sticker'])) {
+            if (isset($message['text']) || isset($message['caption']) || isset($message['sticker'])) {
                 $isPrivate = $this->service->isPrivate($chat);
                 $postfix = $isPrivate ? "" : ("@" . BOT_NAME);
                 if (isset($message['sticker'])) {
                     $text = $message['sticker']['emoji'];
                 } else {
-                    $text = $message['text'];
+                    $text = isset($message['text']) ? $message['text'] : $message['caption'];
                 }
                 switch (true) {
                     case Util::startsWith($text, ["+", "-", '👍', '👎']):
@@ -158,7 +161,7 @@ class Axenia
                     case (Util::startsWith($text, "/start" . $postfix)):
                         if ($isPrivate) {
                             if (preg_match('/donate/ui ', $text)) {
-                                //$this->service->showDonateMenu($from_id);
+                                $this->service->showDonateMenu($from_id);
                             } else {
                                 Request::sendTyping($chat_id);
                                 Request::sendHtmlMessage($chat_id, Lang::message('chat.greetings'));
