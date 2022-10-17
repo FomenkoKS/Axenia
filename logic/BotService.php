@@ -524,15 +524,7 @@ class BotService
 
 // region -------------------- Donate
     public function showDonateMenu($from_id){
-        $text = "https://oplata.qiwi.com/create";
-        $txn_id = substr(md5(rand(1, 99999999) . Date('dmYhhmmss') . $from_id), -10, 10);
-        $params = [
-            "publicKey" => QIWI_PUBLIC_KEY,
-            "billId" => $txn_id,
-            "comment" => "Поддержка Аксиньи",
-            "successurl" => 'http://axeniabot.ru/QiwiPaid.php'
-        ];
-        $url_qiwi = $text . "?" . http_build_query($params);
+        $url_qiwi = 'https://my.qiwi.com/Kyryll-FDj_Sfq_3Y';
 
         Request::sendHtmlMessage(
             $from_id, 

@@ -118,7 +118,7 @@ Ayrıca şu formattaki mesaj türleri için de geçerlidir: \"+ @username\" vb.\
 "settings.unfollow.title" => "Hangi gruptaki itibar puanlarını silmek istediğin grubu seç.\r\n\r\n <b>❗️ Dikkat! Bu işlem iptal edilemez</b>",
 "settings.hidden.turnon" => "👻 Üyeliğimi gösterme",
 "settings.hidden.turnoff" => "👻 Üyeliğimi göster",
-"donate.title" => "Lütfen gelişimim için bağış yapın.\r\n\r\nBTC: <code>bc1qegnmzy004elder7vmp5u7r7unpd439ye52ceu8</code>\r\nETH: <code>0x90B9DFD251BbBcc3b1E6238BACB17FB6Af7FD6f7</code>\r\nTON: <code>UQApxopXX69V-STQ3JuIyxw33-O_fMPmUzWJ_wspEHQIxaFF</code><a href='https://paypal.me/AxeniaBot'>PayPal</a>",
+"donate.title" => "Lütfen gelişimim için bağış yapın.\r\n\r\nBTC: <code>bc1q3ajzyp0yezw3s3hz3j8fekkw7agweg8vdjs443</code>\r\nETH: <code>0xa79b0ecbb3475A7f7A0aEFd90cc785b18bD47c02</code>\r\nTON: <code>UQApxopXX69V-STQ3JuIyxw33-O_fMPmUzWJ_wspEHQIxaFF</code><a href='https://paypal.me/AxeniaBot'>PayPal</a>",
 "donate.attention" => "Ödeme düğmesine tıklayarak, komutun /terms mevcut hüküm ve koşullarını kabul etmiş olursunuz.",
 "donate.pay" => "Ödeme yap (Qiwi)",
 "donate.check" => "Ödemeyi kontrol et",

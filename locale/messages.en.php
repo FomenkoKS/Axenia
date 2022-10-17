@@ -118,7 +118,7 @@ Also I understand messages in format like \"+ @username\" and etc.\r\n
 "settings.unfollow.title" => "Choose group where you want erase data about karma.\r\n\r\n <b>❗️Attention! This operation can't be canceled.</b>",
 "settings.hidden.turnon" => "👻 Don't show membership",
 "settings.hidden.turnoff" => "👻 Show membership",
-"donate.title" => "Please donate to my development.\r\n\r\nBTC: <code>bc1qegnmzy004elder7vmp5u7r7unpd439ye52ceu8</code>\r\nETH: <code>0x90B9DFD251BbBcc3b1E6238BACB17FB6Af7FD6f7</code>\r\nTON: <code>UQApxopXX69V-STQ3JuIyxw33-O_fMPmUzWJ_wspEHQIxaFF</code>\r\nOr <a href='https://paypal.me/AxeniaBot'>PayPal</a>",
+"donate.title" => "Please donate to my development.\r\n\r\nBTC: <code>bc1q3ajzyp0yezw3s3hz3j8fekkw7agweg8vdjs443</code>\r\nETH: <code>0xa79b0ecbb3475A7f7A0aEFd90cc785b18bD47c02</code>\r\nTON: <code>UQApxopXX69V-STQ3JuIyxw33-O_fMPmUzWJ_wspEHQIxaFF</code>\r\nOr <a href='https://paypal.me/AxeniaBot'>PayPal</a>",
 "donate.attention" => "By clicking on the payment button you agree with the terms and conditions available by the command /terms",
 "donate.pay" => "Donate (Qiwi)",
 "donate.check" => "Check bill",

@@ -118,7 +118,7 @@ Shuningdek, \"+ @ username +\" va shunga o'xshash xabar formatini tushunaman. \r
 "settings.unfollow.title" => "Karmani tozalashni istagan guruhni tanlang. Guruhda ishtirok etish bilan bog'liq ma'lumotlar ham o'chirib tashlanadi.\r\n\r\n<b>Diqqat! Operatsiya yakuniy va uni bekor qilib bo'lmaydi bo'lmaydi.</b>",
 "settings.hidden.turnon" => "👻 Guruhda ishtirok etishni ko'rsatmaslik",
 "settings.hidden.turnoff" => "👻 Guruhda ishtirok etishni ko'rsatish",
-"donate.title" => "Iltimos, mening qo'llab-quvvatlanib turishim va rivojlanishim uchun ehson qiling.\r\n\r\nBTC: <code>bc1qegnmzy004elder7vmp5u7r7unpd439ye52ceu8</code>\r\nETH: <code>0x90B9DFD251BbBcc3b1E6238BACB17FB6Af7FD6f7</code>\r\nTON: <code>UQApxopXX69V-STQ3JuIyxw33-O_fMPmUzWJ_wspEHQIxaFF</code><a href='https://paypal.me/AxeniaBot'>PayPal</a>",
+"donate.title" => "Iltimos, mening qo'llab-quvvatlanib turishim va rivojlanishim uchun ehson qiling.\r\n\r\nBTC: <code>bc1q3ajzyp0yezw3s3hz3j8fekkw7agweg8vdjs443</code>\r\nETH: <code>0xa79b0ecbb3475A7f7A0aEFd90cc785b18bD47c02</code>\r\nTON: <code>UQApxopXX69V-STQ3JuIyxw33-O_fMPmUzWJ_wspEHQIxaFF</code><a href='https://paypal.me/AxeniaBot'>PayPal</a>",
 "donate.attention" => "To'lov tugmachasini bosish orqali siz /terms buyrug'i orqali ko'rish mumkin bo'lgan shartlarni qabul qilasiz",
 "donate.pay" => "Hisobni to'lash (Qiwi)",
 "donate.check" => "Hisob holatini tekshirish",

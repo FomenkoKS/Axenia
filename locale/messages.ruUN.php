@@ -118,7 +118,7 @@
 "settings.unfollow.title" => "Выбери группу, участие о которой вы хотите забыть. Ну и заодно я сотру всю карму, что ты получил её там.\r\n\r\n<b>❗️Внимание! Операция окончательная и не может быть отменена.</b>",
 "settings.hidden.turnon" => "👻 Не палить группы",
 "settings.hidden.turnoff" => "👻 Палить группы",
-"donate.title" => "Подкинь деньжат на хостинг.\r\n\r\nBTC: <code>bc1qegnmzy004elder7vmp5u7r7unpd439ye52ceu8</code>\r\nETH: <code>0x90B9DFD251BbBcc3b1E6238BACB17FB6Af7FD6f7</code>\r\nTON: <code>UQApxopXX69V-STQ3JuIyxw33-O_fMPmUzWJ_wspEHQIxaFF\r\n<a href='https://paypal.me/AxeniaBot'>PayPal</a>",
+"donate.title" => "Пожалуйста, пожертвуйте для моей поддержки и развития.\r\n\r\nBTC: <code>bc1q3ajzyp0yezw3s3hz3j8fekkw7agweg8vdjs443</code>\r\nETH: <code>0xa79b0ecbb3475A7f7A0aEFd90cc785b18bD47c02</code>\r\nTON: <code>UQApxopXX69V-STQ3JuIyxw33-O_fMPmUzWJ_wspEHQIxaFF</code>\r\n<a href='https://paypal.me/AxeniaBot'>PayPal</a>",
 "donate.attention" => "Нажимая на кнопку оплаты вы соглашаетесь с условиями и положениями, доступными командой /terms",
 "donate.pay" => "Задонатить (Qiwi)",
 "donate.check" => "Проверить состояние счёта",
