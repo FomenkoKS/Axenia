@@ -45,7 +45,7 @@ class Axenia
             if (isset($message['caption'])) {
                 return Util::startsWith($message['caption'], ["/", "+", "-", '👍', '👎']);
             }
-            if (isset($message['sticker']) && array_key_exists('emoji',($message['sticker']))) {
+            if (isset($message['sticker']) && array_key_exists('emoji', ($message['sticker']))) {
                 return Util::startsWith($message['sticker']['emoji'], ['👍', '👎']);
             }
             if (isset($message['new_chat_member']) || isset($message['new_chat_title']) || isset($message['left_chat_member']) || isset($message['migrate_to_chat_id'])) {
@@ -131,8 +131,8 @@ class Axenia
                         break;
 
                     case (Util::startsWith($text, "/donate" . $postfix)):
-                        if(isset($message['sender_chat'])){
-                            $from_id=$message['sender_chat']['id'];
+                        if (isset($message['sender_chat'])) {
+                            $from_id = $message['sender_chat']['id'];
                         }
 
                         $this->service->showDonateMenu($from_id);
@@ -262,13 +262,14 @@ class Axenia
 
         $button_list = [];
         foreach ($store as $value) {
-            if ($value[2] == "0" || (Lang::isUncensored() && $value[2] == "1")) array_push(
-                $button_list,
-                [
-                    'text' => Lang::message('store.button.buy_' . $value[0], ['price' => $value[1]]),
-                    'callback_data' => 'buy_' . $value[0] . '|' . $from['id'] . '|' . $value[1]
-                ]
-            );
+            if ($value[2] == "0" || (Lang::isUncensored() && $value[2] == "1"))
+                array_push(
+                    $button_list,
+                    [
+                        'text' => Lang::message('store.button.buy_' . $value[0], ['price' => $value[1]]),
+                        'callback_data' => 'buy_' . $value[0] . '|' . $from['id'] . '|' . $value[1]
+                    ]
+                );
         }
         $inline_keyboard = array_chunk($button_list, 2);
         $username = $this->service->getUserName($from['id']);
@@ -279,7 +280,7 @@ class Axenia
             Request::sendHtmlMessage($chat_id, $text, ["reply_markup" => ['inline_keyboard' => $inline_keyboard]]);
         } else {
             $command = explode("|", $callback);
-            $newKarma = $karma - (int)$command[2];
+            $newKarma = $karma - (int) $command[2];
             if ($newKarma >= 0) {
                 switch ($command[0]) {
                     case 'buy_bashorg':
@@ -344,7 +345,8 @@ class Axenia
                         $a = [];
                     }
                 }
-                if (count($a) > 0) array_push($button_list, $a);
+                if (count($a) > 0)
+                    array_push($button_list, $a);
                 array_push($button_list, [['text' => Lang::message("settings.button.back"), 'callback_data' => "set_back"]]);
 
                 $text = Lang::message('settings.select.lang');
@@ -387,7 +389,8 @@ class Axenia
                                 'text' => Lang::message('settings.button.lang'),
                                 'callback_data' => 'set_lang'
                             ]
-                        ], [
+                        ],
+                        [
                             [
                                 'text' => Lang::message('settings.erase'),
                                 'callback_data' => 'set_eraseGroup'
@@ -417,22 +420,30 @@ class Axenia
                                 'callback_data' => 'set_lang'
                             ]
                         ],
-                        [[
-                            'text' => Lang::message('settings.button.set_cooldown'),
-                            'callback_data' => 'set_cooldown'
-                        ]],
-                        [[
-                            'text' => Lang::message('settings.button.set_another_growth', ["type" => ($this->service->getGrowth($chat_id) == 0) ? Lang::message('settings.growth.ariphmetic') : Lang::message('settings.growth.geometric')]),
-                            'callback_data' => 'set_another_growth'
-                        ]],
-                        [[
-                            'text' => Lang::message('settings.button.set_another_access', ["type" => ($this->service->getAccess($chat_id) == 0) ? Lang::message('settings.access.for_admin') : Lang::message('settings.access.for_everyone')]),
-                            'callback_data' => 'set_another_access'
-                        ]],
-                        [[
-                            'text' => Lang::message('settings.button.set_showcase', ["type" => ($this->service->getShowcaseStatus($chat_id) == 0) ? Lang::message('settings.enable') : Lang::message('settings.disable')]),
-                            'callback_data' => 'set_another_showcase'
-                        ]]
+                        [
+                            [
+                                'text' => Lang::message('settings.button.set_cooldown'),
+                                'callback_data' => 'set_cooldown'
+                            ]
+                        ],
+                        [
+                            [
+                                'text' => Lang::message('settings.button.set_another_growth', ["type" => ($this->service->getGrowth($chat_id) == 0) ? Lang::message('settings.growth.ariphmetic') : Lang::message('settings.growth.geometric')]),
+                                'callback_data' => 'set_another_growth'
+                            ]
+                        ],
+                        [
+                            [
+                                'text' => Lang::message('settings.button.set_another_access', ["type" => ($this->service->getAccess($chat_id) == 0) ? Lang::message('settings.access.for_admin') : Lang::message('settings.access.for_everyone')]),
+                                'callback_data' => 'set_another_access'
+                            ]
+                        ],
+                        [
+                            [
+                                'text' => Lang::message('settings.button.set_showcase', ["type" => ($this->service->getShowcaseStatus($chat_id) == 0) ? Lang::message('settings.enable') : Lang::message('settings.disable')]),
+                                'callback_data' => 'set_another_showcase'
+                            ]
+                        ]
                     ];
 
                     $text .= Lang::message("settings.title.silent_mode", ["status" => ($this->service->isSilentMode($chat_id)) ? Lang::message('settings.enabled') : Lang::message('settings.disabled')]) . "\r\n";
@@ -494,7 +505,8 @@ class Axenia
                             $ii = $ii - 1;
                             $tits = json_decode(file_get_contents("http://api.oboobs.ru/boobs/1/1/random"), true);
                             $rez = "http://media.oboobs.ru/boobs/" . sprintf("%05d", $tits[0]['id']) . ".jpg";
-                        };
+                        }
+                        ;
                         break;
                     case 'buy_butts':
                         $ii = 3;
@@ -538,7 +550,7 @@ class Axenia
                         $rez = $json->link;
                         break;
                     case 'buy_meme':
-                        $json = json_decode(file_get_contents("https://meme-api.herokuapp.com/gimme"), false);
+                        $json = json_decode(file_get_contents("https://meme-api.com/gimme"), false);
                         $rez = $json->url;
                         break;
                     case 'buy_dogs':
