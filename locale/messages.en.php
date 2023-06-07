@@ -6,8 +6,7 @@
 "user.pickChat" => "Please, <a href='t.me/:botName?startgroup=0'>pick а group</a> where I'll handle the karma points and more. ✌😊",
 "chat.greetings" => "Hello! My name is Axenia and I can count the karma points.\r\nUse /help to see more about and /settings for switch language.",
 "chat.help" => "<b>💬 What I can?</b>\r\n\r\n<b>Raising/reducing karma</b>
-Type 'plus' (+ or 👍) for raising or 'minus' (- or 👎) for reducing karma points to the user on which message it will be replying.
-Also I understand messages in format like \"+ @username\" and etc.\r\n
+Type 'plus' (+ or 👍) for raising or 'minus' (- or 👎) for reducing karma points to the user on which message it will be replying. \r\n
 <b>Commands</b>
 /top - show top of users in current group.
 /my_stats - show your global statistics.

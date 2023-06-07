@@ -92,26 +92,32 @@ class Axenia
                                         $replyUser = $message['reply_to_message']['from'];
                                         if (!$this->service->isUserBot($replyUser)) {
                                             $this->service->insertOrUpdateUser($replyUser);
-                                            $this->doKarmaAction($isRise, $from_id, $replyUser['id'], $chat_id);
-                                        }
-                                    } else {
-                                        if (count($matches) > 2) {
-                                            if (preg_match('/@([\w]+)/ui', $matches[2], $user)) {
-                                                if (BOT_NAME != $user[1] && !$this->service->isUsernameEndBot($user[1])) {
-                                                    $to = $this->service->getUserID($user[1]);
-                                                    if ($to) {
-                                                        if (Request::isChatMember($to, $chat_id)) {
-                                                            $this->doKarmaAction($isRise, $from_id, $to, $chat_id);
-                                                        } else {
-                                                            Request::sendHtmlMessage($chat_id, Lang::message('karma.unknownUser.kicked'), ['reply_to_message_id' => $message_id]);
-                                                        }
-                                                    } else {
-                                                        Request::sendHtmlMessage($chat_id, Lang::message('karma.unknownUser'), ['reply_to_message_id' => $message_id]);
-                                                    }
-                                                }
+                                            $msg = $this->doKarmaAction($isRise, $from_id, $replyUser['id'], $chat_id);
+
+                                            if (!$this->service->isSilentMode($chat_id)) {
+                                                Request::sendHtmlMessage($chat_id, $msg, ['reply_to_message_id' => $message_id]);
                                             }
                                         }
                                     }
+                                    
+                                    // else {
+                                    //     if (count($matches) > 2) {
+                                    //         if (preg_match('/@([\w]+)/ui', $matches[2], $user)) {
+                                    //             if (BOT_NAME != $user[1] && !$this->service->isUsernameEndBot($user[1])) {
+                                    //                 $to = $this->service->getUserID($user[1]);
+                                    //                 if ($to) {
+                                    //                     if (Request::isChatMember($to, $chat_id)) {
+                                    //                         $this->doKarmaAction($isRise, $from_id, $to, $chat_id);
+                                    //                     } else {
+                                    //                         Request::sendHtmlMessage($chat_id, Lang::message('karma.unknownUser.kicked'), ['reply_to_message_id' => $message_id]);
+                                    //                     }
+                                    //                 } else {
+                                    //                     Request::sendHtmlMessage($chat_id, Lang::message('karma.unknownUser'), ['reply_to_message_id' => $message_id]);
+                                    //                 }
+                                    //             }
+                                    //         }
+                                    //     }
+                                    // }
                                 }
                             }
                         }
@@ -226,9 +232,7 @@ class Axenia
     public function doKarmaAction($isRise, $from_id, $user_id, $chat_id)
     {
         $out = $this->service->handleKarma($isRise, $from_id, $user_id, $chat_id);
-        if (!$this->service->isSilentMode($chat_id)) {
-            Request::sendHtmlMessage($chat_id, $out['msg']);
-        }
+        return $out['msg'];
     }
 
     public function processInline($inline)
@@ -256,7 +260,6 @@ class Axenia
 
     public function sendStore($chat_id, $from = NULL, $message = NULL, $text = NULL, $callback = NULL, $callback_id = NULL)
     {
-        $message_id = $message['message_id'];
         $store = $this->service->getShowcase();
         $store = array_chunk($store, 3);
 
@@ -279,6 +282,7 @@ class Axenia
             $text = Util::insert(Lang::message('store.title'), ["user" => $username, "k" => $karma]);
             Request::sendHtmlMessage($chat_id, $text, ["reply_markup" => ['inline_keyboard' => $inline_keyboard]]);
         } else {
+            $message_id = $message['message_id'];
             $command = explode("|", $callback);
             $newKarma = $karma - (int) $command[2];
             if ($newKarma >= 0) {
@@ -332,7 +336,6 @@ class Axenia
                 break;
             case "set_lang":
                 $ln = Lang::availableLangs();
-
                 $i = 0;
                 $button_list = [];
                 $a = [];
@@ -397,16 +400,24 @@ class Axenia
                             ]
                         ]
                     ];
-                    $newButton = 'settings.hidden.';
-                    $newButton .= $this->service->isHidden($chat_id) ? 'turnoff' : 'turnon';
-                    $newButton = Lang::message($newButton);
 
-                    array_push($button_list, [
-                        [
-                            'text' => $newButton,
-                            'callback_data' => 'set_switchHidden'
-                        ]
-                    ]);
+                    // array_push($button_list, [
+                    //     [
+                    //         'text' => Lang::message('settings.erase'),
+                    //         'callback_data' => 'set_eraseGroup'
+                    //     ]
+                    // ]);
+
+                    // $newButton = 'settings.hidden.';
+                    // $newButton .= $this->service->isHidden($chat_id) ? 'turnoff' : 'turnon';
+                    // $newButton = Lang::message($newButton);
+
+                    // array_push($button_list, [
+                    //     [
+                    //         'text' => $newButton,
+                    //         'callback_data' => 'set_switchHidden'
+                    //     ]
+                    // ]);
                     $text .= Lang::message("settings.title.lang", ["lang" => Lang::getCurrentLangDesc()]) . "\r\n";
                 } else {
                     $button_list = [
@@ -465,7 +476,7 @@ class Axenia
                 Request::sendHtmlMessage($chat_id, $text);
             }
         } else {
-            Request::editMessageText($chat_id, $message['message_id'], $text, ["reply_markup" => ['inline_keyboard' => $inline_keyboard], "parse_mode" => "HTML"]);
+            Request::editMessageText($chat_id, $message['message_id'], $message['text'], ["reply_markup" => ['inline_keyboard' => $inline_keyboard], "parse_mode" => "HTML"]);
         }
     }
 
@@ -542,11 +553,11 @@ class Axenia
                         $rez = substr($xml, $s + 5, $e - $s - 5);
                         break;
                     case 'buy_pandas':
-                        $json = json_decode(file_get_contents("https://some-random-api.ml/img/panda"), false);
+                        $json = json_decode(file_get_contents("https://some-random-api.com/img/panda"), false);
                         $rez = $json->link;
                         break;
                     case 'buy_koalas':
-                        $json = json_decode(file_get_contents("https://some-random-api.ml/img/koala"), false);
+                        $json = json_decode(file_get_contents("https://some-random-api.com/img/koala"), false);
                         $rez = $json->link;
                         break;
                     case 'buy_meme':
