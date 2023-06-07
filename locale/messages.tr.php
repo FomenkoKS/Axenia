@@ -6,8 +6,7 @@
 "user.pickChat" => "Lütfen, nerede itibar sistemini kulllanmak istiyorsanız <a href='t.me/:botName?startgroup=0'>bir grup seçin.</a> ✌😊",
 "chat.greetings" => "Merhaba! Benim adım Axenia ve itibar puanlaması yapabilir ve itibar sayılarını sayabilirim.\r\nYardım almak için /help komutunu kullanabilirsin ve dili değiştirmek için /settings komutunu kullanabilirsin.",
 "chat.help" => "<b>💬 Ne yapabilirim?</b>\r\n\r\n<b>itibarı arttırıp azaltabilirim</b>
-'plus' (+ veya 👍) yazdığında veya 'minus' (- or 👎) yazdığında yanıtladığın kullanıcının itibarını değiştiririm.
-Ayrıca şu formattaki mesaj türleri için de geçerlidir: \"+ @username\" vb.\r\n
+'plus' (+ veya 👍) yazdığında veya 'minus' (- or 👎) yazdığında yanıtladığın kullanıcının itibarını değiştiririm.\r\n
 <b>Komutlar</b>
 /top - gruptaki en yüksek itibarı olan kullanıcıyı göster
 /my_stats - genel istatistiklerimi göster

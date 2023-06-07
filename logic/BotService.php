@@ -147,7 +147,7 @@ class BotService
 
     public function isUserBot($user)
     {
-        return $user["is_bot"];
+        return (($user["is_bot"]) || ($user['id']==777000));
     }
 
     public function CheckRights($user_id,$type)
