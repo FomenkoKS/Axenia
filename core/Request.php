@@ -183,16 +183,6 @@ class Request
         self::exec("answerCallbackQuery", $data);
     }
 
-    public static function answerPreCheckoutQuery($pre_checkout_query_id)
-    {
-        $data = [
-            'pre_checkout_query_id' => $pre_checkout_query_id,
-            "ok" => true
-        ];
-        self::exec("answerPreCheckoutQuery", $data);
-    }
-
-
     public static function editMessageText($chat_id, $message_id, $text, $addition = NULL)
     {
         $data = ['chat_id' => $chat_id, "message_id" => $message_id, "text" => $text];
@@ -232,7 +222,6 @@ class Request
 
     public static function send($method, array $content, $post = true)
     {
-
         $url = self::$url . $method;
         if ($post)
             $reply = self::sendAPIRequest($url, $content);

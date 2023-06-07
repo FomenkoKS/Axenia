@@ -11,7 +11,7 @@ class BotDao extends AbstractDao
         $username = strtolower(str_ireplace("@", "", $username));
         $res = $this->select("SELECT id FROM Users WHERE lower(username)=$username");
 
-        return (!$res[0]) ? false : $res[0];
+        return (count($res)) ? $res[0] : false ;
     }
 
     public function insertOrUpdateUser($user)
